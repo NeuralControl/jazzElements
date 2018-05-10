@@ -1,2 +1,3 @@
-## Welcome to GitHub Pages
-[Documentation] (inted.ipynnb)
+
+[Documentation](https://github.com/NeuralControl/jazzTheory/blob/master/demos.ipynb)
+
