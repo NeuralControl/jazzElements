@@ -17,7 +17,7 @@ prg.plot()
 
 Plot all Chords in a given Scale:  
 ```python
-Scale(('C minor').plotChords()
+Scale('C minor').plotChords()
 ```
 ![SatinDoll](img/allChords.png)  
 
