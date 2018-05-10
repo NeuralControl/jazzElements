@@ -5,10 +5,11 @@ For example, we can enter a progression as a string, ask to analyse then plot th
 
 
 From a chord progression, we can analyze and plot the results:  
+```python
 prg = Progression('|Dm7,G7|Dm7,G7|Em7,A7|Em7,A7|Am7,D7|Abm7,Db7|CM7|CM7|',name='Satin Doll')  
 prg.analyze()  
 prg.plot()  
-
+```
 ![SatinDoll](img/SatinDoll.png)  
 
 Print all Chords in a given Scale:  
