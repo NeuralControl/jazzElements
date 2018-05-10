@@ -1,6 +1,4 @@
 
 [Documentation](https://github.com/NeuralControl/jazzTheory/blob/master/demos.ipynb)
 
-Reference-style: 
-![alt text][img/SatinDoll]
-
+![SatinDoll](https://github.com/NeuralControl/jazzTheory/tree/master/img/SatinDoll.png)
