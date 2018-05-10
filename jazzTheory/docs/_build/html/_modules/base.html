@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>base &#8212; jazzTheory 0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          jazzTheory</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">jazzTheory <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../note.html">Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chord.html">Chord</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mode.html">Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scale.html">Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../progression.html">Progression</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../note.html">Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chord.html">Chord</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mode.html">Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scale.html">Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../progression.html">Progression</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../note.html">Note</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chord.html">Chord</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mode.html">Mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scale.html">Scale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../progression.html">Progression</a></li>
+</ul>
+
+<form action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="col-md-9 content">
+      
+  <h1>Source code for base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">permutations</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="printNotes"><a class="viewcode-back" href="../index.html#base.printNotes">[docs]</a><span class="k">def</span> <span class="nf">printNotes</span><span class="p">(</span><span class="n">notes</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;shade&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">notes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Note</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s1">&#39;square&#39;</span><span class="p">:</span>
+        <span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spc</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u25A1</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u25A0</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u2005</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s1">&#39;shade&#39;</span><span class="p">:</span>
+        <span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spc</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u2591</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u2588</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u2005</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">spc</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u2591</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u2588</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u2005</span><span class="s2">&quot;</span><span class="p">]</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">*</span> <span class="mi">12</span>
+    <span class="k">for</span> <span class="n">ni</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Scale</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;Chromatic&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">notes</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span> <span class="n">N</span><span class="p">[</span><span class="n">ni</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="mi">9</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span>
+          <span class="mi">3</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="mi">9</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span>
+          <span class="n">N</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span>
+              <span class="mi">11</span><span class="p">]</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span>
+          <span class="n">N</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">spc</span> <span class="o">+</span> <span class="n">N</span><span class="p">[</span>
+              <span class="mi">11</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Note"><a class="viewcode-back" href="../note.html#base.Note">[docs]</a><span class="k">class</span> <span class="nc">Note</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a new note with format verification and simplification</span>
+<span class="sd">    Args:</span>
+<span class="sd">        note: note string format (can use unicode b,♭,#,♯ )</span>
+<span class="sd">        alt: additional alteration</span>
+<span class="sd">    Examples:</span>
+<span class="sd">        n=Note(&#39;Db&#39;)</span>
+<span class="sd">        n=Note(&#39;D♭&#39;)</span>
+<span class="sd">        n=Note(&#39;D♭♭♭♭♭♭♭&#39;)</span>
+<span class="sd">        n=Note(&#39;D♭&#39;,+3)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">chrSharp</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;C♯&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;D♯&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;F♯&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;G♯&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;A♯&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">]</span>
+    <span class="n">chrFlat</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;D♭&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;E♭&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;G♭&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;A♭&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B♭&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">]</span>
+
+    <span class="n">sharp</span> <span class="o">=</span> <span class="s1">&#39;#&#39;</span>
+    <span class="n">Sharp</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u266f</span><span class="s2">&quot;</span>
+    <span class="n">flat</span> <span class="o">=</span> <span class="s1">&#39;b&#39;</span>
+    <span class="n">Flat</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u266d</span><span class="s2">&quot;</span>
+    <span class="n">natural</span> <span class="o">=</span> <span class="s1">&#39;n&#39;</span>
+    <span class="n">Natural</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;</span><span class="se">\u266e</span><span class="s2">&quot;</span>
+    <span class="n">altLst</span> <span class="o">=</span> <span class="p">{</span><span class="n">sharp</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Sharp</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">flat</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">Flat</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">natural</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Natural</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;?&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+<div class="viewcode-block" id="Note.__init__"><a class="viewcode-back" href="../note.html#base.Note.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">note</span><span class="p">,</span> <span class="n">alt</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">note</span><span class="p">,</span> <span class="n">Note</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">note</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chrSharp</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">note</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Note unknown&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">alti</span> <span class="ow">in</span> <span class="n">note</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="k">if</span> <span class="n">alti</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">altLst</span><span class="p">:</span>
+                    <span class="n">alt</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">altLst</span><span class="p">[</span><span class="n">alti</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Alteration unknown&#39;</span><span class="p">)</span>
+        <span class="n">alt</span> <span class="o">=</span> <span class="n">alt</span> <span class="o">%</span> <span class="mi">12</span> <span class="k">if</span> <span class="n">alt</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">alt</span>
+        <span class="k">if</span> <span class="n">alt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="n">alt</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">chrScale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chrFlat</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chrSharp</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chrScale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chrSharp</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chrFlat</span> <span class="o">*</span> <span class="mi">2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">chrScale</span><span class="p">[(</span><span class="n">chrScale</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">alt</span><span class="p">)</span> <span class="o">%</span> <span class="mi">12</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Note.__str__"><a class="viewcode-back" href="../note.html#base.Note.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+<div class="viewcode-block" id="Note.__add__"><a class="viewcode-back" href="../note.html#base.Note.__add__">[docs]</a>    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alt</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds alt half steps to a given note</span>
+<span class="sd">        Args:</span>
+<span class="sd">            alt: number of half steps to add</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Altered Note</span>
+<span class="sd">        Examples:</span>
+<span class="sd">            Note(&#39;C&#39;)+2 returns Note(&#39;D&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Note</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alt</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Note.__sub__"><a class="viewcode-back" href="../note.html#base.Note.__sub__">[docs]</a>    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">altOrNote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the steps from another note, OR transpose down alt halfSteps</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            altOrNote: &lt;int&gt;: number of halfSteps to substract</span>
+<span class="sd">                       &lt;Note&gt;:  the note to compare to</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            number of halfSteps or altered Note</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Note(&#39;D&#39;)-Note(&#39;C&#39;) returns 2</span>
+<span class="sd">            Note(&#39;D&#39;)-2 returns Note(&#39;C&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">altOrNote</span><span class="p">,</span> <span class="n">Note</span><span class="p">):</span>
+            <span class="n">n1</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">chrFlat</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chrSharp</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span> <span class="o">%</span> <span class="mi">12</span>
+            <span class="n">n2</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">chrFlat</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">chrSharp</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">altOrNote</span><span class="o">.</span><span class="n">name</span><span class="p">))</span> <span class="o">%</span> <span class="mi">12</span>
+            <span class="k">return</span> <span class="n">n1</span> <span class="o">-</span> <span class="n">n2</span> <span class="k">if</span> <span class="n">n1</span> <span class="o">-</span> <span class="n">n2</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">12</span> <span class="o">+</span> <span class="n">n1</span> <span class="o">-</span> <span class="n">n2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Note</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">-</span><span class="n">altOrNote</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Note.__repr__"><a class="viewcode-back" href="../note.html#base.Note.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Note.__eq__"><a class="viewcode-back" href="../note.html#base.Note.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">note</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tests if self is equivalent to another Note</span>
+<span class="sd">        Args:</span>
+<span class="sd">            note: Note to compare to</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">note</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span> <span class="o">-</span> <span class="n">note</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div></div>
+
+
+<div class="viewcode-block" id="Chord"><a class="viewcode-back" href="../chord.html#base.Chord">[docs]</a><span class="k">class</span> <span class="nc">Chord</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># todo: for a minor chord, the 3 should be b, no #</span>
+    <span class="c1"># todo: implement + and -</span>
+
+    <span class="n">intervalsLst</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;b2&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;b3&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;b5&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;#5&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;b7&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;b9&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="s1">&#39;#9&#39;</span><span class="p">,</span> <span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span> <span class="s1">&#39;#11&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">,</span> <span class="s1">&#39;#12&#39;</span><span class="p">,</span> <span class="s1">&#39;13&#39;</span><span class="p">,</span> <span class="s1">&#39;b14&#39;</span><span class="p">,</span> <span class="s1">&#39;14&#39;</span><span class="p">,</span> <span class="s1">&#39;15&#39;</span><span class="p">]</span>
+    <span class="n">typesLst</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c1"># Major</span>
+        <span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="s1">&#39;1-3-5&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;M6&#39;</span><span class="p">:</span> <span class="s1">&#39;1-3-5-6&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;M7&#39;</span><span class="p">:</span> <span class="s1">&#39;1-3-5-7&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;M9&#39;</span><span class="p">:</span> <span class="s1">&#39;1-3-5-7-9&#39;</span><span class="p">,</span>
+        <span class="c1"># Minor</span>
+        <span class="s1">&#39;m&#39;</span><span class="p">:</span> <span class="s1">&#39;1-b3-5&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;m6&#39;</span><span class="p">:</span> <span class="s1">&#39;1-b3-5-6&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;m7&#39;</span><span class="p">:</span> <span class="s1">&#39;1-b3-5-b7&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;m9&#39;</span><span class="p">:</span> <span class="s1">&#39;1-b3-5-b7-9&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;m7b5&#39;</span><span class="p">:</span> <span class="s1">&#39;1-b3-b5-b7&#39;</span><span class="p">,</span>
+        <span class="c1"># Dominant</span>
+        <span class="s1">&#39;7&#39;</span><span class="p">:</span> <span class="s1">&#39;1-3-5-b7&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;9&#39;</span><span class="p">:</span> <span class="s1">&#39;1-3-5-b7-9&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;7b9&#39;</span><span class="p">:</span> <span class="s1">&#39;1-3-5-b7-b9&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;11&#39;</span><span class="p">:</span> <span class="s1">&#39;1-3-5-b7-9-11&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;13&#39;</span><span class="p">:</span> <span class="s1">&#39;1-3-5-b7-9-11-13&#39;</span><span class="p">,</span>
+        <span class="c1"># diminished</span>
+        <span class="s1">&#39;o&#39;</span><span class="p">:</span> <span class="s1">&#39;1-b3-b5&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;o7&#39;</span><span class="p">:</span> <span class="s1">&#39;1-b3-b5-6&#39;</span><span class="p">,</span>  <span class="c1"># bb7-&gt;6</span>
+        <span class="sa">u</span><span class="s1">&#39;</span><span class="se">\u00F8</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;1-b3-b5-b7&#39;</span><span class="p">,</span>
+        <span class="c1"># augmented</span>
+        <span class="s1">&#39;aug&#39;</span><span class="p">:</span> <span class="s1">&#39;1-3-#5&#39;</span><span class="p">,</span>
+        <span class="c1"># sus</span>
+        <span class="s1">&#39;sus4&#39;</span><span class="p">:</span> <span class="s1">&#39;1-4-5&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sus2&#39;</span><span class="p">:</span> <span class="s1">&#39;1-2-5&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;7sus4&#39;</span><span class="p">:</span> <span class="s1">&#39;1-4-5-b7&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;7sus2&#39;</span><span class="p">:</span> <span class="s1">&#39;1-2-5-b7&#39;</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="Chord.__init__"><a class="viewcode-back" href="../chord.html#base.Chord.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nameOrNotes</span><span class="p">,</span> <span class="n">checkInv</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a chord from chord name or list of notes</span>
+<span class="sd">        Args:</span>
+<span class="sd">            nameOrNotes: chord names or notes within chord</span>
+<span class="sd">        Examples:</span>
+<span class="sd">            c=Chord(&#39;Em7&#39;)</span>
+<span class="sd">            c=Chord([&#39;C&#39;,&#39;E&#39;,&#39;G&#39;])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nameOrNotes</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nameOrNotes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span><span class="n">nameOrNotes</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">nameOrNotes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">Note</span><span class="o">.</span><span class="n">altLst</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span><span class="n">nameOrNotes</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nameOrNotes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">nameOrNotes</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span><span class="n">nameOrNotes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">nameOrNotes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nameOrNotes</span><span class="p">,</span> <span class="n">Chord</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">nameOrNotes</span><span class="o">.</span><span class="n">root</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">nameOrNotes</span><span class="o">.</span><span class="n">type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nameOrNotes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nameOrNotes</span><span class="p">]</span>
+            <span class="n">chrdType</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">checkInv</span><span class="p">:</span>
+                <span class="n">seq</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">permutations</span><span class="p">(</span><span class="n">nameOrNotes</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nameOrNotes</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">seq</span> <span class="o">=</span> <span class="p">[</span><span class="n">nameOrNotes</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">lst</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
+                <span class="n">intervals</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">12</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Note</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">-</span> <span class="n">Note</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">]]</span>
+                <span class="n">intervals</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">Chord</span><span class="o">.</span><span class="n">intervalsLst</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">intervals</span><span class="p">])</span>
+                <span class="n">chrdType</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">typesLst</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">intervals</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chrdType</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot find a chord from &#39;</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nameOrNotes</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chrdType</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">chrdType</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>  <span class="c1"># todo: Best match shouldnt be done this way</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Found </span><span class="si">{}</span><span class="s1"> choosing </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chrdType</span><span class="p">),</span> <span class="n">chrdType</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Chord</span><span class="p">(</span><span class="n">chrdType</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">root</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">Chord</span><span class="p">(</span><span class="n">chrdType</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">type</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span></div>
+
+<div class="viewcode-block" id="Chord.intervals"><a class="viewcode-back" href="../chord.html#base.Chord.intervals">[docs]</a>    <span class="k">def</span> <span class="nf">intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asStr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return intervals of the chord</span>
+<span class="sd">        Args:</span>
+<span class="sd">            asStr: if True, returns as strings list, otherwise as list of steps</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">asStr</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">typesLst</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">intervalsLst</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">typesLst</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="Chord.print"><a class="viewcode-back" href="../index.html#base.Chord.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">set</span><span class="o">=</span><span class="s1">&#39;shade&#39;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span>
+        <span class="n">printNotes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">(),</span> <span class="n">fmt</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Chord.notes"><a class="viewcode-back" href="../index.html#base.Chord.notes">[docs]</a>    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asStr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">I</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="s1">&#39;b&#39;</span> <span class="ow">in</span> <span class="n">iName</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">iName</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intervals</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">intervals</span><span class="p">(</span><span class="n">asStr</span><span class="o">=</span><span class="kc">True</span><span class="p">))]</span>
+        <span class="c1"># hack to keep flat intervals flat</span>
+        <span class="k">if</span> <span class="n">asStr</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">Note</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">I</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Note</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">I</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Chord.guideTones"><a class="viewcode-back" href="../chord.html#base.Chord.guideTones">[docs]</a>    <span class="k">def</span> <span class="nf">guideTones</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asStr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Guide Tones are the 3rd and the 7th of a chord. They are the most harmonically important as they</span>
+<span class="sd">        determine its quality, so we want to focus on them.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            asStr: return a string list</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of guide tones</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">guideTonesLst</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;b3&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;b7&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">]</span>
+        <span class="n">guideTones</span> <span class="o">=</span> <span class="p">[</span><span class="n">gt</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">gt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intervals</span><span class="p">(</span><span class="n">asStr</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">())</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">guideTonesLst</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">gt</span><span class="p">)</span> <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">guideTones</span><span class="p">]</span> <span class="k">if</span> <span class="n">asStr</span> <span class="k">else</span> <span class="n">guideTones</span></div>
+
+<div class="viewcode-block" id="Chord.avoidNotes"><a class="viewcode-back" href="../chord.html#base.Chord.avoidNotes">[docs]</a>    <span class="k">def</span> <span class="nf">avoidNotes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">notesOrScale</span><span class="p">,</span> <span class="n">asStr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Avoid notes are notes one step above a chord note, use sparingly and while passing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">notesOrScale</span><span class="p">,</span> <span class="n">Scale</span><span class="p">):</span>
+            <span class="n">notesOrScale</span> <span class="o">=</span> <span class="n">notesOrScale</span><span class="o">.</span><span class="n">notes</span><span class="p">()</span>
+        <span class="n">avoid</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">()]</span>
+        <span class="n">avoidNotes</span> <span class="o">=</span> <span class="p">[</span><span class="n">an</span> <span class="k">for</span> <span class="n">an</span> <span class="ow">in</span> <span class="n">notesOrScale</span> <span class="k">if</span> <span class="n">an</span> <span class="ow">in</span> <span class="n">avoid</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">gt</span><span class="p">)</span> <span class="k">for</span> <span class="n">gt</span> <span class="ow">in</span> <span class="n">avoidNotes</span><span class="p">]</span> <span class="k">if</span> <span class="n">asStr</span> <span class="k">else</span> <span class="n">avoidNotes</span></div>
+
+<div class="viewcode-block" id="Chord.__str__"><a class="viewcode-back" href="../chord.html#base.Chord.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> | </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                     <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intervals</span><span class="p">(</span><span class="n">asStr</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
+                                     <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">()]))</span></div>
+
+<div class="viewcode-block" id="Chord.__repr__"><a class="viewcode-back" href="../chord.html#base.Chord.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Chord.__eq__"><a class="viewcode-back" href="../chord.html#base.Chord.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chordOrStr</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">Chord</span><span class="p">(</span><span class="n">chordOrStr</span><span class="p">)</span><span class="o">.</span><span class="n">notes</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">xi</span> <span class="ow">in</span> <span class="n">y</span> <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span><span class="n">yi</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">for</span> <span class="n">yi</span> <span class="ow">in</span> <span class="n">y</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Chord.listKeys"><a class="viewcode-back" href="../chord.html#base.Chord.listKeys">[docs]</a>    <span class="k">def</span> <span class="nf">listKeys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lists the keys on which we have this chord</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lst</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">Scale</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;Chromatic&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">notes</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">Mode</span><span class="o">.</span><span class="n">modesLst</span><span class="p">:</span>
+                <span class="nb">chr</span> <span class="o">=</span> <span class="n">Scale</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span><span class="o">.</span><span class="n">hasChord</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">chr</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">chr</span><span class="p">:</span>
+                        <span class="n">lst</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">key</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">lst</span></div></div>
+
+<div class="viewcode-block" id="Mode"><a class="viewcode-back" href="../mode.html#base.Mode">[docs]</a><span class="k">class</span> <span class="nc">Mode</span><span class="p">:</span>
+    <span class="n">modesLst</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Ionian&#39;</span><span class="p">,</span> <span class="s1">&#39;Dorian&#39;</span><span class="p">,</span> <span class="s1">&#39;Phrygian&#39;</span><span class="p">,</span> <span class="s1">&#39;Lydian&#39;</span><span class="p">,</span> <span class="s1">&#39;Mixolydian&#39;</span><span class="p">,</span> <span class="s1">&#39;Aeolian&#39;</span><span class="p">,</span> <span class="s1">&#39;Locrian&#39;</span><span class="p">,</span> <span class="s1">&#39;Chromatic&#39;</span><span class="p">]</span>
+    <span class="n">modesIntervals</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Ionian&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="s1">&#39;Dorian&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="s1">&#39;Phrygian&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="s1">&#39;Lydian&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="s1">&#39;Mixolydian&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="s1">&#39;Aeolian&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="s1">&#39;Locrian&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="s1">&#39;Chromatic&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="Mode.__init__"><a class="viewcode-back" href="../mode.html#base.Mode.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">Mode</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">mode</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">mode</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;Major&#39;</span><span class="p">:</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Ionian&#39;</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;Minor&#39;</span><span class="p">:</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Aeolian&#39;</span>
+
+            <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modesLst</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">mode</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;mode </span><span class="si">{}</span><span class="s1"> not implemented&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Mode.intervals"><a class="viewcode-back" href="../index.html#base.Mode.intervals">[docs]</a>    <span class="k">def</span> <span class="nf">intervals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">str</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">stepsNames</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;h&#39;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">stepsNames</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modesIntervals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modesIntervals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Mode.__str__"><a class="viewcode-back" href="../mode.html#base.Mode.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">intervals</span><span class="p">(</span><span class="nb">str</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Mode.__repr__"><a class="viewcode-back" href="../mode.html#base.Mode.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Mode.__eq__"><a class="viewcode-back" href="../mode.html#base.Mode.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">mode</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Scale"><a class="viewcode-back" href="../scale.html#base.Scale">[docs]</a><span class="k">class</span> <span class="nc">Scale</span><span class="p">:</span>
+    <span class="c1"># todo: ability to call as in &#39;C Ionian&#39;</span>
+
+    <span class="n">chordsDegrees</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;II&#39;</span><span class="p">,</span> <span class="s1">&#39;III&#39;</span><span class="p">,</span> <span class="s1">&#39;IV&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;VI&#39;</span><span class="p">,</span> <span class="s1">&#39;VII&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Scale.__init__"><a class="viewcode-back" href="../scale.html#base.Scale.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;ionian&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">Mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scale.__str__"><a class="viewcode-back" href="../scale.html#base.Scale.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{:10}</span><span class="s1"> | </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">),</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">()]))</span></div>
+
+<div class="viewcode-block" id="Scale.__repr__"><a class="viewcode-back" href="../scale.html#base.Scale.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Scale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Scale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">-</span> <span class="n">steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Scale.__eq__"><a class="viewcode-back" href="../scale.html#base.Scale.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">scale</span><span class="o">.</span><span class="n">notes</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">xi</span> <span class="ow">in</span> <span class="n">y</span> <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">([</span><span class="n">yi</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">for</span> <span class="n">yi</span> <span class="ow">in</span> <span class="n">y</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Scale.__getitem__"><a class="viewcode-back" href="../scale.html#base.Scale.__getitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">asStr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get chord or note from a scale</span>
+<span class="sd">        Args:</span>
+<span class="sd">            item: int-&gt; nth note | str: chord by degree</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            note or chord</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">(</span><span class="n">asStr</span><span class="p">)[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">(</span><span class="n">asStr</span><span class="p">)[</span><span class="n">item</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Scale.print"><a class="viewcode-back" href="../index.html#base.Scale.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">set</span><span class="o">=</span><span class="s1">&#39;shade&#39;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span>
+        <span class="n">printNotes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">(),</span> <span class="n">fmt</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scale.notes"><a class="viewcode-back" href="../index.html#base.Scale.notes">[docs]</a>    <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asStr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">asStr</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">intervals</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">intervals</span><span class="p">()[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="Scale.chords"><a class="viewcode-back" href="../index.html#base.Scale.chords">[docs]</a>    <span class="k">def</span> <span class="nf">chords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asStr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">())</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="n">asStr</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chordsDegrees</span><span class="p">[</span><span class="n">n</span><span class="p">]:</span> <span class="n">Chord</span><span class="p">([</span><span class="n">N</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">N</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">2</span><span class="p">],</span> <span class="n">N</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">4</span><span class="p">],</span> <span class="n">N</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">6</span><span class="p">]],</span> <span class="n">checkInv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span>
+                        <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chordsDegrees</span><span class="p">[</span><span class="n">n</span><span class="p">]:</span> <span class="n">Chord</span><span class="p">([</span><span class="n">N</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">N</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">2</span><span class="p">],</span> <span class="n">N</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">4</span><span class="p">],</span> <span class="n">N</span><span class="p">[</span><span class="n">n</span> <span class="o">+</span> <span class="mi">6</span><span class="p">]],</span> <span class="n">checkInv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span>
+                        <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="Scale.hasChord"><a class="viewcode-back" href="../index.html#base.Scale.hasChord">[docs]</a>    <span class="k">def</span> <span class="nf">hasChord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chord</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chord</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span> <span class="n">chord</span> <span class="o">=</span> <span class="n">Chord</span><span class="p">(</span><span class="n">chord</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">chord</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Scale.relativeMinor"><a class="viewcode-back" href="../index.html#base.Scale.relativeMinor">[docs]</a>    <span class="k">def</span> <span class="nf">relativeMinor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;Ionian&#39;</span><span class="p">:</span>  <span class="c1"># Relative Major is 1.5 tone below key</span>
+            <span class="k">return</span> <span class="n">Scale</span><span class="p">(</span><span class="n">Note</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Aeolian&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot calculate relative Minor&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scale.relativeMajor"><a class="viewcode-back" href="../index.html#base.Scale.relativeMajor">[docs]</a>    <span class="k">def</span> <span class="nf">relativeMajor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;Aeolian&#39;</span><span class="p">:</span>  <span class="c1"># Relative Minor is 1.5 tone above key</span>
+            <span class="k">return</span> <span class="n">Scale</span><span class="p">(</span><span class="n">Note</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Ionian&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot calculate relative Major&#39;</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="Progression"><a class="viewcode-back" href="../progression.html#base.Progression">[docs]</a><span class="k">class</span> <span class="nc">Progression</span><span class="p">:</span>
+<div class="viewcode-block" id="Progression.__init__"><a class="viewcode-back" href="../progression.html#base.Progression.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beatsPerBar</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beats</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">degree</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">bar</span> <span class="ow">in</span> <span class="n">prg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bar</span><span class="p">):</span>
+                <span class="n">chords</span> <span class="o">=</span> <span class="p">[</span><span class="n">Chord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">bar</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">chords</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">beats</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">beatsPerBar</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">chords</span><span class="p">)]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">chords</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">chords</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">chords</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Progression.findScale"><a class="viewcode-back" href="../index.html#base.Progression.findScale">[docs]</a>    <span class="k">def</span> <span class="nf">findScale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">chr</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="s1">&#39;V&#39;</span><span class="p">):</span>
+        <span class="c1"># todo: There must be a better way</span>
+        <span class="c1"># todo: Only looking for major keys</span>
+        <span class="c1"># todo: Taking now the first one found</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Ionian&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Scale</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">Note</span><span class="o">.</span><span class="n">chrSharp</span> <span class="k">if</span> <span class="nb">chr</span> <span class="o">==</span> <span class="n">Scale</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">mode</span><span class="p">)[</span><span class="n">degree</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Progression.label"><a class="viewcode-back" href="../index.html#base.Progression.label">[docs]</a>    <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">]:</span>
+                <span class="c1"># we found a dominant</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;V&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">findScale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="s1">&#39;V&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="s1">&#39;II&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">[</span><span class="n">c</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+                        <span class="c1"># we found a predominant</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">c</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;II&#39;</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="n">c</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">chords</span><span class="p">()[</span><span class="s1">&#39;I&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]:</span>
+                        <span class="c1"># we found the tonic</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;I&#39;</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="n">c</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Progression.print"><a class="viewcode-back" href="../index.html#base.Progression.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">beats</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beats</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">):</span>
+            <span class="n">beats</span> <span class="o">+=</span> <span class="n">b</span>
+            <span class="n">C</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{:8}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="n">d</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39; | &#39;</span> <span class="k">if</span> <span class="n">beats</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">beatsPerBar</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Scale</span><span class="p">):</span>
+                <span class="n">S</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{:8}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span>
+                    <span class="s1">&#39; | &#39;</span> <span class="k">if</span> <span class="n">beats</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">beatsPerBar</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">S</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{:8}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span>
+                                     <span class="s1">&#39; | &#39;</span> <span class="k">if</span> <span class="n">beats</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">beatsPerBar</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">beats</span> <span class="o">%</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">beatsPerBar</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">txt</span> <span class="o">+=</span> <span class="n">C</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">S</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">C</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="n">S</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span></div></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Notes:</span>
+<span class="sd">- Tritone substitution: we can replace a dom7 by a dom7 that is 6halfSteps above the root</span>
+<span class="sd">- Tritone substitution is good on II-V-I because it provides a chromatic root movement</span>
+<span class="sd">  e.g. Dm7–G7–CM7 -&gt; Dm7–D♭7–CM gives a downward walking bass</span>
+<span class="sd">- Guide Tones are the 3rd and the 7th of a chord. They are the most harmonically important as they </span>
+<span class="sd">   determine its quality, so we want to focus on them</span>
+<span class="sd">- Avoid notes are notes located one step above a given chord&#39;s notes </span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Remy Wahnoun.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
