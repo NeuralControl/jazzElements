@@ -15,10 +15,14 @@ prg.plot()
 ![SatinDoll](img/SatinDoll.png)  
 
 
-Print all Chords in a given Scale:  
+Plot all Chords in a given Scale:  
+```python
+Scale(('C minor').plotChords()
+```
 ![SatinDoll](img/allChords.png)  
 
 Plot all m7 for all roots:  
+
 ![SatinDoll](img/allKeys.png)  
 
 Plot implemented chords:  
