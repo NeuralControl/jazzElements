@@ -1,6 +1,8 @@
 
 - Chord(['C', 'G', 'Eb','Bb']) return Cm7  
-- Fix Demos  
+- group chord types 
+- update chords degrees with chord type
+- look for progressions using chord type
 - for now, just looking for II-V-I,II-V,V-I   
 - add scale.relativeModes:     
 e.g. for C major:  
