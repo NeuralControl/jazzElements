@@ -457,7 +457,7 @@ class Scale:
             ax = fig.add_subplot(grid[i])
             ax.set_xlim(0, 100)
             ax.set_ylim(0, 60)
-            plotNotes(self[degree].notes(), pos=[0, 0, 100, 60], name=self[degree].name + ' (' + degree + ')')
+            plotNotes(self[degree].notes(), pos=[0, 0, 100, 60], name=self[degree].name + ' (' + degree + ')',ax=ax)
             axis('off')
         suptitle('Chords built from ' + self.root.name + ' ' + self.mode.name)
 
