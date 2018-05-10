@@ -1,6 +1,14 @@
 import pandas as pd
-
 from jazzTheory.jazzTheory.base import Note, Chord, Mode, Scale, Progression
+
+Chord('Co').plot()
+Scale('C dorian').plot()
+
+
+self = Progression('Misty')
+self.label()
+self.plot(plotScale=True, plotChord=True)
+
 
 Note('Cb')
 
@@ -14,7 +22,7 @@ Scale('Eb', 'Ionian').chords()
 
 Scale('Eb', 'Ionian').hasChord(Chord('Cm7'))
 
-for ch in Chord('F7').listKeys():
+for ch in Chord('F7').listScales():
     print('{} {:12} {}'.format(ch[0], ch[1], ch[2]))
 
 ## print all chords from C scales

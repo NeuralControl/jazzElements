@@ -1,17 +1,9 @@
 """
 """
 from itertools import permutations
-
+from matplotlib import gridspec
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.pyplot import *
-from matplotlib import gridspec
-
-progressions = \
-    {
-        'SatinDoll': '|Dm7,G7|%|Em7,A7|%|Am7,D7|Abm7,Db7|CM7|%|',
-        'Misty': '|B7b9|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7|',
-    }
-
 
 def printNotes(notes, fmt='shade'):
     if isinstance(notes[0], str):
@@ -69,6 +61,12 @@ def plotNotes(notes, pos=[0, 0, 100, 40], cNote='#63B4D1', name='', ax=0, nbOcta
     plot(0, 0, '.w', zorder=-1)
     if name:
         text(pos[0], pos[1] + pos[3] / 2, name, ha='right', va='center', rotation=90)
+
+progressions = \
+    {
+        'SatinDoll': '|Dm7,G7|%|Em7,A7|%|Am7,D7|Abm7,Db7|CM7|%|',
+        'Misty': '|B7b9|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7|',
+    }
 
 class Note:
     """
@@ -252,7 +250,7 @@ class Chord:
 
             if len(chrdType) > 1:
                 chrdType.sort(key=len)  # todo: Best match shouldnt be done this way
-                print('Found {} choosing {}'.format(','.join(chrdType), chrdType[0]))
+                #print('Found {} choosing {}'.format(','.join(chrdType), chrdType[0]))
 
             self.root = Chord(chrdType[0]).root
             self.type = Chord(chrdType[0]).type
@@ -305,6 +303,10 @@ class Chord:
         """
         if isinstance(notesOrScale, Scale):
             notesOrScale = notesOrScale.notes()
+        if isinstance(notesOrScale,str):
+            if ' ' in notesOrScale:
+                notesOrScale = Scale(notesOrScale).notes()
+
         avoid = [n + 1 for n in self.notes()]
         avoidNotes = [an for an in notesOrScale if an in avoid]
         return [str(gt) for gt in avoidNotes] if asStr else avoidNotes
@@ -322,7 +324,7 @@ class Chord:
         y = self.notes()
         return all([xi in y for xi in x]) and all([yi in x for yi in y])
 
-    def listKeys(self):
+    def listScales(self):
         """
         Lists the keys on which we have this chord
         """
@@ -502,7 +504,7 @@ class Progression:
         mode = 'Ionian'
         return [Scale(k, mode) for k in Note.chrSharp if chr == Scale(k, mode)[degree]][0]
 
-    def label(self):
+    def analyze(self):
         for c in range(len(self.chords)):
             if self.chords[c]['chord'].type in ['', '7']:
                 # we found a dominant
@@ -598,15 +600,6 @@ class Progression:
             ax.set_xticks([])
             ax.set_yticks([])
         suptitle(self.name,size=30,weight='bold')
-
-
-Chord('Co').plot()
-Scale('C dorian').plot()
-
-
-self = Progression('Misty')
-self.label()
-self.plot(plotScale=True, plotChord=True)
 
 
 

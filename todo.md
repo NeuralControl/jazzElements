@@ -1,4 +1,6 @@
 
+- Chord(['C', 'G', 'Eb','Bb']) return Cm7
+- Fix Demos
 
 - add scale.relativeModes:\
 e.g. for C major:\
@@ -7,6 +9,8 @@ D dorian E phrygian F lydian G mixolydian A minor B locrian
 e.g. for C major:\
 C major C dorian C phrygian C lydian C mixolydian C minor C locrian
 - add % or / to repeat chord
+
+
 
 Notes:
 - Tritone substitution: we can replace a dom7 by a dom7 that is 6halfSteps above the root
