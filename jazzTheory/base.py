@@ -548,31 +548,6 @@ class Progression:
             P.append(C)
         return P
 
-    def print(self):
-        lastBar = -1
-        for c in self.asArray():
-            if c['bar'] > lastBar:
-                lastBar += 1
-                print(u"\u2588" * 2 + ' bar ' + str(lastBar) + ' ' + u"\u2588" * 27)
-
-            if 'scale' in c:
-                scaleStr = Scale(c['scale']).root.name + ' ' + Scale(c['scale']).mode.name[:3] + ': ' + ','.join(
-                    (Scale(c['scale']).notes(asStr=True)))
-            else:
-                scaleStr = ''
-            print('  {:2} {:4} x{} | {:10} | {}'.format(
-                c.get('degree', ''),
-                c.get('chord', ''),
-                int(c.get('beats', -1)),
-                ','.join(Chord(c['chord']).notes(asStr=True)) if 'chord' in c else '', scaleStr))
-
-    def printChords(self):
-        for chr in set([s.get('chord') for s in self.asArray() if 'chord' in s]):
-            Chord(chr).print()
-
-    def printScales(self):
-        for sca in set([s.get('scale') for s in self.asArray() if 'scale' in s]):
-            Scale(sca).print()
 
     def plot(self, plotScale=True, plotChord=True):
         from matplotlib import patches, gridspec
