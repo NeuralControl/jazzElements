@@ -1,11 +1,10 @@
 """
 """
 from itertools import permutations
-
 from matplotlib import gridspec
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.pyplot import *
-
+import numpy as np
 
 def printNotes(notes, fmt='shade'):
     if isinstance(notes[0], str):
@@ -190,18 +189,35 @@ class Chord:
         '': '1-3-5',
         'M6': '1-3-5-6',
         'M7': '1-3-5-7',
-        'M9': '1-3-5-7-9',
+        'M9': '1-3-5-7-2',
+        'M11':'1-3-5-7-2-4',
+
         # Minor
         'm': '1-b3-5',
         'm6': '1-b3-5-6',
         'm7': '1-b3-5-b7',
-        'm9': '1-b3-5-b7-9',
+        'm9': '1-b3-5-b7-2',
+        'm9(no7)': '1-b3-5-2',
+        'm7b9':'1-b3-5-b7-b2',
+        'm7b5b9': '1-b3-b5-b7-b2',
+        'm11':'1-b3-5-b7-2-4',
+
         # Dominant
         '7': '1-3-5-b7',
-        '9': '1-3-5-b7-9',
-        '7b9': '1-3-5-b7-b9',
-        '11': '1-3-5-b7-9-11',
-        '13': '1-3-5-b7-9-11-13',
+        '9': '1-3-5-b7-2',
+        '7b9': '1-3-5-b7-b2',
+        '11': '1-3-5-b7-2-4',
+        '11(no7)': '1-3-5-2-4',
+        '11(no7,no9)': '1-3-5-4',
+        '11(no9)': '1-3-5-b7-4',
+        '13': '1-3-5-b7-2-4-6',
+        '13(no7)': '1-3-5-2-4-6', #todo ugly
+        '13(no9)': '1-3-5-b7-4-6',
+        '13(no11)': '1-3-5-b7-2-6',
+        '13(no7no9)': '1-3-5-4-6',
+        '13(no7no11)': '1-3-5-2-6',
+        '13(no9no11)': '1-3-5-b7-2-4-6',
+
         # diminished
         'o': '1-b3-b5',
         'o7': '1-b3-b5-6',  # bb7->6
@@ -339,8 +355,7 @@ class Chord:
         for key in Scale('C', 'Chromatic').notes():
             for mode in Mode.modesLst:
                 chr = Scale(key, mode).hasChord(self)
-                if len(chr):
-                    for c in chr:
+                if chr:
                         lst.append([key, mode, c])
         return lst
 
@@ -445,22 +460,18 @@ class Scale:
         else:
             return [self.root + i for i in np.insert(np.cumsum(self.mode.intervals()[:-1]), 0, 0)]
 
-    def chords(self, incl7=True, asStr=False):
-        N = self.notes() * 2
-        if incl7:
-            C = [Chord([N[n], N[n + 2], N[n + 4], N[n + 6]], checkInv=False) for n in range(len(self.notes()))]
-        else:
-            C = [Chord([N[n], N[n + 2], N[n + 4]], checkInv=False) for n in range(len(self.notes()))]
+    def chords(self, nbNotes=4, asStr=False):
+        N = self.notes() * 3
+        C = [Chord([N[n+2*i] for i in range(nbNotes) ], checkInv=False) for n in range(len(self.notes()))]
 
         if asStr:
             return [c.name for c in C]
         return C
 
-    def chordsNumerals(self,incl7=True):
+    def chordsNumerals(self,nbNotes=4):
         return [self.chordsDegrees[d].lower()+' '+c.type
                 if 3 in c.intervals() else self.chordsDegrees[d]+' '+c.type
-                for d,c in enumerate(self.chords(incl7=incl7,asStr=False))]
-
+                for d,c in enumerate(self.chords(nbNotes=nbNotes,asStr=False))]
 
     def plotChords(self):
         fig = figure(figsize=(7, 4))
@@ -474,8 +485,17 @@ class Scale:
         suptitle('Chords built from ' + self.root.name + ' ' + self.mode.name)
 
     def hasChord(self, chord):
+        """
+        Checks if a given chord can be built from a scale
+        Args:
+            chord: Chord name or Chord instance
+
+        Returns:
+            boolean
+        """
+
         if isinstance(chord, str): chord = Chord(chord)
-        return [k for k, v in self.chords().items() if v == chord]
+        return all([n in self.notes() for n in chord.notes()])
 
     def relativeMinor(self):
         if self.mode == 'Ionian':  # Relative Major is 1.5 tone below key

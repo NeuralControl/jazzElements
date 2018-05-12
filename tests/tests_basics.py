@@ -1,8 +1,4 @@
-#
-#
-
-from jazzTheory.jazzTheory.base import Note, Chord, Scale
-
+from jazzTheory.base import Note, Chord, Scale
 
 def test_Note():
     for note in Note.chrSharp + Note.chrFlat:
@@ -39,7 +35,6 @@ def test_Note():
     assert Note('A#') == Note('Bb')
     assert Note(Note('C')) == 'C'
 
-
 def test_Chord():
     assert Chord('C').notes() == ['C', Note('E'), 'G']
     assert Chord('Cm7') == Chord('EbM6')
@@ -60,10 +55,10 @@ def test_Chord():
 
 def test_Scale():
     assert Scale('C ionian').notes() == ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-    assert Scale('C ionian').chords(asStr=True) == {'I': 'CM7', 'II': 'Dm7', 'III': 'Em7', 'IV': 'FM7',
-                                                       'V': 'G7', 'VI': 'Am7', 'VII': 'Bø'}
+    assert Scale('C ionian').chords(asStr=True) == ['CM7', 'Dm7', 'Em7', 'FM7', 'G7', 'Am7', 'Bø']
     assert Scale('C dorian').hasChord(Chord('Gm7'))
     assert Scale('C dorian').hasChord('Gm7')
+    assert Scale('C dorian').hasChord('Gm')
 
     assert Scale('D Ionian').relativeMinor() == Scale('B Aeolian')
 
