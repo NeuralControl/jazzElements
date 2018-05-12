@@ -5,7 +5,6 @@
 
 **ToDo**
 - issue with major/minor modes?
-- look for progressions using chord type
 - for now, just looking for II-V-I,II-V,V-I   
 - add scale.relativeModes:     
 e.g. for C major:  
@@ -26,8 +25,5 @@ Instead we substitute the 5th for the 13th. This creates tension and dissonance 
 - Tritone substitution is good on II-V-I because it provides a chromatic root movement   
   e.g. Dm7–G7–CM7 -> Dm7–D♭7–CM gives a downward walking bass   
 - identify pivot chord in modulations   
-
-- Add key signature to progression:
-e.g. keySignature('###')
 
 

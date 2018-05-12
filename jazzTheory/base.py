@@ -68,8 +68,14 @@ def plotNotes(notes, pos=[0, 0, 100, 40], cNote='#63B4D1', name='', ax=0, nbOcta
 
 progressions = \
     {
-        'SatinDoll': '|Dm7,G7|%|Em7,A7|%|Am7,D7|Abm7,Db7|CM7|%|',
+        'Satin Doll': '|Dm7,G7|%|Em7,A7|%|Am7,D7|Abm7,Db7|CM7|%|',
         'Misty': '|B7b9|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7|',
+        'Major 251s': '|Dm7,G7|CM7|E♭m7,A♭7|D♭M7|Em7,A7|DM7|Fm7,B♭7|E♭M7|F♯m7,B7|EM7|Gm7,C7|FM7|A♭m7,D♭7|G♭M7|Am7,D7|GM7|B♭m7,E♭7|A♭M7|Bm7,E7|AM7|Cm7,F7|B♭M7|C♯m7,F♯7|BM7|',
+        'Minor 251s': '|Dø,Gm7|Cm7|E♭ø,A♭m7|D♭m7|Eø,Am7|Dm7|Fø,B♭m7|E♭m7|F♯ø,Bm7|Em7|Gø,Cm7|Fm7|A♭ø,D♭m7|G♭m7|Aø,Dm7|Gm7|B♭ø,E♭m7|A♭m7|Bø,Em7|Am7|Cø,Fm7|B♭m7|C♯ø,F♯m7|Bm7|',
+        'All Of Me': '|CM7|%|E7|%|A7|%|Dm|%|E7|%|Am|%|D7|%|Dm7|G7|'
+                     'CM7|%|E7|%|A7|%|Dm|%|F|Fm|CM7,Em7|A7|Dm7|G7|C6,Ebdim|Dm7,G7|',
+        'My Romance': '|CM7,FM7|Em7,Am7|Dm7,G7|CM7,E7#5|Am7,E7#5|Am7,A7#5|Dm7,G7|CM7,C7|'
+                      'FM7,Bb7|CM7,C7|FM7,Bb7|CM7|F#m7b5,B7|Em7,Bb7|Am7,D7|Dm7,G7|',
     }
 
 
@@ -209,6 +215,7 @@ class Chord:
 
         # Dominant
         '7': '1-3-5-b7',
+        '7#5': '1-3-#5-b7',
         '9': '1-3-5-b7-2',
         '7b9': '1-3-5-b7-b2',
         '11': '1-3-5-b7-2-4',
@@ -424,7 +431,27 @@ class Mode:
 
 class Scale:
     chordsDegrees = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
-
+    chordSubstitutions = {
+        'IM7':
+            [  # Median Note Substitution
+                ['iii m7'],
+                ['vi m7']
+            ],
+        'im7':
+            [
+                ['III M7'],
+                ['VI M7']
+            ],
+        'V7':
+            [
+                ['ii m7', 'V 7'],
+                ['iii m7', 'VI 7', 'ii m7', 'V 7'],
+                ['II 7', 'V 7'],
+                ['III 7', 'VI 7', 'II 7', 'V 7'],
+                ['#V dim7'],
+                ['bii 7']
+            ]
+    }
     def __init__(self, root='C', mode='ionian'):
         if isinstance(root, Note): root = root.name
         if ' ' in root:
@@ -453,7 +480,7 @@ class Scale:
         y = self.notes()
         return all([xi in y for xi in x]) and all([yi in x for yi in y])
 
-    def getDegree(self, d,nbNotes=4):
+    def getDegree(self, d, nbNotes=4):
         if isinstance(d, str):
             d = self.chordsDegrees.index(d) + 1
         return self.chords(nbNotes=nbNotes)[d - 1]
@@ -527,6 +554,27 @@ class Scale:
         else:
             raise ValueError('Cannot calculate relative Major')
 
+    def getChordByDegree(self,d):
+        r, t = d.split(' ')
+        if r[0] in Note.altLst:
+            return Chord((self.notes()[self.chordsDegrees.index(r[1:].upper())] + Note.altLst[r[0]]).name + t)
+        else:
+            return Chord(self.notes()[self.chordsDegrees.index(r.upper())].name + t)
+
+    def substitutions(self, chr):
+        d = self.hasChord(chr)
+        subs = []
+        if d:
+            d = d.replace(' ', '')
+            if d in self.chordSubstitutions:
+                sub = self.chordSubstitutions[d]
+                for s in sub:
+                    if isinstance(s, str):
+                        subs.append(self.getChordByDegree(s).name)
+                    else:
+                        subs.append([self.getChordByDegree(ss).name for ss in s])
+        return subs
+
 
 class Progression:
     def __init__(self, prg, name=''):
@@ -537,16 +585,20 @@ class Progression:
         if '|' not in prg:
             self.name = prg
             prg = progressions[prg]
-
+        chr = ''
         for bi, bar in enumerate(prg.strip('|').split('|')):
             if len(bar):
-                chords = [Chord(c) for c in bar.split(',')]
-                for c in chords:
-                    chr = {}
-                    chr['chord'] = c
-                    chr['beats'] = self.beatsPerBar / len(chords)
+                if bar == '%':
                     chr['bar'] = bi
                     self.chords.append(chr)
+                else:
+                    chords = [Chord(c) for c in bar.split(',')]
+                    for c in chords:
+                        chr = {}
+                        chr['chord'] = c
+                        chr['beats'] = self.beatsPerBar / len(chords)
+                        chr['bar'] = bi
+                        self.chords.append(chr)
 
     def findScale(self, chr, degree):
         # todo: There must be a better way
@@ -557,24 +609,45 @@ class Progression:
                 Scale(k, mode).getDegree(degree) == chr]
 
     def analyze(self):
-        for c in range(len(self.chords)):
-            if self.chords[c]['chord'].type in ['', '7']:
-                # we found a dominant
-                S = self.findScale(self.chords[c]['chord'], 'V')
-                self.chords[c]['scale'] = S[0][0]
-                self.chords[c]['degree'] = S[0][1]
+        """
+        Following WalkThatBass:
 
-                if c > 0:
-                    if self.chords[c]['scale'].getDegree('II',nbNotes=len(self.chords[c-1]['chord'].notes())) == self.chords[c-1]['chord']:
-                        # we found a predominant
-                        self.chords[c - 1]['degree'] = self.chords[c]['scale'].hasChord(self.chords[c-1]['chord'])
-                        self.chords[c - 1]['scale'] = self.chords[c]['scale']
+        Level 1:
+        - Find the most represented key
+        - Annotate chords using this key   #todo: He adds chords not directly in the key (e.g. E7#5 in )
+        Level 2:
+        - Annotate Function: (PD,D,T)
+        - Annotate Second Level Chords
+            Everything before PD-D-T is a Tonic Prolongation (prolongs the tonic without a cadence)
+            They can be Substitutions, or Quick Passing Chords
+        - Look for non-diatonic chords:
+            Long period (>1bar): Modulation
+            Short Period (.5-1 bar): Passing Chord | Borrowed Chord | Secondary Dominant
 
-                if c < len(self.chords) - 1:
-                    if self.chords[c]['scale'].getDegree('I',nbNotes=len(self.chords[c+1]['chord'].notes())) == self.chords[c+1]['chord']:
-                        # we found a tonic
-                        self.chords[c + 1]['degree'] = self.chords[c]['scale'].hasChord(self.chords[c-1]['chord'])
-                        self.chords[c + 1]['scale'] = self.chords[c]['scale']
+        Improvisation:
+        - first level: We can use the relevant mode under each chord, but we change scale all the time
+        - or in the second level: We use the functionally important chords
+        then we can go into crazy stuff i.e. side slipping, cycled patterns, chromatic runs etc...
+
+        """
+        # ---------------------------------- LEVEL 1 ----------------------------------
+        # Find the most represented key:
+        key = self.findKey()[0][0]
+        keyChords = Scale(key).chords(3) + Scale(key).chords(4)
+        keyDegrees = Scale(key).chordsNumerals(3) + Scale(key).chordsNumerals(4)
+
+        # Annotate chords from this key:
+        for c in self.chords:
+            if c['chord'] in keyChords:
+                c['scale'] = Scale(key)
+                c['degree'] = keyDegrees[keyChords.index(c['chord'])]
+
+        # ---------------------------------- LEVEL 2 ----------------------------------
+        chordFunctions = dict(T=['I'], PD=['II'], D=['V'])
+        for c in self.chords:
+            if 'degree' in c:
+                for fn in chordFunctions:
+                    if c['degree'].split(' ')[0].upper() in chordFunctions[fn]:  c['function'] = fn
 
     def asArray(self):
         P = []
@@ -588,6 +661,22 @@ class Progression:
             P.append(C)
         return P
 
+    def findKey(self):
+        """
+        Finds and orders potential keys for the progression using the number of corresponding chords.
+
+        Returns:
+            list of lists  [[<key>,<probability>],...]
+        """
+        S = []
+        for k in Note.chrFlat:
+            scaleChords = Scale(k, 'Ionian').chords(3) + Scale(k, 'Ionian').chords(4)
+            S.append([str(k) + ' Ionian',
+                      100 * len([chr['chord'] for chr in self.chords if chr['chord'] in scaleChords]) / len(
+                          self.chords)])
+        S.sort(key=lambda s: s[1], reverse=True)
+        return S
+
     def plot(self, plotScale=True, plotChord=True):
         from matplotlib import patches, gridspec
         from matplotlib.pyplot import Subplot
@@ -595,7 +684,7 @@ class Progression:
         fig = figure(figsize=(12, 6))
         axis('off')
         # gridspec inside gridspec
-        grid = gridspec.GridSpec(4, 4, wspace=0.01, hspace=0.1)
+        grid = gridspec.GridSpec(int(len(self.chords) / 6) + 1, 6, wspace=0.01, hspace=0.1)
         for i, c in enumerate(self.asArray()):
             ax = Subplot(fig, grid[i])
             fig.add_subplot(ax)
@@ -607,7 +696,7 @@ class Progression:
             ax.text(5, 80, c['chord'], ha='left', fontSize=15, fontWeight='bold')
             if 'degree' in c:
                 ax.text(95, 80, '$\\bf{' + c['degree'] + '}_{' + c['scale'].replace(' ', '-') + '}$',
-                                      ha='right', fontSize=15)
+                        ha='right', fontSize=15)
 
             if c['bar'] != lastBar:
                 lastBar = c['bar']
@@ -629,7 +718,24 @@ class Progression:
             ax.set_yticks([])
         suptitle(self.name, size=30, weight='bold')
 
+    def print(self):
+        lastBar = -1
+        for c in self.chords:
+            print('{:2} |{:7} |{:3}| {:5} {:10}'.format(
+                str(c['bar']) if c['bar'] != lastBar else '',
+                c['chord'].name,
+                c['function'] if 'function' in c else '',
+                c.get('degree', ''),
+                c['scale'].name if 'scale' in c else '',
+            ))
+            lastBar = c['bar']
 
-self = Progression('|Dm7,G7|Dm7,G7|Em7,A7|Em7,A7|Am7,D7|Abm7,Db7|CM7|CM7|', name='Satin Doll')
-self.analyze()
-self.plot()
+
+# self = Progression('My Romance')
+# self.print()
+
+self=Scale('C major')
+
+self.substitutions('G7')
+
+
