@@ -70,3 +70,7 @@ def test_Scale():
     for key in Note.chrSharp:
         assert Scale(key, 'Ionian').relativeMinor() == Scale(key, 'Ionian')
         assert Scale(key, 'Aeolian').relativeMajor() == Scale(key, 'Aeolian')
+
+    assert Scale('C Major').chordsNumerals(incl7=False) == ['I ', 'ii m', 'iii m', 'IV ', 'V ', 'vi m', 'vii o']
+    assert Scale('C Minor').chordsNumerals(incl7=False) == ['i m', 'ii o', 'III ', 'iv m', 'v m', 'VI ', 'VII ']
+

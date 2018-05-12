@@ -1,7 +1,6 @@
 
 
 **Bugs**  
-- Chord(['C', 'G', 'Eb','Bb']) return Cm7  
 
 
 **ToDo**
