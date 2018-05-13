@@ -775,9 +775,9 @@ class Progression:
         axis('tight')
         axis('off');
 
-self = Progression('My Romance')
-self.chords=self.chords
-self.analyze()
-#self.plot(False,False)
-# self.plot2()
-self.print()
+# self = Progression('My Romance')
+# self.chords=self.chords
+# self.analyze()
+# #self.plot(False,False)
+# # self.plot2()
+# self.print()
