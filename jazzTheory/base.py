@@ -1,5 +1,6 @@
 """
 """
+import re
 from itertools import permutations
 
 from matplotlib import gridspec
@@ -263,6 +264,7 @@ class Chord:
             c=Chord(['C','E','G'])
         """
         if isinstance(nameOrNotes, str):
+            # todo: use a regex as in scale
             self.type = ''
             if len(nameOrNotes) == 1:
                 self.root = Note(nameOrNotes)
@@ -430,28 +432,27 @@ class Mode:
 
 
 class Scale:
-    chordsDegrees = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
-    chordSubstitutions = {
-        'IM7':
-            [  # Median Note Substitution
-                ['iii m7'],
-                ['vi m7']
-            ],
-        'im7':
-            [
-                ['III M7'],
-                ['VI M7']
-            ],
-        'V7':
-            [
-                ['ii m7', 'V 7'],
-                ['iii m7', 'VI 7', 'ii m7', 'V 7'],
-                ['II 7', 'V 7'],
-                ['III 7', 'VI 7', 'II 7', 'V 7'],
-                ['#V dim7'],
-                ['bii 7']
-            ]
-    }
+    chrDegLst = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
+    chrSubLst = \
+        [  # List of chord substitutions,  Format ['<old>-><new>','name']
+            ['IM7->iiim7', '3sub1'],  # I -> iii common on I-vi-ii-V
+            ['im7->IIIM7', '3sub1'],
+
+            ['IM7->vim7', '6sub1'],
+            ['im7->VIM7', '6sub1'],
+
+            ['V7->iim7,V7', '2-5sub5'],
+            ['V7->II7,V7', '2-5sub5'],
+
+            ['V7->iiim7,VI7,iim7,V7', '3-6-2-5sub5'],
+            ['V7->III7,VI7,II7,V7', '3-6-2-5sub5'],
+
+            ['V7->#Vdim7', '#5sub5'],
+            ['V7->bii7', 'trisub5'],
+        ]
+
+    regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.+)")  # Regulat expression to understand Roman Notation
+
     def __init__(self, root='C', mode='ionian'):
         if isinstance(root, Note): root = root.name
         if ' ' in root:
@@ -480,14 +481,54 @@ class Scale:
         y = self.notes()
         return all([xi in y for xi in x]) and all([yi in x for yi in y])
 
-    def getDegree(self, d, nbNotes=4):
-        if isinstance(d, str):
-            d = self.chordsDegrees.index(d) + 1
-        return self.chords(nbNotes=nbNotes)[d - 1]
-
     def plot(self, ax=0, pos=[0, 0, 200, 40], nbOctaves=2, showName=True):
         plotNotes(self.notes(), pos=pos, ax=ax, nbOctaves=nbOctaves,
                   name=showName * (self.root.name + ' ' + self.mode.name))
+
+    def plotChords(self, nbNotes=4):
+        fig = figure(figsize=(7, 4))
+        grid = gridspec.GridSpec(4, 2, wspace=0.2, hspace=0.2)
+        i = 0
+        for c, d in zip(self.chords(), self.chordsNumerals(nbNotes=nbNotes)):
+            ax = fig.add_subplot(grid[i])
+            ax.set_xlim(0, 100)
+            ax.set_ylim(0, 60)
+            plotNotes(c.notes(), pos=[0, 0, 100, 60], name=c.name + '  ' + d.replace(' ', ' $^{') + '}$', ax=ax)
+            axis('off')
+            i += 1
+        suptitle('Chords built from ' + self.root.name + ' ' + self.mode.name);
+
+    def relativeMinor(self, asStr=False):
+        if self.mode == 'Ionian':  # Relative Major is 1.5 tone below key
+            return Scale(Note(self.root) - 3, 'Aeolian').name if asStr else Scale(Note(self.root) - 3, 'Aeolian')
+        else:
+            raise ValueError('Cannot calculate relative Minor')
+
+    def relativeMajor(self, asStr=False):
+        if self.mode == 'Aeolian':  # Relative Minor is 1.5 tone above key
+            return Scale(Note(self.root) + 3, 'Ionian').name if asStr else Scale(Note(self.root) + 3, 'Ionian')
+        else:
+            raise ValueError('Cannot calculate relative Major')
+
+    def chordFromRoman(self, item, asStr=False):
+        alt, deg, chrType = re.search(self.regexRoman, item).groups()
+        chr = Chord(self.notes(asStr=True)[self.chrDegLst.index(deg.upper())] + alt + chrType)
+        return chr.name if asStr else chr
+
+    def possibleSubstitutions(self, asStr=False):
+        S = []
+        for s in self.chrSubLst:
+            From, To = s[0].split('->')
+            From = [self.chordFromRoman(c, asStr=asStr) for c in From.split(',')]
+            To = [self.chordFromRoman(c, asStr=asStr) for c in To.split(',')]
+            S.append([From, To, s[1]])
+        return S
+
+
+    def getDegree(self, d, nbNotes=4):
+        if isinstance(d, str):
+            d = self.chrDegLst.index(d) + 1
+        return self.chords(nbNotes=nbNotes)[d - 1]
 
     def notes(self, asStr=False):
         if asStr:
@@ -504,22 +545,9 @@ class Scale:
         return C
 
     def chordsNumerals(self, nbNotes=4):
-        return [(self.chordsDegrees[d].lower() + ' ' + c.type
-                 if 3 in c.intervals() else self.chordsDegrees[d] + ' ' + c.type).strip()
+        return [(self.chrDegLst[d].lower() + ' ' + c.type
+                 if 3 in c.intervals() else self.chrDegLst[d] + ' ' + c.type).strip()
                 for d, c in enumerate(self.chords(nbNotes=nbNotes, asStr=False))]
-
-    def plotChords(self, nbNotes=4):
-        fig = figure(figsize=(7, 4))
-        grid = gridspec.GridSpec(4, 2, wspace=0.2, hspace=0.2)
-        i = 0
-        for c, d in zip(self.chords(), self.chordsNumerals(nbNotes=nbNotes)):
-            ax = fig.add_subplot(grid[i])
-            ax.set_xlim(0, 100)
-            ax.set_ylim(0, 60)
-            plotNotes(c.notes(), pos=[0, 0, 100, 60], name=c.name + '  ' + d.replace(' ', ' $^{') + '}$', ax=ax)
-            axis('off')
-            i += 1
-        suptitle('Chords built from ' + self.root.name + ' ' + self.mode.name);
 
     def hasChord(self, chord):
         """
@@ -541,39 +569,6 @@ class Scale:
                 print('Found {} in {} but cannot calculate it'.format(chord.name, self.name))
 
         return False
-
-    def relativeMinor(self):
-        if self.mode == 'Ionian':  # Relative Major is 1.5 tone below key
-            return Scale(Note(self.root) - 3, 'Aeolian')
-        else:
-            raise ValueError('Cannot calculate relative Minor')
-
-    def relativeMajor(self):
-        if self.mode == 'Aeolian':  # Relative Minor is 1.5 tone above key
-            return Scale(Note(self.root) + 3, 'Ionian')
-        else:
-            raise ValueError('Cannot calculate relative Major')
-
-    def getChordByDegree(self,d):
-        r, t = d.split(' ')
-        if r[0] in Note.altLst:
-            return Chord((self.notes()[self.chordsDegrees.index(r[1:].upper())] + Note.altLst[r[0]]).name + t)
-        else:
-            return Chord(self.notes()[self.chordsDegrees.index(r.upper())].name + t)
-
-    def substitutions(self, chr):
-        d = self.hasChord(chr)
-        subs = []
-        if d:
-            d = d.replace(' ', '')
-            if d in self.chordSubstitutions:
-                sub = self.chordSubstitutions[d]
-                for s in sub:
-                    if isinstance(s, str):
-                        subs.append(self.getChordByDegree(s).name)
-                    else:
-                        subs.append([self.getChordByDegree(ss).name for ss in s])
-        return subs
 
 
 class Progression:
@@ -643,11 +638,25 @@ class Progression:
                 c['degree'] = keyDegrees[keyChords.index(c['chord'])]
 
         # ---------------------------------- LEVEL 2 ----------------------------------
+        # Annotate T, PD, D
         chordFunctions = dict(T=['I'], PD=['II'], D=['V'])
         for c in self.chords:
             if 'degree' in c:
                 for fn in chordFunctions:
                     if c['degree'].split(' ')[0].upper() in chordFunctions[fn]:  c['function'] = fn
+
+        # Find Single Chord Substitutions
+        subs = Scale(key).possibleSubstitutions(True)
+        for c in self.chords:
+            if 'function' not in c:
+                s = [[s[0][0], s[2]] for s in subs if len(s[1]) == 1 and Chord(s[1][0]) == c['chord']]
+                if len(s) == 1:
+                    # c['degree']=s[0][0]
+                    c['function'] = s[0][1]
+                elif len(s) > 1:
+                    raise ValueError('Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chord'].name)
+
+
 
     def asArray(self):
         P = []
@@ -731,11 +740,11 @@ class Progression:
             lastBar = c['bar']
 
 
+
 # self = Progression('My Romance')
+# self.analyze()
 # self.print()
 
-self=Scale('C major')
 
-self.substitutions('G7')
 
 
