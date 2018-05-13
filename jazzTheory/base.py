@@ -604,10 +604,11 @@ class Progression:
     def analyze(self):
         """
         Following WalkThatBass:
+        http://www.thejazzpianosite.com/jazz-piano-lessons/jazz-chord-progressions/how-to-analyse-a-chord-progression-harmonic-analysis/
 
         Level 1:
         - Find the most represented key
-        - Annotate chords using this key   #todo: He adds chords not directly in the key (e.g. E7#5 in )
+        - Annotate chords using this key
         Level 2:
         - Annotate Function: (PD,D,T)
         - Annotate Second Level Chords
@@ -656,7 +657,6 @@ class Progression:
                 elif len(s) > 1:
                     raise ValueError('Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chord'].name)
 
-
     def asArray(self):
         P = []
         for c in self.chords:
@@ -690,7 +690,7 @@ class Progression:
         lastBar = -1
         for c in self.chords:
             print('{:2} |{:7} |{:3}| {:5} {:10}'.format(
-                str(c['bar']) if c['bar'] != lastBar else '',
+                str(c['bar']+1) if c['bar'] != lastBar else '',
                 c['chord'].name,
                 c['function'] if 'function' in c else '',
                 c.get('degree', ''),
@@ -774,10 +774,10 @@ class Progression:
 
         axis('tight')
         axis('off');
-#
-# self = Progression('My Romance')
-# self.chords=self.chords
-# self.analyze()
-# #self.plot(False,False)
-# # self.plot2()
-# self.print()
+
+self = Progression('My Romance')
+self.chords=self.chords
+self.analyze()
+#self.plot(False,False)
+# self.plot2()
+self.print()
