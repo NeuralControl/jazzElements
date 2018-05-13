@@ -17,5 +17,5 @@ def test_guideAndAvoid():
     assert Chord('Dm7').guideTones() == ['F', 'C']
     assert Chord('G7').guideTones() == ['B', 'F']
     assert Chord('CM7').guideTones() == ['E', 'B']
-    assert Chord('Cm7').avoidNotes(Scale('C', 'Ionian')) == ['E', 'B']
+    assert Chord('Cm7').avoidNotes(Scale('C Ion')) == ['E', 'B']
     assert Chord('Cm7').avoidNotes(Note.chrFlat) == ['D♭', 'E', 'A♭', 'B']

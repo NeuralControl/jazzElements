@@ -19,7 +19,7 @@ def printNotes(notes, fmt='shade'):
         b, w, spc = [u"\u2591", u"\u2588", u"\u2005"]
 
     N = [b] * 12
-    for ni, n in enumerate(Scale('C', 'Chromatic').notes()):
+    for ni, n in enumerate(Scale('C', 'Chr').notes()):
         if n in notes: N[ni] = w
 
     print(3 * spc + N[1] + 2 * spc + N[3] + 9 * spc + N[6] + 2 * spc + N[8] + 2 * spc + N[10] + 7 * spc +
@@ -253,6 +253,7 @@ class Chord:
         '5': '1-3',
 
     }
+    regexChord = re.compile(r"([a-zA-Z]{1})([#b♭♯]*)(.*)")  # Regular expression to understand Chord Notation
 
     def __init__(self, nameOrNotes, checkInv=True):
         """
@@ -264,17 +265,9 @@ class Chord:
             c=Chord(['C','E','G'])
         """
         if isinstance(nameOrNotes, str):
-            # todo: use a regex as in scale
-            self.type = ''
-            if len(nameOrNotes) == 1:
-                self.root = Note(nameOrNotes)
-            elif nameOrNotes[1] in Note.altLst:
-                self.root = Note(nameOrNotes[:2])
-                if len(nameOrNotes) > 2:
-                    self.type = nameOrNotes[2:]
-            else:
-                self.root = Note(nameOrNotes[0])
-                self.type = nameOrNotes[1:]
+            root, alt, chrType = re.search(self.regexChord, nameOrNotes).groups()
+            self.root=Note(root+alt)
+            self.type=chrType
 
         elif isinstance(nameOrNotes, Chord):
             self.root = nameOrNotes.root
@@ -375,9 +368,9 @@ class Chord:
         Lists the keys on which we have this chord
         """
         lst = []
-        for key in Scale('C', 'Chromatic').notes():
+        for key in Scale('C', 'Chr').notes():
             for mode in Mode.modesLst:
-                if mode is not 'Chromatic':
+                if mode is not 'Chr':
                     chr = Scale(key, mode).hasChord(self)
                     if chr:
                         lst.append([key.name + ' ' + mode, chr])
@@ -385,16 +378,16 @@ class Chord:
 
 
 class Mode:
-    modesLst = ['Ionian', 'Dorian', 'Phrygian', 'Lydian', 'Mixolydian', 'Aeolian', 'Locrian', 'Chromatic']
+    modesLst = ['Ion', 'Dor', 'Phr', 'Lyd', 'Mix', 'Aeo', 'Loc', 'Chr']
     modesIntervals = {
-        'Ionian': [2, 2, 1, 2, 2, 2, 1],
-        'Dorian': [2, 1, 2, 2, 2, 1, 2],
-        'Phrygian': [1, 2, 2, 2, 1, 2, 2],
-        'Lydian': [2, 2, 2, 1, 2, 2, 1],
-        'Mixolydian': [2, 2, 1, 2, 2, 1, 2],
-        'Aeolian': [2, 1, 2, 2, 1, 2, 2],
-        'Locrian': [1, 2, 2, 1, 2, 2, 2],
-        'Chromatic': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        'Ion': [2, 2, 1, 2, 2, 2, 1],
+        'Dor': [2, 1, 2, 2, 2, 1, 2],
+        'Phr': [1, 2, 2, 2, 1, 2, 2],
+        'Lyd': [2, 2, 2, 1, 2, 2, 1],
+        'Mix': [2, 2, 1, 2, 2, 1, 2],
+        'Aeo': [2, 1, 2, 2, 1, 2, 2],
+        'Loc': [1, 2, 2, 1, 2, 2, 2],
+        'Chr': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     }
 
     def __init__(self, mode):
@@ -403,8 +396,8 @@ class Mode:
         else:
             mode = mode[0].upper() + mode[1:].lower()
 
-            if mode == 'Major': mode = 'Ionian'
-            if mode == 'Minor': mode = 'Aeolian'
+            if mode == 'Major': mode = 'Ion'
+            if mode == 'Minor': mode = 'Aeo'
 
             if mode in self.modesLst:
                 self.name = mode
@@ -451,9 +444,9 @@ class Scale:
             ['V7->bii7', 'trisub5'],
         ]
 
-    regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.+)")  # Regulat expression to understand Roman Notation
+    regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.*)")  # Regulat expression to understand Roman Notation
 
-    def __init__(self, root='C', mode='ionian'):
+    def __init__(self, root='C', mode='Ion'):
         if isinstance(root, Note): root = root.name
         if ' ' in root:
             self.root = Note(root.split(' ')[0])
@@ -489,7 +482,7 @@ class Scale:
         fig = figure(figsize=(7, 4))
         grid = gridspec.GridSpec(4, 2, wspace=0.2, hspace=0.2)
         i = 0
-        for c, d in zip(self.chords(), self.chordsNumerals(nbNotes=nbNotes)):
+        for c, d in zip(self.chords(), self.chordsRoman(nbNotes=nbNotes)):
             ax = fig.add_subplot(grid[i])
             ax.set_xlim(0, 100)
             ax.set_ylim(0, 60)
@@ -499,14 +492,14 @@ class Scale:
         suptitle('Chords built from ' + self.root.name + ' ' + self.mode.name);
 
     def relativeMinor(self, asStr=False):
-        if self.mode == 'Ionian':  # Relative Major is 1.5 tone below key
-            return Scale(Note(self.root) - 3, 'Aeolian').name if asStr else Scale(Note(self.root) - 3, 'Aeolian')
+        if self.mode == 'Ion':  # Relative Major is 1.5 tone below key
+            return Scale(Note(self.root) - 3, 'Aeo').name if asStr else Scale(Note(self.root) - 3, 'Aeo')
         else:
             raise ValueError('Cannot calculate relative Minor')
 
     def relativeMajor(self, asStr=False):
-        if self.mode == 'Aeolian':  # Relative Minor is 1.5 tone above key
-            return Scale(Note(self.root) + 3, 'Ionian').name if asStr else Scale(Note(self.root) + 3, 'Ionian')
+        if self.mode == 'Aeo':  # Relative Minor is 1.5 tone above key
+            return Scale(Note(self.root) + 3, 'Ion').name if asStr else Scale(Note(self.root) + 3, 'Ion')
         else:
             raise ValueError('Cannot calculate relative Major')
 
@@ -523,7 +516,6 @@ class Scale:
             To = [self.chordFromRoman(c, asStr=asStr) for c in To.split(',')]
             S.append([From, To, s[1]])
         return S
-
 
     def getDegree(self, d, nbNotes=4):
         if isinstance(d, str):
@@ -544,9 +536,9 @@ class Scale:
             return [c.name for c in C]
         return C
 
-    def chordsNumerals(self, nbNotes=4):
-        return [(self.chrDegLst[d].lower() + ' ' + c.type
-                 if 3 in c.intervals() else self.chrDegLst[d] + ' ' + c.type).strip()
+    def chordsRoman(self, nbNotes=4):
+        return [(self.chrDegLst[d].lower() + c.type
+                 if 3 in c.intervals() else self.chrDegLst[d] + c.type).strip()
                 for d, c in enumerate(self.chords(nbNotes=nbNotes, asStr=False))]
 
     def hasChord(self, chord):
@@ -563,7 +555,7 @@ class Scale:
         if all([n in self.notes() for n in chord.notes()]):
             if chord in self.chords(nbNotes=len(chord.notes())):
 
-                return self.chordsNumerals(nbNotes=len(chord.notes()))[
+                return self.chordsRoman(nbNotes=len(chord.notes()))[
                     self.chords(nbNotes=len(chord.notes())).index(chord)]
             else:
                 print('Found {} in {} but cannot calculate it'.format(chord.name, self.name))
@@ -585,21 +577,27 @@ class Progression:
             if len(bar):
                 if bar == '%':
                     chr['bar'] = bi
+                    chr['beats'] = self.beatsPerBar
                     self.chords.append(chr)
                 else:
-                    chords = [Chord(c) for c in bar.split(',')]
-                    for c in chords:
-                        chr = {}
-                        chr['chord'] = c
-                        chr['beats'] = self.beatsPerBar / len(chords)
-                        chr['bar'] = bi
+                    for c in bar.split(','):
+                        if c == '%':
+                            chr = dict(
+                                chord=self.chords[-1]['chord'],
+                                beats=int(self.beatsPerBar / len(bar.split(','))),
+                                bar=bi)
+                        else:
+                            chr = dict(
+                                chord=Chord(c),
+                                beats=int(self.beatsPerBar / len(bar.split(','))),
+                                bar=bi)
                         self.chords.append(chr)
 
     def findScale(self, chr, degree):
         # todo: There must be a better way
         # todo: Only looking for major keys
         # todo: Taking now the first one found
-        mode = 'Ionian'
+        mode = 'Ion'
         return [[Scale(k, mode), Scale(k, mode).hasChord(chr)] for k in Note.chrSharp if
                 Scale(k, mode).getDegree(degree) == chr]
 
@@ -629,7 +627,7 @@ class Progression:
         # Find the most represented key:
         key = self.findKey()[0][0]
         keyChords = Scale(key).chords(3) + Scale(key).chords(4)
-        keyDegrees = Scale(key).chordsNumerals(3) + Scale(key).chordsNumerals(4)
+        keyDegrees = Scale(key).chordsRoman(3) + Scale(key).chordsRoman(4)
 
         # Annotate chords from this key:
         for c in self.chords:
@@ -642,8 +640,9 @@ class Progression:
         chordFunctions = dict(T=['I'], PD=['II'], D=['V'])
         for c in self.chords:
             if 'degree' in c:
+                alt, deg, chrType = re.search(Scale.regexRoman, c['degree']).groups()
                 for fn in chordFunctions:
-                    if c['degree'].split(' ')[0].upper() in chordFunctions[fn]:  c['function'] = fn
+                    if deg.upper() in chordFunctions[fn]:  c['function'] = fn
 
         # Find Single Chord Substitutions
         subs = Scale(key).possibleSubstitutions(True)
@@ -653,9 +652,9 @@ class Progression:
                 if len(s) == 1:
                     # c['degree']=s[0][0]
                     c['function'] = s[0][1]
+                    c['scale'] = Scale(key)
                 elif len(s) > 1:
                     raise ValueError('Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chord'].name)
-
 
 
     def asArray(self):
@@ -666,6 +665,7 @@ class Progression:
             if 'bar' in c: C['bar'] = c['bar']
             if 'beats' in c: C['beats'] = c['beats']
             if 'degree' in c: C['degree'] = c['degree']
+            if 'function' in c: C['function'] = c['function']
             if 'scale' in c: C['scale'] = c['scale'].root.name + ' ' + c['scale'].mode.name
             P.append(C)
         return P
@@ -679,20 +679,33 @@ class Progression:
         """
         S = []
         for k in Note.chrFlat:
-            scaleChords = Scale(k, 'Ionian').chords(3) + Scale(k, 'Ionian').chords(4)
-            S.append([str(k) + ' Ionian',
+            scaleChords = Scale(k, 'Ion').chords(3) + Scale(k, 'Ion').chords(4)
+            S.append([str(k) + ' Ion',
                       100 * len([chr['chord'] for chr in self.chords if chr['chord'] in scaleChords]) / len(
                           self.chords)])
         S.sort(key=lambda s: s[1], reverse=True)
         return S
 
+    def print(self):
+        lastBar = -1
+        for c in self.chords:
+            print('{:2} |{:7} |{:3}| {:5} {:10}'.format(
+                str(c['bar']) if c['bar'] != lastBar else '',
+                c['chord'].name,
+                c['function'] if 'function' in c else '',
+                c.get('degree', ''),
+                c['scale'].name if 'scale' in c else '',
+            ))
+            lastBar = c['bar']
+
     def plot(self, plotScale=True, plotChord=True):
         from matplotlib import patches, gridspec
         from matplotlib.pyplot import Subplot
+        matplotlib.rcParams['text.usetex'] = False
+        matplotlib.rcParams['text.latex.unicode'] = True
         lastBar = -1
         fig = figure(figsize=(12, 6))
         axis('off')
-        # gridspec inside gridspec
         grid = gridspec.GridSpec(int(len(self.chords) / 6) + 1, 6, wspace=0.01, hspace=0.1)
         for i, c in enumerate(self.asArray()):
             ax = Subplot(fig, grid[i])
@@ -702,17 +715,21 @@ class Progression:
             ax.set_xlim(0, 100)
             ax.set_ylim(0, 100)
 
-            ax.text(5, 80, c['chord'], ha='left', fontSize=15, fontWeight='bold')
+            ax.text(5, 80, Chord(c['chord']).root.name +Chord(c['chord']).type, ha='left', fontSize=12,
+                    fontWeight='bold')
+
             if 'degree' in c:
-                ax.text(95, 80, '$\\bf{' + c['degree'] + '}_{' + c['scale'].replace(' ', '-') + '}$',
-                        ha='right', fontSize=15)
+                scaleTxt = c['scale'].split(' ')[0].upper() + c['scale'].split(' ')[1].lower() if 'scale' in c else ''
+
+                ax.text(95, 80, '$\\bf{' + c['degree'] + '}_{' + scaleTxt + '}$',
+                        ha='right', fontSize=12)
 
             if c['bar'] != lastBar:
                 lastBar = c['bar']
                 ax.plot([0, 0], [0, 100], 'k', lw=10)
             if 'chord' in c:
                 if plotChord:
-                    Chord(c['chord']).plot(ax=ax, pos=[10, 42, 80, 30], nbOctaves=1, showName=False)
+                    Chord(c['chord']).plot(ax=ax, pos=[10, 42, 80, 30], nbOctaves=2, showName=False)
                 else:
                     ax.text(50, 55, 'Chord: ' + ','.join(Chord(c['chord']).notes(asStr=True)), ha='center', va='center')
 
@@ -727,24 +744,40 @@ class Progression:
             ax.set_yticks([])
         suptitle(self.name, size=30, weight='bold')
 
-    def print(self):
+    def plot2(self):
+        from matplotlib import patches
+        def plotChord(ax, chr, x, y, w, h, showBar=True):
+            bgd = patches.Rectangle((x, y), w, h, fill=True, clip_on=False, alpha=.1)
+            ax.add_patch(bgd)
+            if showBar: text(x, y + h, chr['bar'] + 1, va='top', ha='left')
+            text(x + w / 2, y + h, chr['chord'], va='top', ha='center', fontSize=10)
+            if 'function' in chr:
+                text(x + w / 2, y + h / 2, chr['function'], va='center', ha='center', fontSize=10)
+            if 'scale' in chr:
+                text(x + w / 2, y, chr['scale'], va='bottom', ha='center', fontSize=10)
+
+        barsPerRow = 4
+        w, h = [400 / self.beatsPerBar, 25]
+        x, y = [0, 0]
+        sep = 20
+        figure(figsize=(15, 4))
+        ax = gca()
+        nBeats = 0
         lastBar = -1
-        for c in self.chords:
-            print('{:2} |{:7} |{:3}| {:5} {:10}'.format(
-                str(c['bar']) if c['bar'] != lastBar else '',
-                c['chord'].name,
-                c['function'] if 'function' in c else '',
-                c.get('degree', ''),
-                c['scale'].name if 'scale' in c else '',
-            ))
-            lastBar = c['bar']
+        for ci, chr in enumerate(self.asArray()):
+            plotChord(ax, chr, x + (w + sep) * (nBeats), y, chr['beats'] * w, h, showBar=chr['bar'] != lastBar)
+            nBeats += chr['beats']
+            lastBar = chr['bar']
+            if nBeats >= barsPerRow * self.beatsPerBar:
+                nBeats = 0
+                y -= (h + sep)
 
-
-
+        axis('tight')
+        axis('off');
+#
 # self = Progression('My Romance')
+# self.chords=self.chords
 # self.analyze()
+# #self.plot(False,False)
+# # self.plot2()
 # self.print()
-
-
-
-
