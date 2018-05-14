@@ -433,10 +433,10 @@ class Scale():
         return self.__str__()
 
     def __add__(self, steps):
-        return Scale(self.root + steps, self.mode.name)
+        return Scale(self.root + steps, self.mode)
 
     def __sub__(self, steps):
-        return Scale(self.root - steps, self.mode.name)
+        return Scale(self.root - steps, self.mode)
 
     def __eq__(self, scale):
         x = scale.notes()
@@ -452,7 +452,7 @@ class Scale():
 
     def plot(self, ax=0, pos=[0, 0, 200, 40], nbOctaves=2, showName=True):
         plotNotes(self.notes(), pos=pos, ax=ax, nbOctaves=nbOctaves,
-                  name=showName * (self.root.name + ' ' + self.mode.name))
+                  name=showName * (self.root.name + ' ' + self.mode))
 
     def plotChords(self, nbNotes=4):
         fig = figure(figsize=(7, 4))
@@ -465,7 +465,7 @@ class Scale():
             plotNotes(c.notes(), pos=[0, 0, 100, 60], name=c.name + '  ' + d.replace(' ', ' $^{') + '}$', ax=ax)
             axis('off')
             i += 1
-        suptitle('Chords built from ' + self.root.name + ' ' + self.mode.name);
+        suptitle('Chords built from ' + self.root.name + ' ' + self.mode);
 
     def relativeMinor(self, asStr=False):
         if self.mode == 'Ion':  # Relative Major is 1.5 tone below key
@@ -637,7 +637,7 @@ class Progression:
             if 'beats' in c: C['beats'] = c['beats']
             if 'degree' in c: C['degree'] = c['degree']
             if 'function' in c: C['function'] = c['function']
-            if 'scale' in c: C['scale'] = c['scale'].root.name + ' ' + c['scale'].mode.name
+            if 'scale' in c: C['scale'] = c['scale'].root.name + ' ' + c['scale'].mode
             P.append(C)
         return P
 
