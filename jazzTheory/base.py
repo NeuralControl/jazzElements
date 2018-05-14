@@ -378,7 +378,7 @@ class Chord:
 
 
 class Scale():
-    modesLst = ['Ion', 'Dor', 'Phr', 'Lyd', 'Mix', 'Aeo', 'Loc', 'Chr']
+    modesLst = ['Ion', 'Dor', 'Phr', 'Lyd', 'Mix', 'Aeo', 'Loc']
     modesIntervals = {
         'Ion': [2, 2, 1, 2, 2, 2, 1],
         'Dor': [2, 1, 2, 2, 2, 1, 2],
@@ -468,10 +468,24 @@ class Scale():
         suptitle('Chords built from ' + self.root.name + ' ' + self.mode);
 
     def parallelModes(self,asStr=False):
+        """
+        Parallel modes are the modes built from the same tonic
+        Returns:
+            list of parallel modes
+        """
         if asStr:
             return [m for m in self.modesLst if m != self.mode]
         else:
-            return [Scale(self.root,m) for m in self.modesLst if m != self.mode]
+            return [Scale(self.root, m) for m in self.modesLst if m != self.mode]
+
+    def relativeModes(self,asStr=False):
+        """
+        Relative modes are the scales with the same key signature
+        Returns:
+            list of relative modes
+
+        """
+
 
     def relativeMinor(self, asStr=False):
         if self.mode == 'Ion':  # Relative Major is 1.5 tone below key
