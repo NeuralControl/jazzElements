@@ -4,15 +4,12 @@
 
 
 **ToDo**
-- issue with major/minor modes?
-- for now, just looking for II-V-I,II-V,V-I   
 - add scale.relativeModes:     
 e.g. for C major:  
 D dorian E phrygian F lydian G mixolydian A minor B locrian  
 - add scale.parallelModes:  
 e.g. for C major:  
 C major C dorian C phrygian C lydian C mixolydian C minor C locrian  
-- add % or / to repeat chord  
 - rootless chord voicing
 e.g.:
 Why Invert Rootless Voicings?   

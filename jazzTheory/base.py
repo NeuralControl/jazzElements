@@ -266,8 +266,8 @@ class Chord:
         """
         if isinstance(nameOrNotes, str):
             root, alt, chrType = re.search(self.regexChord, nameOrNotes).groups()
-            self.root=Note(root+alt)
-            self.type=chrType
+            self.root = Note(root + alt)
+            self.type = chrType
 
         elif isinstance(nameOrNotes, Chord):
             self.root = nameOrNotes.root
@@ -369,7 +369,7 @@ class Chord:
         """
         lst = []
         for key in Scale('C', 'Chr').notes():
-            for mode in Mode.modesLst:
+            for mode in Scale.modesLst:
                 if mode is not 'Chr':
                     chr = Scale(key, mode).hasChord(self)
                     if chr:
@@ -377,7 +377,7 @@ class Chord:
         return lst
 
 
-class Mode:
+class Scale():
     modesLst = ['Ion', 'Dor', 'Phr', 'Lyd', 'Mix', 'Aeo', 'Loc', 'Chr']
     modesIntervals = {
         'Ion': [2, 2, 1, 2, 2, 2, 1],
@@ -389,42 +389,6 @@ class Mode:
         'Loc': [1, 2, 2, 1, 2, 2, 2],
         'Chr': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     }
-
-    def __init__(self, mode):
-        if isinstance(mode, Mode):
-            self.name = mode.name
-        else:
-            mode = mode[0].upper() + mode[1:].lower()
-
-            if mode == 'Major': mode = 'Ion'
-            if mode == 'Minor': mode = 'Aeo'
-
-            if mode in self.modesLst:
-                self.name = mode
-            else:
-                raise ValueError('mode {} not implemented'.format(mode))
-
-    def intervals(self, str=False):
-        stepsNames = {2: 'w', 1: 'h'}
-        if str:
-            return '-'.join([stepsNames[s] for s in self.modesIntervals[self.name]])
-        else:
-            return self.modesIntervals[self.name]
-
-    def __str__(self):
-        return self.name + ': ' + self.intervals(str=True)
-
-    def __repr__(self):
-        return self.__str__()
-
-    def __eq__(self, mode):
-        if isinstance(mode, str):
-            return self.name.lower() == mode.lower()
-        else:
-            return self.name.lower() == mode.name.lower()
-
-
-class Scale:
     chrDegLst = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
     chrSubLst = \
         [  # List of chord substitutions,  Format ['<old>-><new>','name']
@@ -447,15 +411,20 @@ class Scale:
     regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.*)")  # Regulat expression to understand Roman Notation
 
     def __init__(self, root='C', mode='Ion'):
-        if isinstance(root, Note): root = root.name
+        if isinstance(root, Note):
+            root = root.name
         if ' ' in root:
-            self.root = Note(root.split(' ')[0])
-            self.mode = Mode(root.split(' ')[1])
-        else:
-            self.root = Note(root)
-            self.mode = Mode(mode)
+            root, mode = root.split(' ')
 
-        self.name = self.root.name + ' ' + self.mode.name
+        mode = mode[0].upper() + mode[1:].lower()
+
+        if mode in ['Major', 'Maj']: mode = 'Ion'
+        if mode in ['Minor', 'Min']: mode = 'Aeo'
+        if mode not in self.modesLst: raise ValueError('mode {} not implemented'.format(mode))
+
+        self.root = Note(root)
+        self.mode = mode
+        self.name = self.root.name + ' ' + self.mode
 
     def __str__(self):
         return '{} {:10} | {}'.format(str(self.root), str(self.mode), ' '.join([str(n) for n in self.notes()]))
@@ -473,6 +442,13 @@ class Scale:
         x = scale.notes()
         y = self.notes()
         return all([xi in y for xi in x]) and all([yi in x for yi in y])
+
+    def intervals(self, asStr=False):
+        stepsNames = {2: 'w', 1: 'h'}
+        if asStr:
+            return '-'.join([stepsNames[s] for s in self.modesIntervals[self.mode]])
+        else:
+            return self.modesIntervals[self.mode]
 
     def plot(self, ax=0, pos=[0, 0, 200, 40], nbOctaves=2, showName=True):
         plotNotes(self.notes(), pos=pos, ax=ax, nbOctaves=nbOctaves,
@@ -524,9 +500,9 @@ class Scale:
 
     def notes(self, asStr=False):
         if asStr:
-            return [str(self.root + i) for i in np.insert(np.cumsum(self.mode.intervals()[:-1]), 0, 0)]
+            return [str(self.root + i) for i in np.insert(np.cumsum(self.intervals()[:-1]), 0, 0)]
         else:
-            return [self.root + i for i in np.insert(np.cumsum(self.mode.intervals()[:-1]), 0, 0)]
+            return [self.root + i for i in np.insert(np.cumsum(self.intervals()[:-1]), 0, 0)]
 
     def chords(self, nbNotes=4, asStr=False):
         N = self.notes() * 3
@@ -575,23 +551,18 @@ class Progression:
         chr = ''
         for bi, bar in enumerate(prg.strip('|').split('|')):
             if len(bar):
-                if bar == '%':
-                    chr['bar'] = bi
-                    chr['beats'] = self.beatsPerBar
+                for c in bar.split(','):
+                    if c == '%':
+                        chr = dict(
+                            chord=self.chords[-1]['chord'],
+                            beats=int(self.beatsPerBar / len(bar.split(','))),
+                            bar=bi)
+                    else:
+                        chr = dict(
+                            chord=Chord(c),
+                            beats=int(self.beatsPerBar / len(bar.split(','))),
+                            bar=bi)
                     self.chords.append(chr)
-                else:
-                    for c in bar.split(','):
-                        if c == '%':
-                            chr = dict(
-                                chord=self.chords[-1]['chord'],
-                                beats=int(self.beatsPerBar / len(bar.split(','))),
-                                bar=bi)
-                        else:
-                            chr = dict(
-                                chord=Chord(c),
-                                beats=int(self.beatsPerBar / len(bar.split(','))),
-                                bar=bi)
-                        self.chords.append(chr)
 
     def findScale(self, chr, degree):
         # todo: There must be a better way
@@ -690,7 +661,7 @@ class Progression:
         lastBar = -1
         for c in self.chords:
             print('{:2} |{:7} |{:3}| {:5} {:10}'.format(
-                str(c['bar']+1) if c['bar'] != lastBar else '',
+                str(c['bar'] + 1) if c['bar'] != lastBar else '',
                 c['chord'].name,
                 c['function'] if 'function' in c else '',
                 c.get('degree', ''),
@@ -715,7 +686,7 @@ class Progression:
             ax.set_xlim(0, 100)
             ax.set_ylim(0, 100)
 
-            ax.text(5, 80, Chord(c['chord']).root.name +Chord(c['chord']).type, ha='left', fontSize=12,
+            ax.text(5, 80, Chord(c['chord']).root.name + Chord(c['chord']).type, ha='left', fontSize=12,
                     fontWeight='bold')
 
             if 'degree' in c:

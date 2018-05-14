@@ -15,8 +15,7 @@ def test_relativeMinorMajor():
 
 
 def test_Numerals():
-    assert Scale('C Major').chordsNumerals(nbNotes=3) == ['I', 'ii m', 'iii m', 'IV', 'V', 'vi m', 'vii o']
-    assert Scale('C Minor').chordsNumerals(nbNotes=3) == ['i m', 'ii o', 'III', 'iv m', 'v m', 'VI', 'VII']
-
-
+    assert Scale('C Major').chordsRoman(nbNotes=3) == ['I', 'iim', 'iiim', 'IV', 'V', 'vim', 'viio']
+    assert Scale('C Minor').chordsRoman(nbNotes=3) == ['im', 'iio', 'III', 'ivm', 'vm', 'VI', 'VII']
+    assert Scale('C Minor').chordsRoman(nbNotes=4) == ['im7', 'iiø', 'IIIM7', 'ivm7', 'vm7', 'VIM7', 'VII7']
 
