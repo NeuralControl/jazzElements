@@ -427,7 +427,7 @@ class Scale():
         self.name = self.root.name + ' ' + self.mode
 
     def __str__(self):
-        return '{} {:10} | {}'.format(str(self.root), str(self.mode), ' '.join([str(n) for n in self.notes()]))
+        return '{} {:4} | {}'.format(str(self.root), str(self.mode), ' '.join([str(n) for n in self.notes()]))
 
     def __repr__(self):
         return self.__str__()
@@ -466,6 +466,12 @@ class Scale():
             axis('off')
             i += 1
         suptitle('Chords built from ' + self.root.name + ' ' + self.mode);
+
+    def parallelModes(self,asStr=False):
+        if asStr:
+            return [m for m in self.modesLst if m != self.mode]
+        else:
+            return [Scale(self.root,m) for m in self.modesLst if m != self.mode]
 
     def relativeMinor(self, asStr=False):
         if self.mode == 'Ion':  # Relative Major is 1.5 tone below key
