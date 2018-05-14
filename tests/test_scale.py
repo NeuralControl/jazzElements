@@ -8,11 +8,17 @@ def test_Basics():
     assert Scale('C dor').hasChord('Gm')
 
 
-def test_relativeMinorMajor():
+def test_relativeModes():
     for key in Note.chrSharp:
         assert Scale(key, 'ion').relativeMinor() == Scale(Scale(key, 'ion').notes()[5].name, 'aeo')
         assert Scale(key, 'aeo').relativeMajor() == Scale(Scale(key, 'aeo').notes()[2].name, 'ion')
 
+    # Relative keys should have the same notes
+    for k in Note.chrSharp:
+        for m in Scale.modesLst:
+            scale = Scale(k+' '+m)
+            for s in scale.relativeModes():
+                assert sorted(s.notes(asStr=True)) == sorted(scale.notes(asStr=True))
 
 def test_Numerals():
     assert Scale('C Major').chordsRoman(nbNotes=3) == ['I', 'iim', 'iiim', 'IV', 'V', 'vim', 'viio']

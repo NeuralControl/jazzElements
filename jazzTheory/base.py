@@ -483,9 +483,15 @@ class Scale():
         Relative modes are the scales with the same key signature
         Returns:
             list of relative modes
-
         """
-
+        modesLst=self.modesLst.index(self.mode)
+        if asStr:
+            return [n + ' ' + m for n, m in zip(Scale(self.root, self.mode).notes(asStr=True), np.roll(self.modesLst, -modesLst)) if
+                    m != self.mode]
+        else:
+            return [Scale(n + ' ' + m) for n, m in
+                    zip(Scale(self.root, self.mode).notes(asStr=True), np.roll(self.modesLst, -modesLst))
+                    if m != self.mode]
 
     def relativeMinor(self, asStr=False):
         if self.mode == 'Ion':  # Relative Major is 1.5 tone below key
@@ -772,3 +778,6 @@ class Progression:
 # #self.plot(False,False)
 # # self.plot2()
 # self.print()
+
+
+
