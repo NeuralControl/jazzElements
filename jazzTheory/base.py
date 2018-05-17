@@ -425,7 +425,7 @@ class Scale():
 
         if mode in ['Major', 'Maj']: mode = 'Ion'
         if mode in ['Minor', 'Min']: mode = 'Aeo'
-        if mode not in self.modesLst: raise ValueError('mode {} not implemented'.format(mode))
+        if mode not in self.modesIntervals: raise ValueError('mode {} not implemented'.format(mode))
 
         self.root = Note(root)
         self.mode = mode
@@ -783,6 +783,4 @@ class Progression:
 # #self.plot(False,False)
 # # self.plot2()
 # self.print()
-
-
 
