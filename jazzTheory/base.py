@@ -690,8 +690,11 @@ class Progression:
 
     def print(self):
         lastBar = -1
+        print('{:4} |{:7} |{:8}| {:5} |{:10}'.format(
+            'Bar','Chord','Function','Type','Scale'))
+
         for c in self.chords:
-            print('{:2} |{:7} |{:3}| {:5} {:10}'.format(
+            print('{:4} |{:7} |{:8}| {:5} |{:10}'.format(
                 str(c['bar'] + 1) if c['bar'] != lastBar else '',
                 c['chord'].name,
                 c['function'] if 'function' in c else '',
@@ -783,4 +786,3 @@ class Progression:
 # #self.plot(False,False)
 # # self.plot2()
 # self.print()
-
