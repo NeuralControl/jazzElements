@@ -407,6 +407,11 @@ class Scale():
             ['V7->#Vdim7', '#5sub5'],
             ['V7->bii7', 'trisub5'],
         ]
+    """
+        - Tritone substitution: we can replace a dom7 by a dom7 that is 6halfSteps above the root   
+        - Tritone substitution is good on II-V-I because it provides a chromatic root movement   
+          e.g. Dm7–G7–CM7 -> Dm7–D♭7–CM gives a downward walking bass   
+    """
 
     regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.*)")  # Regulat expression to understand Roman Notation
 
