@@ -1,4 +1,4 @@
-from jazzElements.base import Note, Chord, Scale,Progression
+from jazzTheory.base import Note, Chord, Scale,Progression
 
 
 def test_basics():
