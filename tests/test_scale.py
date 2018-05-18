@@ -1,4 +1,4 @@
-from jazzTheory.base import Note, Chord, Scale
+from jazzElements.base import Note, Chord, Scale
 
 def test_Basics():
     assert Scale('C ion').notes() == ['C', 'D', 'E', 'F', 'G', 'A', 'B']
