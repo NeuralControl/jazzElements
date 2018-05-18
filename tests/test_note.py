@@ -1,4 +1,4 @@
-from jazzTheory.base import Note, Chord, Scale
+from jazzElements.base import Note, Chord, Scale
 
 def test_basics():
     for note in Note.chrSharp + Note.chrFlat:

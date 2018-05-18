@@ -1,4 +1,4 @@
-from jazzTheory.base import Note, Chord, Scale
+from jazzElements.base import Note, Chord, Scale
 
 def test_fromName():
     assert Chord('Cm7') == Chord('EbM6')
