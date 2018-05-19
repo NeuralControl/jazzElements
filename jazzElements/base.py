@@ -78,13 +78,28 @@ def plotNotes(notes, pos=None, name='', ax=0, nbOctaves=1):
 progressions = \
     {
         'Satin Doll': '|Dm7,G7|%|Em7,A7|%|Am7,D7|Abm7,Db7|CM7|%|',
+
         'Misty': '|B7b9|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7|',
-        'Major 251s': '|Dm7,G7|CM7|E♭m7,A♭7|D♭M7|Em7,A7|DM7|Fm7,B♭7|E♭M7|F♯m7,B7|EM7|Gm7,C7|FM7|A♭m7,D♭7|G♭M7|Am7,D7|GM7|B♭m7,E♭7|A♭M7|Bm7,E7|AM7|Cm7,F7|B♭M7|C♯m7,F♯7|BM7|',
-        'Minor 251s': '|Dø,Gm7|Cm7|E♭ø,A♭m7|D♭m7|Eø,Am7|Dm7|Fø,B♭m7|E♭m7|F♯ø,Bm7|Em7|Gø,Cm7|Fm7|A♭ø,D♭m7|G♭m7|Aø,Dm7|Gm7|B♭ø,E♭m7|A♭m7|Bø,Em7|Am7|Cø,Fm7|B♭m7|C♯ø,F♯m7|Bm7|',
+
+        'Major 251s': '|Dm7,G7|CM7|E♭m7,A♭7|D♭M7|Em7,A7|DM7|Fm7,B♭7|E♭M7|F♯m7,B7|EM7|'
+                      'Gm7,C7|FM7|A♭m7,D♭7|G♭M7|Am7,D7|GM7|B♭m7,E♭7|A♭M7|Bm7,E7|AM7|Cm7,F7|B♭M7|C♯m7,F♯7|BM7|',
+
+        'Minor 251s': '|Dø,Gm7|Cm7|E♭ø,A♭m7|D♭m7|Eø,Am7|Dm7|Fø,B♭m7|E♭m7|F♯ø,Bm7|Em7|'
+                      'Gø,Cm7|Fm7|A♭ø,D♭m7|G♭m7|Aø,Dm7|Gm7|B♭ø,E♭m7|A♭m7|Bø,Em7|Am7|Cø,Fm7|B♭m7|C♯ø,F♯m7|Bm7|',
+
         'All Of Me': '|CM7|%|E7|%|A7|%|Dm|%|E7|%|Am|%|D7|%|Dm7|G7|'
                      'CM7|%|E7|%|A7|%|Dm|%|F|Fm|CM7,Em7|A7|Dm7|G7|C6,Ebdim|Dm7,G7|',
+
         'My Romance': '|CM7,FM7|Em7,Am7|Dm7,G7|CM7,E7#5|Am7,E7#5|Am7,A7#5|Dm7,G7|CM7,C7|'
-                      'FM7,Bb7|CM7,C7|FM7,Bb7|CM7|F#m7b5,B7|Em7,Bb7|Am7,D7|Dm7,G7|',
+                      'FM7,Bb7|CM7,C7|FM7,Bb7|CM7|F#m7b5,B7|Em7,Bb7|Am7,D7|Dm7,G7|', # INCOMPLETE
+
+        'All The Things You Are':
+            '|Fm7|Bbm7|Eb7|AbM7|DbM7|Dm7,G7|CM7|%'
+            '|Cm7|Fm7|Bb7|EbM7|AbM7|Am7,D7|GM7|%'
+            '|Am7|D7|GM7|%|Am7|D7|GM7|%'
+            '|F#m7|B7|EM7|C7#5|Fm7|Bbm7|Eb7|AbM7'
+            '|DbM7|Dbm7|Cm7|Bo7|Bbm7|Eb7|AbM7|G7,C7|',
+
     }
 
 
@@ -544,10 +559,10 @@ class Scale():
             S.append([From, To, s[1]])
         return S
 
-    def getDegree(self, d, nbNotes=4):
+    def getDegree(self, d, nbNotes=4,asStr=False):
         if isinstance(d, str):
             d = self.chrDegLst.index(d) + 1
-        return self.chords(nbNotes=nbNotes)[d - 1]
+        return self.chords(nbNotes=nbNotes)[d - 1].name if asStr else self.chords(nbNotes=nbNotes)[d - 1]
 
     def notes(self, asStr=False):
         if asStr:
@@ -805,7 +820,7 @@ class Progression:
         # todo: Scale issue when too many chords -> adjust figsize?
 
         if plotType =='fn':
-            self.barsPerRow = 8
+            self.barsPerRow = 4
             nbRows = np.ceil(self.nbBars / self.barsPerRow)
             figure(figsize=(2*self.barsPerRow,nbRows))
         else:
@@ -829,8 +844,3 @@ class Progression:
         suptitle(self.name, size=30, weight='bold')
 
 
-# self = Progression('All Of Me')
-# # self = Progression('Misty')
-#
-# self.analyze()
-# self.plot()
