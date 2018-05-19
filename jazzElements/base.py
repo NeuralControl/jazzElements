@@ -524,6 +524,12 @@ class Scale():
         else:
             raise ValueError('Cannot calculate relative Major')
 
+    def parallelMinor(self, asStr=False):
+        if self.mode== 'Ion':
+            return Scale(Note(self.root),'Aeo').name if asStr else Scale(Note(self.root),'Aeo')
+        else:
+            raise ValueError('Cannot calculate parallel Minor')
+
     def chordFromRoman(self, item, asStr=False):
         alt, deg, chrType = re.search(self.regexRoman, item).groups()
         chr = Chord(self.notes(asStr=True)[self.chrDegLst.index(deg.upper())] + alt + chrType)
