@@ -86,7 +86,11 @@ progressions = \
     {
         'Satin Doll': '|Dm7,G7|%|Em7,A7|%|Am7,D7|Abm7,Db7|CM7|%|',
 
-        'Misty': '|B7b9|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7|',
+        'Misty': '|B7b9|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7'
+                 '|B7b9|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|EbM7#5,Ab7|EbM7,Do7,G7alt,Cm7,Bm7'
+                 '|Bbm7|Eb7b9|AbM7|%'
+                 '|Am7|D7,F67|Gm7b5|C7b9|Fm7,Bb7'
+                 '|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7|Eb6|Fm7,Bb7|',
 
         'Major 251s': '|Dm7,G7|CM7|E♭m7,A♭7|D♭M7|Em7,A7|DM7|Fm7,B♭7|E♭M7|F♯m7,B7|EM7|'
                       'Gm7,C7|FM7|A♭m7,D♭7|G♭M7|Am7,D7|GM7|B♭m7,E♭7|A♭M7|Bm7,E7|AM7|Cm7,F7|B♭M7|C♯m7,F♯7|BM7|',
@@ -227,6 +231,7 @@ class Chord:
         '6': '1-3-5-6',
         '6/9': '1-3-5-6-4',
         'M7': '1-3-5-7',
+        'M7#5': '1-3-#5-7',
         'M9': '1-3-5-7-2',
         'M9(no7)': '1-3-5-2',
         'M(add9)': '1-3-5-2',
@@ -324,6 +329,7 @@ class Chord:
                 print('Cannot find a chord from ' + ','.join(nameOrNotes))
                 self.root = Note(nameOrNotes[0])
                 self.type = '?'
+
         self.name = str(self.root) + self.type
 
     def intervals(self, asStr=False):
@@ -332,9 +338,8 @@ class Chord:
         Args:
             asStr: if True, returns as strings list, otherwise as list of steps
         """
-        if self.type == '?':
-            return ''
-
+        if self.type not in self.typesLst:
+            return None
         if asStr:
             return self.typesLst[self.type].split('-')
         else:
@@ -346,6 +351,8 @@ class Chord:
         plotNotes(self.notes(), ax=ax, pos=pos, nbOctaves=nbOctaves, name=showName * self.name)
 
     def notes(self, asStr=False):
+        if not self.intervals():
+            return None
         I = [i - 12 * ('b' in iName) for i, iName in zip(self.intervals(), self.intervals(asStr=True))]
         # hack to keep flat intervals flat
         if asStr:
@@ -382,6 +389,8 @@ class Chord:
         return [str(gt) for gt in avoidNotes] if asStr else avoidNotes
 
     def __str__(self):
+        if not self.intervals():
+            return '{}{} ? | ?'.format(self.root.name, self.type)
         return '{}{} {} | {}'.format(self.root.name, self.type,
                                      '-'.join(self.intervals(asStr=True)),
                                      ' '.join([str(n) for n in self.notes()]))
@@ -392,7 +401,10 @@ class Chord:
     def __eq__(self, chordOrStr):
         x = Chord(chordOrStr).notes()
         y = self.notes()
-        return all([xi in y for xi in x]) and all([yi in x for yi in y])
+        if y:
+            return all([xi in y for xi in x]) and all([yi in x for yi in y])
+        else:
+            return False
 
     def listScales(self):
         """
@@ -645,7 +657,204 @@ class Progression:
         return [[Scale(k, mode), Scale(k, mode).hasChord(chr)] for k in Note.chrSharp if
                 Scale(k, mode).getDegree(degree) == chr]
 
-    def analyze(self, key=None):
+    def asArray(self):
+        P = []
+        for c in self.chords:
+            C = {}
+            if 'chord' in c: C['chord'] = c['chord'].name
+            if 'bar' in c: C['bar'] = c['bar']
+            if 'beats' in c: C['beats'] = c['beats']
+            if 'degree' in c: C['degree'] = c['degree']
+            if 'fn' in c: C['fn'] = c['fn']
+            if 'scale' in c: C['scale'] = c['scale'].root.name + ' ' + c['scale'].mode
+            P.append(C)
+        return P
+
+    def findKey(self):
+        """
+        Finds and orders potential keys for the progression using the number of corresponding chords.
+
+        Returns:
+            list of lists  [[<key>,<probability>],...]
+        """
+        S = []
+        for k in Note.chrFlat:
+            scaleChords = Scale(k, 'Ion').chords(3) + Scale(k, 'Ion').chords(4)
+            S.append([str(k) + ' Ion',
+                      100 * len([chr['chord'] for chr in self.chords if chr['chord'] in scaleChords]) / len(
+                          self.chords)])
+        S.sort(key=lambda s: s[1], reverse=True)
+        return S
+
+    def print(self):
+        lastBar = -1
+        print('{:4}|{:7}|{:5}|{:10}|{:12}|{:12}'.format(
+            'Bar', 'Chord', 'Fn', 'Degree', 'Scale', 'Cadence'))
+
+        for c in self.chords:
+            print('{:4}|{:7}|{:5}|{:10}|{:12}|{:12}'.format(
+                str(c['bar'] + 1) if c['bar'] != lastBar else '',
+                c['chord'].name,
+                ','.join(c['fn']) if 'fn' in c else '',
+                ','.join(c['degree']) if 'degree' in c else '',
+                ','.join(c['scale']) if 'scale' in c else '',
+                ','.join([cad[0] for cad in c['cadence']]) if 'cadence' in c else '',
+            ))
+            lastBar = c['bar']
+
+    def plotChord(self, ax, chr, pos, plotType='fn'):
+        xChr, yChr, wChr, hChr = pos
+        bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=False, clip_on=False, color='k')
+        ax.add_patch(bgd)
+        # Function
+        if plotType == 'fn':
+            root, alt, chrType = re.search(Chord.regexChord, chr['chord'].name).groups()
+            text(xChr + wChr / 2, yChr + 2 * hChr / 3, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
+                 va='center', ha='right' if 'degree' in chr else 'center', fontSize=10,
+                 bbox=dict(boxstyle='round4', fc='skyblue'), weight=1000)
+
+            if 'degree' in chr:
+                alt, deg, chrType = re.search(Scale.regexRoman, chr['degree']).groups()
+                text(xChr + wChr / 2, yChr + 2 * hChr / 3, ' {}{}$^{{{}}}$'.format(alt, deg, chrType.replace('#', '+')),
+                     va='center', ha='left', fontSize=10, weight=1000)
+            if 'scale' in chr:
+                text(xChr + 2, yChr, chr['scale'].name,
+                     va='bottom', ha='left', fontSize=7, weight=1000, style='italic')
+
+            x = xChr + wChr / 2
+            y = yChr + hChr / 3
+
+            if 'fn' in chr:
+                fnc = 'r'
+                if chr['fn'] in ['T', '1'] or 'sub1' in chr['fn']: fnc = 'b'
+                if chr['fn'] in ['PD', '2'] or 'sub2' in chr['fn']: fnc = 'g'
+                if chr['fn'] in ['D', '2'] or 'sub5' in chr['fn']: fnc = 'g'
+                bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=True, clip_on=False, color=fnc, alpha=.1)
+                ax.add_patch(bgd)
+                text(x, y, chr['fn'], va='center', ha='center', fontSize=10, weight='bold')
+
+        if plotType == 'kbd':
+            root, alt, chrType = re.search(Chord.regexChord, chr['chord'].name).groups()
+            text(xChr + wChr / 2, yChr + hChr, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
+                 fontsize=14, va='top', ha='right' if 'degree' in chr else 'center', fontSize=10,
+                 bbox=dict(boxstyle='round4', fc='skyblue'), weight=1000)
+
+            if 'degree' in chr:
+                alt, deg, chrType = re.search(Scale.regexRoman, chr['degree']).groups()
+                text(xChr + wChr / 2, yChr + hChr, ' {}{}$^{{{}}}$'.format(alt, deg, chrType.replace('#', '+')),
+                     va='top', ha='left', fontSize=10, weight=1000)
+
+            Chord(chr['chord']).plot(ax=ax, pos=[xChr + 3, yChr + 3 + (hChr - 10) / 2, wChr - 6, (hChr - 10) / 2],
+                                     nbOctaves=1, showName=False)
+            if 'scale' in chr:
+                Scale(chr['scale'].name).plot(ax=ax, pos=[xChr + 3, yChr + 1, wChr - 6, (hChr - 10) / 2], nbOctaves=1,
+                                              showName=False)
+
+    def plotBar(self, b, pos, plotType='fn'):
+        # Debug:
+        # bgd = patches.Rectangle((xBar,yBar), wBar, hBar,color='r', fill=False, clip_on=True, alpha=1,linestyle='dashed')
+        # ax.add_patch(bgd)
+        xBar, yBar, wBar, hBar = pos
+        chrs = [c for c in self.chords if c['bar'] == b]
+        wBeat = (wBar - self.sepx * (len(chrs) - 1)) / self.beatsPerBar
+        nBeats = 0
+        ax = gca()
+        for ic, c in enumerate(chrs):
+            posChr = [xBar + wBeat * nBeats + self.sepx * (ic), yBar, c['beats'] * wBeat, hBar]
+            self.plotChord(ax, c, posChr, plotType=plotType)
+            nBeats += c['beats']
+            if nBeats >= self.barsPerRow * self.beatsPerBar:
+                nBeats = 0
+                yBar -= (hBar + self.sepy)
+
+        # Plot Bar
+        plot([xBar - self.sepx / 2, xBar - self.sepx / 2], [yBar, yBar + hBar], color='k', lw=3)
+        text(xBar - self.sepx / 2, yBar + hBar, '{:02}'.format(b + 1), color='w', va='top', ha='center', fontSize=8,
+             weight=1000,
+             bbox=dict(boxstyle='round4', fc='k'))
+
+    def plot(self, plotType='fn', barsPerRow=4):
+        # todo: Scaling issues
+        self.barsPerRow = barsPerRow
+        if plotType == 'fn':
+            nbRows = np.ceil(self.nbBars / self.barsPerRow)
+            figure(figsize=(2 * self.barsPerRow, nbRows))
+        else:
+            nbRows = np.ceil(self.nbBars / self.barsPerRow)
+            figure(figsize=(2.5 * self.barsPerRow, 2 * nbRows))
+
+        x, y, w, h, self.sepx, self.sepy = [0, 0, 200, 200, 0, 5]
+
+        nbRows = np.ceil(self.nbBars / self.barsPerRow)
+        wBar = (w - (self.barsPerRow - 1) * self.sepx) / self.barsPerRow
+        hBar = (h - (nbRows - 1) * self.sepy) / nbRows
+
+        for b in range(self.chords[-1]['bar'] + 1):
+            posBar = [x + (b % self.barsPerRow) * (wBar + self.sepx),
+                      y + h - hBar * (1 + (b // self.barsPerRow)) - self.sepy * ((b // self.barsPerRow)), wBar, hBar]
+            self.plotBar(b, posBar, plotType=plotType)
+
+        axis('tight')
+        axis('off')
+        suptitle(self.name, size=20, weight='bold')
+
+    def findCadences(self):
+        def findSeqInLst(seq, lst):
+            idx = []
+            for i in range(len(lst) - len(seq) + 1):
+                if np.array_equal(lst[i:i + len(seq)], seq):
+                    idx.append((i, i + len(seq) - 1))
+            return idx
+
+        lstCadences = ['3-6-2-5-1', '6-2-5-1', '1-6-2-5', '2-5-1', '2-5', '5-1']
+        chords = [c['chord'] for c in self.chords]
+        cadLst = []
+        idx = 0
+        # Find all the possible known minor or major cadences:
+        for root in Note.chrFlat:
+            for mode in Scale.modesLst:  # ['Ion', 'Aeo']:
+                key = root + ' ' + mode
+                keyChords = Scale(key).chords(3) + Scale(key).chords(4)
+                keyDegrees = np.tile(np.arange(1, len(Scale(key).chordsRoman(3)) + 1), 2)
+                # Diatonic annotation
+                dia = np.array([keyDegrees[keyChords.index(c)] if c in keyChords else None for c in chords])
+
+                # Find Cadences:
+                for cadence in lstCadences:
+                    seq = np.array([int(d) for d in cadence.split('-')])
+                    for cad in findSeqInLst(seq, dia):
+                        cadLst.append((cad, key, cadence))
+                        idx += 1
+
+        # Sort cadences by length:
+        cadLst = sorted(cadLst, key=lambda x: x[0][1] - x[0][0], reverse=True)
+        # Remove cadences embedded in another:
+        cadLstOk = []
+        chrFree = np.array([True] * len(chords))
+        for cad in cadLst:
+            if any(chrFree[cad[0][0]:cad[0][1] + 1]):
+                cadLstOk.append(cad)
+                chrFree[cad[0][0]:cad[0][1] + 1] *= False
+
+        for cad in cadLstOk:
+            for idx, c in enumerate(range(cad[0][0], cad[0][1] + 1)):
+                for x in ['scale', 'fn', 'cadence','degree']:
+                    if x not in self.chords[c]:
+                        self.chords[c][x] = []
+
+                if len(self.chords[c]['cadence']) and max([x[1] for x in self.chords[c]['cadence']]) > idx:
+                    self.chords[c]['cadence'].append((cad[2], idx))  # Last one is first
+                    self.chords[c]['scale'].append(cad[1])
+                    self.chords[c]['fn'].append(cad[2].split('-')[idx])  # todo: improve
+                    self.chords[c]['degree'].append(Scale(cad[1]).hasChord(self.chords[c]['chord'].name))
+
+                else:
+                    self.chords[c]['cadence'].insert(0, (cad[2], idx))  # This one is first
+                    self.chords[c]['scale'].insert(0, cad[1])
+                    self.chords[c]['fn'].insert(0,cad[2].split('-')[idx])  # todo: improve
+                    self.chords[c]['degree'].insert(0,Scale(cad[1]).hasChord(self.chords[c]['chord'].name))
+
+    def analyze0(self, key=None):
         """
         Harmonic Analysis of the chord progression
         Args:
@@ -692,155 +901,42 @@ class Progression:
             if 'degree' in c:
                 alt, deg, chrType = re.search(Scale.regexRoman, c['degree']).groups()
                 for fn in chordFunctions:
-                    if deg.upper() in chordFunctions[fn]:  c['function'] = fn
+                    if deg.upper() in chordFunctions[fn]:  c['fn'] = fn
 
         # Find Single Chord Substitutions
         subs = Scale(key).possibleSubstitutions(True)
         for c in self.chords:
-            if 'function' not in c:
+            if 'fn' not in c:
                 s = [[s[0][0], s[2]] for s in subs if len(s[1]) == 1 and Chord(s[1][0]) == c['chord']]
                 if len(s) == 1:
                     # c['degree']=s[0][0]
-                    c['function'] = s[0][1]
+                    c['fn'] = s[0][1]
                     c['scale'] = Scale(key)
                 elif len(s) > 1:
                     raise ValueError('Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chord'].name)
 
-    def asArray(self):
-        P = []
-        for c in self.chords:
-            C = {}
-            if 'chord' in c: C['chord'] = c['chord'].name
-            if 'bar' in c: C['bar'] = c['bar']
-            if 'beats' in c: C['beats'] = c['beats']
-            if 'degree' in c: C['degree'] = c['degree']
-            if 'function' in c: C['function'] = c['function']
-            if 'scale' in c: C['scale'] = c['scale'].root.name + ' ' + c['scale'].mode
-            P.append(C)
-        return P
+    def analyze(self):
+        self.findCadences()
 
-    def findKey(self):
-        """
-        Finds and orders potential keys for the progression using the number of corresponding chords.
+        # for c in self.chords:
+        #     if 'scale' in c:
+        #         c['degree'] = Scale(c['scale'].name).hasChord(c['chord'])
 
-        Returns:
-            list of lists  [[<key>,<probability>],...]
-        """
-        S = []
-        for k in Note.chrFlat:
-            scaleChords = Scale(k, 'Ion').chords(3) + Scale(k, 'Ion').chords(4)
-            S.append([str(k) + ' Ion',
-                      100 * len([chr['chord'] for chr in self.chords if chr['chord'] in scaleChords]) / len(
-                          self.chords)])
-        S.sort(key=lambda s: s[1], reverse=True)
-        return S
 
-    def print(self):
-        lastBar = -1
-        print('{:4} |{:7} |{:8}| {:5} |{:10}'.format(
-            'Bar', 'Chord', 'Function', 'Type', 'Scale'))
+#
+# self = Progression('Misty')
+# self.analyze()
+# self.plot()
+# self.print()
 
-        for c in self.chords:
-            print('{:4} |{:7} |{:8}| {:5} |{:10}'.format(
-                str(c['bar'] + 1) if c['bar'] != lastBar else '',
-                c['chord'].name,
-                c['function'] if 'function' in c else '',
-                c.get('degree', ''),
-                c['scale'].name if 'scale' in c else '',
-            ))
-            lastBar = c['bar']
 
-    def plotChord(self, ax, chr, pos, plotType='fn'):
-        xChr, yChr, wChr, hChr = pos
-        bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=False, clip_on=False, color='k')
-        ax.add_patch(bgd)
-        # Function
-        if plotType == 'fn':
-            root, alt, chrType = re.search(Chord.regexChord, chr['chord'].name).groups()
-            text(xChr + wChr / 2, yChr + 2 * hChr / 3, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
-                 va='center', ha='right' if 'degree' in chr else 'center', fontSize=10,
-                 bbox=dict(boxstyle='round4', fc='skyblue'), weight=1000)
+# todo: print all Fn and Degree and Scale
+# todo: plot all cadences
+# todo: replace scale by just name in chord
+# todo: ones should be recognized
 
-            if 'degree' in chr:
-                alt, deg, chrType = re.search(Scale.regexRoman, chr['degree']).groups()
-                text(xChr + wChr / 2, yChr + 2 * hChr / 3, ' {}{}$^{{{}}}$'.format(alt, deg, chrType.replace('#', '+')),
-                     va='center', ha='left', fontSize=10, weight=1000)
-            if 'scale' in chr:
-                text(xChr + 2, yChr, chr['scale'].name,
-                     va='bottom', ha='left', fontSize=7, weight=1000, style='italic')
-
-            x = xChr + wChr / 2
-            y = yChr + hChr / 3
-            if 'function' in chr:
-                if chr['function'] == 'T' or 'sub1' in chr['function']: fnc = 'b'
-                if chr['function'] == 'PD' or 'sub2' in chr['function']: fnc = 'g'
-                if chr['function'] == 'D' or 'sub5' in chr['function']: fnc = 'g'
-                bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=True, clip_on=False, color=fnc, alpha=.1)
-                ax.add_patch(bgd)
-                text(x, y, chr['function'], va='center', ha='center', fontSize=10, weight='bold')
-
-        if plotType == 'kbd':
-            root, alt, chrType = re.search(Chord.regexChord, chr['chord'].name).groups()
-            text(xChr + wChr / 2, yChr + hChr, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
-                 fontsize=14, va='top', ha='right' if 'degree' in chr else 'center', fontSize=10,
-                 bbox=dict(boxstyle='round4', fc='skyblue'), weight=1000)
-
-            if 'degree' in chr:
-                alt, deg, chrType = re.search(Scale.regexRoman, chr['degree']).groups()
-                text(xChr + wChr / 2, yChr + hChr, ' {}{}$^{{{}}}$'.format(alt, deg, chrType.replace('#', '+')),
-                     va='top', ha='left', fontSize=10, weight=1000)
-
-            Chord(chr['chord']).plot(ax=ax, pos=[xChr + 3, yChr + 3 + (hChr - 10) / 2, wChr - 6, (hChr - 10) / 2],
-                                     nbOctaves=1, showName=False)
-            if 'scale' in chr:
-                Scale(chr['scale'].name).plot(ax=ax, pos=[xChr + 3, yChr + 1, wChr - 6, (hChr - 10) / 2], nbOctaves=1,
-                                              showName=False)
-
-    def plotBar(self, b, pos, plotType='fn'):
-        # Debug:
-        # bgd = patches.Rectangle((xBar,yBar), wBar, hBar,color='r', fill=False, clip_on=True, alpha=1,linestyle='dashed')
-        # ax.add_patch(bgd)
-        xBar, yBar, wBar, hBar = pos
-        chrs = [c for c in self.chords if c['bar'] == b]
-        wBeat = (wBar - self.sepx * (len(chrs) - 1)) / self.beatsPerBar
-        nBeats = 0
-        ax = gca()
-        for ic, c in enumerate(chrs):
-            posChr = [xBar + wBeat * nBeats + self.sepx * (ic), yBar, c['beats'] * wBeat, hBar]
-            self.plotChord(ax, c, posChr, plotType=plotType)
-            nBeats += c['beats']
-            if nBeats >= self.barsPerRow * self.beatsPerBar:
-                nBeats = 0
-                yBar -= (hBar + self.sepy)
-
-        # Plot Bar
-        plot([xBar - self.sepx / 2, xBar - self.sepx / 2], [yBar, yBar + hBar], color='k', lw=3)
-        text(xBar - self.sepx / 2, yBar + hBar, '{:02}'.format(b + 1), color='w', va='top', ha='center', fontSize=8,
-             weight=1000,
-             bbox=dict(boxstyle='round4', fc='k'))
-
-    def plot(self, plotType='fn'):
-        # todo: Scaling issues
-        if plotType == 'fn':
-            self.barsPerRow = 4
-            nbRows = np.ceil(self.nbBars / self.barsPerRow)
-            figure(figsize=(2 * self.barsPerRow, nbRows))
-        else:
-            self.barsPerRow = 4
-            nbRows = np.ceil(self.nbBars / self.barsPerRow)
-            figure(figsize=(2.5 * self.barsPerRow, 2 * nbRows))
-
-        x, y, w, h, self.sepx, self.sepy = [0, 0, 200, 200, 0, 5]
-
-        nbRows = np.ceil(self.nbBars / self.barsPerRow)
-        wBar = (w - (self.barsPerRow - 1) * self.sepx) / self.barsPerRow
-        hBar = (h - (nbRows - 1) * self.sepy) / nbRows
-
-        for b in range(self.chords[-1]['bar'] + 1):
-            posBar = [x + (b % self.barsPerRow) * (wBar + self.sepx),
-                      y + h - hBar * (1 + (b // self.barsPerRow)) - self.sepy * ((b // self.barsPerRow)), wBar, hBar]
-            self.plotBar(b, posBar, plotType=plotType)
-
-        axis('tight')
-        axis('off')
-        suptitle(self.name, size=30, weight='bold')
+self = Progression('|Dm7|Dm7|Eø|Am7|Dm7|G7|CM7|CM7|', 'unitTest 2-5-1 & 6-2-5-1')
+self.analyze()
+self.print()
+# self.plot()
+# self.plot(barsPerRow=8)
