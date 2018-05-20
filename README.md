@@ -2,7 +2,7 @@ The primary goal of this package is to help in the analysis of a chord progressi
 It will also suggest alternative chords, progressions, scales etc     
 For example, we can enter a progression as a string, ask to analyse then plot the results.   
 Each cell shows the chord, its degree in the corresponding scale, and optionally the corresponding notes.  
-Right now we have a skeleton with the basics, working on the analysis.
+**_Right now we have a skeleton with the basics, working on the analysis.**_  
 
 [Basic Examples](https://github.com/NeuralControl/jazzTheory/blob/master/demos.ipynb)  
 
