@@ -1,11 +1,8 @@
-
-
-
 The primary goal of this package is to help in the analysis of a chord progression and facilitate learning of jazz standards.  
 It will also suggest alternative chords, progressions, scales etc     
 For example, we can enter a progression as a string, ask to analyse then plot the results.   
-Each cell shows the chord, its degree in the corresponding scale, and optionally the coresponding notes.  
-Right know we are only searching for ionian II-V-I, II-V and V-I, but the plan is to extend to other progressions.  
+Each cell shows the chord, its degree in the corresponding scale, and optionally the corresponding notes.  
+Right now we have a skeleton with the basics, working on the analysis.
 
 [Basic Examples](https://github.com/NeuralControl/jazzTheory/blob/master/demos.ipynb)  
 

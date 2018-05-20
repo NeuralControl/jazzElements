@@ -209,8 +209,6 @@ class Chord:
     """
 
     """
-    # todo: for a minor chord, the 3 should be b, no #
-    # todo: implement + and -
 
     intervalsLst = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7', '8',
                     'b9', '9', '#9', '10', '11', '#11', '12', '#12', '13', 'b14', '14', '15']
@@ -817,8 +815,7 @@ class Progression:
              bbox=dict(boxstyle='round4', fc='k'))
 
     def plot(self,plotType='fn'):
-        # todo: Scale issue when too many chords -> adjust figsize?
-
+        # todo: Scaling issues
         if plotType =='fn':
             self.barsPerRow = 4
             nbRows = np.ceil(self.nbBars / self.barsPerRow)
