@@ -34,19 +34,26 @@ def plotNotes(notes, pos=None, name='', ax=0, nbOctaves=1):
     if pos is None:
         pos = [0, 0, 100, 40]
 
-    def plotKey(ax, x, y, w, h,keyType, status):
+    def plotKey(ax, x, y, w, h, keyType, status):
         lw = .5
-        pad=0.5
-        edgeColor = 'w'
+        pad = 0.5
+        # edgeColor = 'w'
+        # parms = dict(
+        #     black=dict(color=['skyblue', 'steelblue'], z=1),
+        #     white=dict(color=['skyblue', 'steelblue'], z=0)
+        # )
+
+        edgeColor = 'k'
         parms = dict(
-            black=dict(color=['skyblue', 'steelblue'], z=1),
-            white=dict(color=['skyblue', 'steelblue'], z=0)
+            black=dict(color=['k', 'skyblue'], z=1),
+            white=dict(color=['w', 'skyblue'], z=0)
         )
+
         ax.add_patch(FancyBboxPatch((x + pad, y + pad),
                                     abs(w) - 2 * pad, abs(h) - 2 * pad,
                                     boxstyle="round,pad=" + str(pad),
-                                    fc=parms[keyType]['color'][status], ec=edgeColor, zorder=parms[keyType]['z'], lw=lw))
-
+                                    fc=parms[keyType]['color'][status], ec=edgeColor, zorder=parms[keyType]['z'],
+                                    lw=lw))
 
     nb = int(np.ceil(len(notes) / (nbOctaves * 12)) * (nbOctaves * 12))
     start = 'C' if notes[0] - Note('C') < notes[0] - Note('F') else 'F'
@@ -65,11 +72,11 @@ def plotNotes(notes, pos=None, name='', ax=0, nbOctaves=1):
     nWhites = 0
     for i, n in enumerate(chromatic):
         if n in whites:
-            plotKey(ax, pos[0] + (nWhites) * whiteWidth, pos[1], whiteWidth, pos[3],keyType='white', status=n in notes)
+            plotKey(ax, pos[0] + (nWhites) * whiteWidth, pos[1], whiteWidth, pos[3], keyType='white', status=n in notes)
             nWhites += 1
         else:
             plotKey(ax, pos[0] + (nWhites) * whiteWidth - blackWidth / 2, pos[1] + pos[3] / 3, blackWidth,
-                    2 * pos[3] / 3, keyType='black', status = n in notes)
+                    2 * pos[3] / 3, keyType='black', status=n in notes)
     plot(0, 0, '.w', zorder=-1)
     if name:
         text(pos[0], pos[1] + pos[3] / 2, name, ha='right', va='center', rotation=90)
@@ -91,7 +98,7 @@ progressions = \
                      'CM7|%|E7|%|A7|%|Dm|%|F|Fm|CM7,Em7|A7|Dm7|G7|C6,Ebdim|Dm7,G7|',
 
         'My Romance': '|CM7,FM7|Em7,Am7|Dm7,G7|CM7,E7#5|Am7,E7#5|Am7,A7#5|Dm7,G7|CM7,C7|'
-                      'FM7,Bb7|CM7,C7|FM7,Bb7|CM7|F#m7b5,B7|Em7,Bb7|Am7,D7|Dm7,G7|', # INCOMPLETE
+                      'FM7,Bb7|CM7,C7|FM7,Bb7|CM7|F#m7b5,B7|Em7,Bb7|Am7,D7|Dm7,G7|',  # INCOMPLETE
 
         'All The Things You Are':
             '|Fm7|Bbm7|Eb7|AbM7|DbM7|Dm7,G7|CM7|%'
@@ -538,8 +545,8 @@ class Scale():
             raise ValueError('Cannot calculate relative Major')
 
     def parallelMinor(self, asStr=False):
-        if self.mode== 'Ion':
-            return Scale(Note(self.root),'Aeo').name if asStr else Scale(Note(self.root),'Aeo')
+        if self.mode == 'Ion':
+            return Scale(Note(self.root), 'Aeo').name if asStr else Scale(Note(self.root), 'Aeo')
         else:
             raise ValueError('Cannot calculate parallel Minor')
 
@@ -557,7 +564,7 @@ class Scale():
             S.append([From, To, s[1]])
         return S
 
-    def getDegree(self, d, nbNotes=4,asStr=False):
+    def getDegree(self, d, nbNotes=4, asStr=False):
         if isinstance(d, str):
             d = self.chrDegLst.index(d) + 1
         return self.chords(nbNotes=nbNotes)[d - 1].name if asStr else self.chords(nbNotes=nbNotes)[d - 1]
@@ -745,34 +752,32 @@ class Progression:
 
     def plotChord(self, ax, chr, pos, plotType='fn'):
         xChr, yChr, wChr, hChr = pos
-        bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=False, clip_on=False,color='k')
+        bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=False, clip_on=False, color='k')
         ax.add_patch(bgd)
         # Function
-        if plotType=='fn':
+        if plotType == 'fn':
             root, alt, chrType = re.search(Chord.regexChord, chr['chord'].name).groups()
-            text(xChr + wChr / 2, yChr + 2*hChr/3, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
-                  va='center', ha='right' if 'degree' in chr else 'center', fontSize=10,
+            text(xChr + wChr / 2, yChr + 2 * hChr / 3, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
+                 va='center', ha='right' if 'degree' in chr else 'center', fontSize=10,
                  bbox=dict(boxstyle='round4', fc='skyblue'), weight=1000)
 
             if 'degree' in chr:
                 alt, deg, chrType = re.search(Scale.regexRoman, chr['degree']).groups()
-                text(xChr + wChr / 2, yChr + 2*hChr/3, ' {}{}$^{{{}}}$'.format(alt, deg, chrType.replace('#', '+')),
-                      va='center', ha='left', fontSize=10, weight=1000)
+                text(xChr + wChr / 2, yChr + 2 * hChr / 3, ' {}{}$^{{{}}}$'.format(alt, deg, chrType.replace('#', '+')),
+                     va='center', ha='left', fontSize=10, weight=1000)
             if 'scale' in chr:
-                text(xChr+2, yChr,chr['scale'].name,
-                      va='bottom', ha='left', fontSize=7, weight=1000,style='italic')
-
+                text(xChr + 2, yChr, chr['scale'].name,
+                     va='bottom', ha='left', fontSize=7, weight=1000, style='italic')
 
             x = xChr + wChr / 2
-            y = yChr+hChr/3
+            y = yChr + hChr / 3
             if 'function' in chr:
                 if chr['function'] == 'T' or 'sub1' in chr['function']: fnc = 'b'
                 if chr['function'] == 'PD' or 'sub2' in chr['function']: fnc = 'g'
                 if chr['function'] == 'D' or 'sub5' in chr['function']: fnc = 'g'
-                bgd = patches.Rectangle((xChr,yChr), wChr,hChr, fill=True, clip_on=False, color=fnc,alpha=.1)
+                bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=True, clip_on=False, color=fnc, alpha=.1)
                 ax.add_patch(bgd)
-                text(x, y, chr['function'], va='center', ha='center', fontSize=10,weight='bold')
-
+                text(x, y, chr['function'], va='center', ha='center', fontSize=10, weight='bold')
 
         if plotType == 'kbd':
             root, alt, chrType = re.search(Chord.regexChord, chr['chord'].name).groups()
@@ -783,15 +788,15 @@ class Progression:
             if 'degree' in chr:
                 alt, deg, chrType = re.search(Scale.regexRoman, chr['degree']).groups()
                 text(xChr + wChr / 2, yChr + hChr, ' {}{}$^{{{}}}$'.format(alt, deg, chrType.replace('#', '+')),
-                     fontsize=14, va='top', ha='left', fontSize=10, weight=1000)
+                     va='top', ha='left', fontSize=10, weight=1000)
 
-            ax = gca()
-            Chord(chr['chord']).plot(ax=ax, pos=[xChr + 3, yChr + 3 +(hChr - 15) / 2, wChr - 6, (hChr - 15) / 2], nbOctaves=1, showName=False)
+            Chord(chr['chord']).plot(ax=ax, pos=[xChr + 3, yChr + 3 + (hChr - 10) / 2, wChr - 6, (hChr - 10) / 2],
+                                     nbOctaves=1, showName=False)
             if 'scale' in chr:
-                Scale(chr['scale'].name).plot(ax=ax, pos=[xChr + 3, yChr + 1, wChr - 6, (hChr - 15) / 2], nbOctaves=1,
+                Scale(chr['scale'].name).plot(ax=ax, pos=[xChr + 3, yChr + 1, wChr - 6, (hChr - 10) / 2], nbOctaves=1,
                                               showName=False)
 
-    def plotBar(self, b, pos,plotType='fn'):
+    def plotBar(self, b, pos, plotType='fn'):
         # Debug:
         # bgd = patches.Rectangle((xBar,yBar), wBar, hBar,color='r', fill=False, clip_on=True, alpha=1,linestyle='dashed')
         # ax.add_patch(bgd)
@@ -802,7 +807,7 @@ class Progression:
         ax = gca()
         for ic, c in enumerate(chrs):
             posChr = [xBar + wBeat * nBeats + self.sepx * (ic), yBar, c['beats'] * wBeat, hBar]
-            self.plotChord(ax, c, posChr,plotType=plotType)
+            self.plotChord(ax, c, posChr, plotType=plotType)
             nBeats += c['beats']
             if nBeats >= self.barsPerRow * self.beatsPerBar:
                 nBeats = 0
@@ -814,16 +819,16 @@ class Progression:
              weight=1000,
              bbox=dict(boxstyle='round4', fc='k'))
 
-    def plot(self,plotType='fn'):
+    def plot(self, plotType='fn'):
         # todo: Scaling issues
-        if plotType =='fn':
+        if plotType == 'fn':
             self.barsPerRow = 4
             nbRows = np.ceil(self.nbBars / self.barsPerRow)
-            figure(figsize=(2*self.barsPerRow,nbRows))
+            figure(figsize=(2 * self.barsPerRow, nbRows))
         else:
             self.barsPerRow = 4
             nbRows = np.ceil(self.nbBars / self.barsPerRow)
-            figure(figsize=(2.5*self.barsPerRow,2*nbRows))
+            figure(figsize=(2.5 * self.barsPerRow, 2 * nbRows))
 
         x, y, w, h, self.sepx, self.sepy = [0, 0, 200, 200, 0, 5]
 
@@ -834,10 +839,8 @@ class Progression:
         for b in range(self.chords[-1]['bar'] + 1):
             posBar = [x + (b % self.barsPerRow) * (wBar + self.sepx),
                       y + h - hBar * (1 + (b // self.barsPerRow)) - self.sepy * ((b // self.barsPerRow)), wBar, hBar]
-            self.plotBar(b, posBar,plotType=plotType)
+            self.plotBar(b, posBar, plotType=plotType)
 
         axis('tight')
         axis('off')
         suptitle(self.name, size=30, weight='bold')
-
-
