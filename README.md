@@ -6,17 +6,18 @@ Each cell shows the chord, its degree in the corresponding scale, and optionally
 
 [Basic Examples](https://github.com/NeuralControl/jazzTheory/blob/master/demos.ipynb)  
 
-From a chord progression, we can analyze and plot the results:
+We can analyze a chord progression:
 ```python
 prg = Progression('|CM7,FM7|Em7,Am7|Dm7,G7|CM7,E7#5|Am7,E7#5|Am7,A7#5|Dm7,G7|CM7,C7|'
                       'FM7,Bb7|CM7,C7|FM7,Bb7|CM7|F#m7b5,B7|Em7,Bb7|Am7,D7|Dm7,G7|',name='My Romance')  
 prg.analyze()  
 prg.plot('fn')  
 ```
+We can see the hadmonic analysis
 ![MyRomanceFn](img/fn/MyRomance.png) 
  
  
-From a chord progression, we can analyze and plot the results:
+or the chords (up) and scales (down):
 ```python
 prg.plot('kbd')  
 ```
