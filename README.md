@@ -8,11 +8,19 @@ Each cell shows the chord, its degree in the corresponding scale, and optionally
 
 From a chord progression, we can analyze and plot the results:
 ```python
-prg = Progression('|Dm7,G7|Dm7,G7|Em7,A7|Em7,A7|Am7,D7|Abm7,Db7|CM7|CM7|',name='Satin Doll')  
+prg = Progression('|CM7,FM7|Em7,Am7|Dm7,G7|CM7,E7#5|Am7,E7#5|Am7,A7#5|Dm7,G7|CM7,C7|'
+                      'FM7,Bb7|CM7,C7|FM7,Bb7|CM7|F#m7b5,B7|Em7,Bb7|Am7,D7|Dm7,G7|',name='My Romance')  
 prg.analyze()  
-prg.plot()  
+prg.plot('fn')  
 ```
-![SatinDoll](img/SatinDoll.png)  
+![SatinDoll](img/fn/SatinDoll.png) 
+ 
+ 
+From a chord progression, we can analyze and plot the results:
+```python
+prg.plot('kbd')  
+```
+![SatinDoll](img/kbd/SatinDoll.png)  
 
 
 Plot all Chords in a given Scale:  
