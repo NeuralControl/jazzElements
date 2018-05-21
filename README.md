@@ -13,14 +13,14 @@ prg = Progression('|CM7,FM7|Em7,Am7|Dm7,G7|CM7,E7#5|Am7,E7#5|Am7,A7#5|Dm7,G7|CM7
 prg.analyze()  
 prg.plot('fn')  
 ```
-![SatinDoll](img/fn/My\ Romance.png) 
+![SatinDoll](img/fn/MyRomance.png) 
  
  
 From a chord progression, we can analyze and plot the results:
 ```python
 prg.plot('kbd')  
 ```
-![SatinDoll](img/kbd/My\ Romance.png)  
+![SatinDoll](img/kbd/MyRomance.png)  
 
 
 Plot all Chords in a given Scale:  
