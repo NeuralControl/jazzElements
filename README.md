@@ -14,11 +14,11 @@ prg = Progression('|CM7,FM7|Em7,Am7|Dm7,G7|CM7,E7#5|Am7,E7#5|Am7,A7#5|Dm7,G7|CM7
 prg.analyze()  
 prg.plot('fn')  
 ```
-We can see the hadmonic analysis
+We can plot the harmonic analysis
 ![MyRomanceFn](img/fn/MyRomance.png) 
  
  
-or the chords (up) and scales (down):
+or the chords (top) and scales (bottom):
 ```python
 prg.plot('kbd')  
 ```
