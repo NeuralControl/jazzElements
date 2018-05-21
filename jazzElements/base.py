@@ -400,11 +400,11 @@ class Chord:
         return self.__str__()
 
     def __eq__(self, chordOrStr):
-        x = Chord(chordOrStr).notes()
+        x = Chord(chordOrStr).notes(asStr=True)
 
-        y = self.notes()
+        y = self.notes(asStr=True)
         if x and y:
-            return all([xi in y for xi in x]) and all([yi in x for yi in y])
+            return set(x)==set(y)
         else:
             return False
 
@@ -845,10 +845,10 @@ class Progression:
             #for mode in Scale.modesLst:  # ['Ion', 'Aeo']:
             for mode in ['Ion', 'Aeo']:
                 key = root + ' ' + mode
-                keyChords = Scale(key).chords(3) + Scale(key).chords(4)
+                keyChords = Scale(key).chords(3,asStr=True) + Scale(key).chords(4,asStr=True)
                 keyDegrees = np.tile(np.arange(1, len(Scale(key).chordsRoman(3)) + 1), 2)
                 # Diatonic annotation
-                dia = np.array([keyDegrees[keyChords.index(c)] if c in keyChords else None for c in chords])
+                dia = np.array([keyDegrees[keyChords.index(c)] if c.name in keyChords else None for c in chords])
 
                 # Find Cadences:
                 for cadence in lstCadences:
@@ -952,12 +952,15 @@ class Progression:
 # todo: replace scale by just name in Chord
 # todo: same for chords?
 # todo: Profile speed
-# todo: scalecolors find a better way to handle.
 
+# python -m cProfile -o base.prof base.py
+# snakeviz.exe base.prof
+
+# todo: scalecolors find a better way to handle.
 
 # self = Progression('Misty')
 # self.analyze()
-# self.print()
+#self.print()
 # self.plot()
 
 # self.plot(barsPerRow=8)
