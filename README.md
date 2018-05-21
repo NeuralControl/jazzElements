@@ -5,6 +5,7 @@ Each cell shows the chord, its degree in the corresponding scale, and optionally
 **Right now we have a skeleton with the basics, working on the analysis.**
 
 [Basic Examples](https://github.com/NeuralControl/jazzTheory/blob/master/demos.ipynb)  
+[Known Progressions](https://github.com/NeuralControl/jazzTheory/blob/master/knownProgressions.ipynb)  
 
 We can analyze a chord progression:
 ```python
