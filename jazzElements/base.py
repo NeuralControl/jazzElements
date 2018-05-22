@@ -616,7 +616,6 @@ class Scale():
 
         if all([n in self.notes() for n in chord.notes()]):
             if chord in self.chords(nbNotes=len(chord.notes())):
-
                 return self.chordsRoman(nbNotes=len(chord.notes()))[
                     self.chords(nbNotes=len(chord.notes())).index(chord)]
             else:
@@ -645,7 +644,7 @@ class Progression:
                             bar=bi)
                     else:
                         chr = dict(
-                            chord=Chord(c),
+                            chord=c,
                             beats=self.beatsPerBar / len(bar.split(',')),
                             bar=bi)
                     self.chords.append(chr)
@@ -660,35 +659,6 @@ class Progression:
         return [[Scale(k, mode), Scale(k, mode).hasChord(chr)] for k in Note.chrSharp if
                 Scale(k, mode).getDegree(degree) == chr]
 
-    def asArray(self):
-        P = []
-        for c in self.chords:
-            C = {}
-            if 'chord' in c: C['chord'] = c['chord'].name
-            if 'bar' in c: C['bar'] = c['bar']
-            if 'beats' in c: C['beats'] = c['beats']
-            if 'degree' in c: C['degree'] = c['degree']
-            if 'fn' in c: C['fn'] = c['fn']
-            if 'scale' in c: C['scale'] = c['scale'].root.name + ' ' + c['scale'].mode
-            P.append(C)
-        return P
-
-    def findKey(self):
-        """
-        Finds and orders potential keys for the progression using the number of corresponding chords.
-
-        Returns:
-            list of lists  [[<key>,<probability>],...]
-        """
-        S = []
-        for k in Note.chrFlat:
-            scaleChords = Scale(k, 'Ion').chords(3) + Scale(k, 'Ion').chords(4)
-            S.append([str(k) + ' Ion',
-                      100 * len([chr['chord'] for chr in self.chords if chr['chord'] in scaleChords]) / len(
-                          self.chords)])
-        S.sort(key=lambda s: s[1], reverse=True)
-        return S
-
     def print(self):
         lastBar = -1
         print('{:4}|{:7}|{:5}|{:10}|{:12}|{:12}'.format(
@@ -697,13 +667,12 @@ class Progression:
         for c in self.chords:
             print('{:4}|{:7}|{:5}|{:10}|{:12}|{:12}'.format(
                 str(c['bar'] + 1) if c['bar'] != lastBar else '',
-                c['chord'].name,
+                c['chord'],
                 ','.join(c['fn']) if 'fn' in c else '',
                 ','.join(c['degree']) if 'degree' in c else '',
                 ','.join(c['scale']) if 'scale' in c else '',
                 ','.join([cad[0] for cad in c['cadence']]) if 'cadence' in c else '',
             ))
-
             lastBar = c['bar']
 
     def plotChord(self, ax, chr, pos, plotType='fn'):
@@ -713,7 +682,7 @@ class Progression:
 
         # Function
         if plotType == 'fn':
-            root, alt, chrType = re.search(Chord.regexChord, self.chords[chr]['chord'].name).groups()
+            root, alt, chrType = re.search(Chord.regexChord, self.chords[chr]['chord']).groups()
             text(xChr + wChr / 2, yChr + hChr, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
                  va='top', ha='center', fontSize=10,
                  bbox=dict(boxstyle='round4', fc='w'), weight=1000)
@@ -754,7 +723,7 @@ class Progression:
                          fontSize=10, weight='bold')
 
         if plotType == 'kbd':
-            root, alt, chrType = re.search(Chord.regexChord, self.chords[chr]['chord'].name).groups()
+            root, alt, chrType = re.search(Chord.regexChord, self.chords[chr]['chord']).groups()
             wBeat = wChr / self.chords[chr]['beats']
             for beat in range(int(np.ceil(self.chords[chr]['beats']))):
                 if beat == 0:
@@ -845,10 +814,10 @@ class Progression:
             #for mode in Scale.modesLst:  # ['Ion', 'Aeo']:
             for mode in ['Ion', 'Aeo']:
                 key = root + ' ' + mode
-                keyChords = Scale(key).chords(3,asStr=True) + Scale(key).chords(4,asStr=True)
+                keyChords = Scale(key).chords(3) + Scale(key).chords(4)
                 keyDegrees = np.tile(np.arange(1, len(Scale(key).chordsRoman(3)) + 1), 2)
                 # Diatonic annotation
-                dia = np.array([keyDegrees[keyChords.index(c)] if c.name in keyChords else None for c in chords])
+                dia = np.array([keyDegrees[keyChords.index(c)] if Chord(c) in keyChords else None for c in chords])
 
                 # Find Cadences:
                 for cadence in lstCadences:
@@ -877,13 +846,13 @@ class Progression:
                     self.chords[c]['cadence'].append((cad[2], idx))  # Last one is first
                     self.chords[c]['scale'].append(cad[1])
                     self.chords[c]['fn'].append(cad[2].split('-')[idx])  # todo: improve
-                    self.chords[c]['degree'].append(Scale(cad[1]).hasChord(self.chords[c]['chord'].name))
+                    self.chords[c]['degree'].append(Scale(cad[1]).hasChord(self.chords[c]['chord']))
 
                 else:
                     self.chords[c]['cadence'].insert(0, (cad[2], idx))  # This one is first
                     self.chords[c]['scale'].insert(0, cad[1])
                     self.chords[c]['fn'].insert(0, cad[2].split('-')[idx])  # todo: improve
-                    self.chords[c]['degree'].insert(0, Scale(cad[1]).hasChord(self.chords[c]['chord'].name))
+                    self.chords[c]['degree'].insert(0, Scale(cad[1]).hasChord(self.chords[c]['chord']))
 
     def findIsolated(self):
         currentKey = []
@@ -899,7 +868,7 @@ class Progression:
 
                 # Searching if the chord is diatonic
                 if 'fn' not in self.chords[ci] and k != []:
-                    deg = Scale(k).hasChord(c['chord'].name)
+                    deg = Scale(k).hasChord(c['chord'])
                     if deg:
                         self.chords[ci]['scale'] = [k]
                         self.chords[ci]['degree'] = [deg]
@@ -908,7 +877,7 @@ class Progression:
                 # Searching if the chord is a substitution in currentKey,nextKey,mainKey
                 if 'fn' not in self.chords[ci] and k != []:
                     subs = Scale(k).possibleSubstitutions(asStr=True)
-                    s = [[s[0][0], s[2]] for s in subs if len(s[1]) == 1 and Chord(s[1][0]) == c['chord'].name]
+                    s = [[s[0][0], s[2]] for s in subs if len(s[1]) == 1 and Chord(s[1][0]) == c['chord']]
 
                     if len(s) == 1:
                         self.chords[ci]['scale'] = [k]
@@ -916,7 +885,7 @@ class Progression:
                         self.chords[ci]['degree'] = [Scale(k).hasChord(Chord(s[0][0]))]
                     elif len(s) > 1:
                         raise ValueError(
-                            'Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chord'].name)
+                            'Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chord'])
 
     def analyze(self):
         """
@@ -949,18 +918,16 @@ class Progression:
 
 
 
-# todo: replace scale by just name in Chord
-# todo: same for chords?
-# todo: Profile speed
 
+# todo: Profile speed
 # python -m cProfile -o base.prof base.py
 # snakeviz.exe base.prof
-
 # todo: scalecolors find a better way to handle.
+
 
 # self = Progression('Misty')
 # self.analyze()
-#self.print()
+# self.print()
 # self.plot()
 
 # self.plot(barsPerRow=8)
