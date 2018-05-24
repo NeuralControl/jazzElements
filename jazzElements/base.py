@@ -392,6 +392,26 @@ class Chord:
         avoidNotes = [an for an in notesOrScale if an in avoid]
         return [str(gt) for gt in avoidNotes] if asStr else avoidNotes
 
+    def relativeMinor(self, asStr=False):
+        if self.intervals()[1]==4:
+            if self.type=='':
+                chr= Chord((self.root - 3).name+'m')
+            else:
+                chr= Chord((self.root - 3).name+self.type.replace('M','m'))
+            return chr.name if asStr else chr
+        else:
+            raise ValueError('Cannot calculate relative minor chord')
+
+    def relativeMajor(self, asStr=False):
+        if self.intervals()[1]==3:
+            if self.type=='':
+                chr= Chord((self.root + 3).name+'M')
+            else:
+                chr= Chord((self.root + 3).name+self.type.replace('m','M'))
+            return chr.name if asStr else chr
+        else:
+            raise ValueError('Cannot calculate relative minor chord')
+
     def __str__(self):
         if not self.intervals():
             return '{}{} ? | ?'.format(self.root.name, self.type)
@@ -808,7 +828,7 @@ class Progression:
                 if np.array_equal(lst[i:i + len(seq)], seq):
                     idx.append((i, i + len(seq) - 1))
             return idx
-        lstCadences = ['3-6-2-5-1', '6-2-5-1', '1-6-2-5', '2-5-1', '2-5', '5-1']
+        lstCadences = ['3-6-2-5-1', '1-6-2-5-1', '6-2-5-1', '1-6-2-5', '2-5-1', '2-5', '5-1']
         chords = [c['chord'] for c in self.chords]
         cadLst = []
         idx = 0
@@ -924,14 +944,12 @@ class Progression:
 
 
 # todo: Profile speed
-# python -m cProfile -o base.prof base.py
-# snakeviz.exe base.prof
 # todo: scalecolors find a better way to handle.
 
 
-self = Progression('Giant Steps')
-self.analyze()
-self.print()
-self.plot()
+# self = Progression('All Of Me')
+# self.analyze()
+# self.print()
+# self.plot()
 
 # self.plot(barsPerRow=8)
