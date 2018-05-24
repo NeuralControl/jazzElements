@@ -109,6 +109,9 @@ progressions = \
             '|Am7|D7|GM7|%|Am7|D7|GM7|%'
             '|F#m7|B7|EM7|C7#5|Fm7|Bbm7|Eb7|AbM7'
             '|DbM7|Dbm7|Cm7|Bo7|Bbm7|Eb7|AbM7|G7,C7|',
+        
+        'Giant Steps':'|DbM7,E9|AM7,C9|FM7|Bm9,E9|AM7,C9|FM7,Ab9|DbM7|Gm9,C9|FM9|Bm9,E9|AM7|Ebm7,Ab9|DbM7|Gm9,C9|FM7|Ebm7,Ab9|',
+
         'unitTest 2-5-1 to 6-2-5-1':
             '|Dm7|Dm7|Eø|Am7|Dm7|G7|CM7|CM7|',
     }
@@ -856,7 +859,8 @@ class Progression:
 
     def findIsolated(self):
         currentKey = []
-        mainKey = self.countKeys()[0][0]
+
+        mainKey = self.countKeys()[0][0] if self.countKeys() else []
 
         for ci, c in enumerate(self.chords):
             if 'scale' in c:
@@ -925,9 +929,9 @@ class Progression:
 # todo: scalecolors find a better way to handle.
 
 
-# self = Progression('Misty')
-# self.analyze()
-# self.print()
-# self.plot()
+self = Progression('Giant Steps')
+self.analyze()
+self.print()
+self.plot()
 
 # self.plot(barsPerRow=8)
