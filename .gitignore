@@ -144,4 +144,4 @@ cmake-build-debug/
 .idea/sonarlint
 
 # perso
-scripts/
+# scripts/
