@@ -310,7 +310,6 @@ class Chord:
         'm13': [0, 3, 7, 10, 14, 17, 21],
         'm7-9': [0, 3, 7, 10, 13],
 
-
         '+5': [0, 4, 8],
         'M': [0, 4, 7],
         '': [0, 4, 7],
@@ -319,7 +318,9 @@ class Chord:
         '6*9': [0, 4, 7, 9, 14],
         '7': [0, 4, 7, 10],
         '7-5': [0, 4, 6, 10],
+        '7b5': [0, 4, 6, 10],
         '7-9': [0, 4, 7, 10, 13],
+        '7b9': [0, 4, 7, 10, 13],
         '9': [0, 4, 7, 10, 14],
         '7-10': [0, 4, 7, 10, 15],
         '11': [0, 4, 7, 10, 14, 17],
@@ -331,18 +332,17 @@ class Chord:
         '7+5': [0, 4, 8, 10],
         '7+5-9': [0, 4, 8, 10, 13],
 
+        'sus4': [0, 5, 7],
         '7sus4': [0, 5, 7, 10],
         '9sus4': [0, 5, 7, 10, 14],
 
-        'o': [0, 3, 6],
-        'o7': [0, 3, 6],
-        'dim': [0, 3, 6],
-        'ø': [0, 3, 6, 10],
-        'm7-5': [0, 3, 6, 10],
-        'hdim': [0, 3, 6, 10],
-        '7sus2': [0, 2, 7, 10],
         'sus2': [0, 2, 7],
-        'sus4': [0, 5, 7],
+        '7sus2': [0, 2, 7, 10],
+        '9sus2': [0, 2, 7, 10, 14],
+
+        'o': [0, 3, 6, 9],
+        'ø': [0, 3, 6, 10],
+
         '9+5': [0, 10, 13],
         'm9+5': [0, 10, 14],
         'm+5': [0, 3, 8],
@@ -351,6 +351,7 @@ class Chord:
         'm7+5': [0, 3, 8, 10],
         'm7+5-9': [0, 3, 8, 10, 13],
     }
+    chrReplace = [('maj', 'M'), ('Maj', 'M'), ('hdim', 'ø'), ('m7-5', 'ø'), ('m7b5', 'ø'), ('dim', 'o')]
 
     def update(self):
         self.notes = []
@@ -380,6 +381,10 @@ class Chord:
         if isinstance(nameOrNotes, str):
             root, alt, chrType = re.search(self.regexChord, nameOrNotes).groups()
             self.root = Note(root + alt)
+
+            for r in self.chrReplace:
+                chrType = chrType.replace(r[0],r[1])
+
             self.type = chrType
 
         elif isinstance(nameOrNotes, Chord):
@@ -1008,3 +1013,4 @@ class Progression:
 # self.plot()
 
 # self.plot(barsPerRow=8)
+
