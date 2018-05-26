@@ -1,5 +1,3 @@
-from jazzElements.base import *
-
 # Can we simplify chords definitions?
 
 
@@ -64,39 +62,62 @@ typesLst = {
     '9sus2': '1-2-5-b7-2',
     # misc:
     '5': '1-3',
-
 }
 
+# chrRegex = re.compile(r"([A-Ga-gXx]+)([#b♭♯]*)"+3*r"([(),]?no[0-9]+|\(?,?add[0-9]+\)?,?|maj|min|m|M|aug|dim|hdim|sus|o|ø|[/]*[#b♭♯+-]*\d*[0-9]*)")
+# def findChords(chrStr):
+#     return [s for s in re.findall(chrRegex , chrStr.replace('(','').replace(')','').replace('.',''))[0] if len(s)]
 
-accidentals = "(b|bb)?",
-chords = "(m|maj7|maj|min7|min|sus)?",
-suspends = "(1|2|3|4|5|6|7|8|9)?",
-sharp = "(#)?",
-regex = new
-RegExp("\\b" + notes + accidentals + chords + suspends + "\\b" + sharp, "g");
+intStr = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7', '8', 'b9', '9', '#9', '10', '11', '#11', '12', '#12', '13']
 
-def testMyTypes():
-    root = 'C♭'
-    ok=[]
-    nok=[]
-    for chr in typesLst:
-        try:
-            result = ','.join(findChords(root + chr)[0])
-            print('{:15} | {}'.format(root + chr, result))
-            ok.append(root + chr)
-        except:
-            #print('{:15} | {}'.format(root + chr, 'FAIL'))
-            nok.append(root+chr)
-#    print('ok   :'+','.join(ok))
-    print('nok  :'+','.join(nok))
-    print('ok: ' + str(100 * len(ok) / len(typesLst)))
+intervals={
+    '1': [0],
+    '5': [0, 7],
 
-def findChords(chrStr):
-    # todo: dont forget to compile
-    notes = "([CDEFGABX])"
-    accidentals = "(#|#|b|♭|♯)*"
-    chords = "(maj|min|m|sus[0-9]*|aug|dim|m|M|o|hdim|ø|\+|\-)*"
-    additions = "([0-9]*|sus[0-9]*|add[0-9]*|no[0-9]*)*"
-    return re.findall(r'\b' + notes + accidentals + chords + additions + r'(?!\w)', chrStr.replace(',',''))
+    'm': [0, 3, 7],
+    'm6': [0, 3, 7, 9],
+    'm7': [0, 3, 7, 10],
+    'm9': [0, 3, 7, 10, 14],
+    'm11': [0, 3, 7, 10, 14, 17],
+    'm11+': [0, 3, 7, 10, 14, 18],
+    'm6*9': [0, 3, 7, 9, 14],
+    'm13': [0, 3, 7, 10, 14, 17, 21],
+    'm7-9': [0, 3, 7, 10, 13],
+    'm+5': [0, 3, 8],
+    'm7-5': [0, 3, 6, 10],
+    'm7+5': [0, 3, 8, 10],
+    'm7+5-9': [0, 3, 8, 10, 13],
 
-testMyTypes()
+    '+5': [0, 4, 8],
+    'major': [0, 4, 7],
+    '6': [0, 4, 7, 9],
+    '6*9': [0, 4, 7, 9, 14],
+    '7': [0, 4, 7, 10],
+    '7-5': [0, 4, 6, 10],
+    '7-9': [0, 4, 7, 10, 13],
+    '9': [0, 4, 7, 10, 14],
+    '7-10': [0, 4, 7, 10, 15],
+    '11': [0, 4, 7, 10, 14, 17],
+    '11+': [0, 4, 7, 10, 14, 18],
+    '13': [0, 4, 7, 10, 14, 17, 21],
+    'maj7': [0, 4, 7, 11],
+    'maj9': [0, 4, 7, 11, 14],
+    'maj11': [0, 4, 7, 11, 14, 17],
+    '7+5': [0, 4, 8, 10],
+    '7+5-9': [0, 4, 8, 10, 13],
+
+    '7sus4': [0, 5, 7, 10],
+    '9sus4': [0, 5, 7, 10, 14],
+
+    'dim': [0, 3, 6],
+    '7sus2': [0, 2, 7, 10],
+    'sus2': [0, 2, 7],
+    'sus4': [0, 5, 7],
+    '9+5': [0, 10, 13],
+    'm9+5': [0, 10, 14],
+}
+for i in intervals:
+    print('{}  {}'.format(i,','.join([intStr[j] for j in intervals[i]])))
+
+
+

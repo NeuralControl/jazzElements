@@ -2,6 +2,7 @@
 """
 import re
 from itertools import permutations
+
 from matplotlib import gridspec, patches
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.pyplot import *
@@ -109,8 +110,8 @@ progressions = \
             '|Am7|D7|GM7|%|Am7|D7|GM7|%'
             '|F#m7|B7|EM7|C7#5|Fm7|Bbm7|Eb7|AbM7'
             '|DbM7|Dbm7|Cm7|Bo7|Bbm7|Eb7|AbM7|G7,C7|',
-        
-        'Giant Steps':'|DbM7,E9|AM7,C9|FM7|Bm9,E9|AM7,C9|FM7,Ab9|DbM7|Gm9,C9|FM9|Bm9,E9|AM7|Ebm7,Ab9|DbM7|Gm9,C9|FM7|Ebm7,Ab9|',
+
+        'Giant Steps': '|DbM7,E9|AM7,C9|FM7|Bm9,E9|AM7,C9|FM7,Ab9|DbM7|Gm9,C9|FM9|Bm9,E9|AM7|Ebm7,Ab9|DbM7|Gm9,C9|FM7|Ebm7,Ab9|',
 
         'unitTest 2-5-1 to 6-2-5-1':
             '|Dm7|Dm7|Eø|Am7|Dm7|G7|CM7|CM7|',
@@ -223,11 +224,10 @@ class Chord:
     """
 
     """
+    intLst = ['1', '♭2', '2', '♭3', '3', '4', '♭5', '5', '♯5', '6', '♭7', '7', '8', '♭9', '9', '♯9', '10', '11', '♯11',
+              '12', '♯12', '13']
 
-    intervalsLst = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7', '8',
-                    'b9', '9', '#9', '10', '11', '#11', '12', '#12', '13', 'b14', '14', '15']
-
-    typesLst = {
+    EXtypesLst = {
         # Major
         '': '1-3-5',
         'M6': '1-3-5-6',
@@ -248,6 +248,7 @@ class Chord:
         'm9(no7)': '1-b3-5-2',
         'm7b9': '1-b3-5-b7-b2',
         'm7b5b9': '1-b3-b5-b7-b2',
+        'øb9': '1-b3-b5-b7-b2',
         'm11': '1-b3-5-b7-2-4',
 
         # Dominant
@@ -276,6 +277,7 @@ class Chord:
         u'\u00F8': '1-b3-b5-b7',
         'hdim': '1-b3-b5-b7',
         'm7b5': '1-b3-b5-b7',
+        'ø': '1-b3-b5-b7',
         # augmented
         'aug': '1-3-#5',
         '+': '1-3-#5',
@@ -290,7 +292,77 @@ class Chord:
         '5': '1-3',
 
     }
+
+
     regexChord = re.compile(r"([a-zA-Z]{1})([#b♭♯]*)(.*)")  # Regular expression to understand Chord Notation
+
+    chrLst = {
+        '1': [0],
+        '5': [0, 7],
+
+        'm': [0, 3, 7],
+        'm6': [0, 3, 7, 9],
+        'm7': [0, 3, 7, 10],
+        'm9': [0, 3, 7, 10, 14],
+        'm11': [0, 3, 7, 10, 14, 17],
+        'm11+': [0, 3, 7, 10, 14, 18],
+        'm6*9': [0, 3, 7, 9, 14],
+        'm13': [0, 3, 7, 10, 14, 17, 21],
+        'm7-9': [0, 3, 7, 10, 13],
+
+
+        '+5': [0, 4, 8],
+        'M': [0, 4, 7],
+        '': [0, 4, 7],
+        'M6': [0, 4, 7, 9],
+        '6': [0, 4, 7, 9],
+        '6*9': [0, 4, 7, 9, 14],
+        '7': [0, 4, 7, 10],
+        '7-5': [0, 4, 6, 10],
+        '7-9': [0, 4, 7, 10, 13],
+        '9': [0, 4, 7, 10, 14],
+        '7-10': [0, 4, 7, 10, 15],
+        '11': [0, 4, 7, 10, 14, 17],
+        '11+': [0, 4, 7, 10, 14, 18],
+        '13': [0, 4, 7, 10, 14, 17, 21],
+        'M7': [0, 4, 7, 11],
+        'M9': [0, 4, 7, 11, 14],
+        'M11': [0, 4, 7, 11, 14, 17],
+        '7+5': [0, 4, 8, 10],
+        '7+5-9': [0, 4, 8, 10, 13],
+
+        '7sus4': [0, 5, 7, 10],
+        '9sus4': [0, 5, 7, 10, 14],
+
+        'o': [0, 3, 6],
+        'o7': [0, 3, 6],
+        'dim': [0, 3, 6],
+        'ø': [0, 3, 6, 10],
+        'm7-5': [0, 3, 6, 10],
+        'hdim': [0, 3, 6, 10],
+        '7sus2': [0, 2, 7, 10],
+        'sus2': [0, 2, 7],
+        'sus4': [0, 5, 7],
+        '9+5': [0, 10, 13],
+        'm9+5': [0, 10, 14],
+        'm+5': [0, 3, 8],
+        'aug': [0, 3, 8],
+        '+': [0, 3, 8],
+        'm7+5': [0, 3, 8, 10],
+        'm7+5-9': [0, 3, 8, 10, 13],
+    }
+
+    def update(self):
+        self.notes = []
+        self.intArr = []
+        self.intStr = []
+        if self.type not in self.chrLst:
+            return
+        self.intArr = self.chrLst[self.type]
+        self.intStr = [self.intLst[n] for n in self.intArr]
+        if self.intArr:
+            self.notes = [Note(self.root.name, i - 12 if '♭' in iStr else i) for i, iStr in
+                          zip(self.intArr, self.intStr)]
 
     def __init__(self, nameOrNotes, checkInv=True):
         """
@@ -301,6 +373,10 @@ class Chord:
             c=Chord('Em7')
             c=Chord(['C','E','G'])
         """
+
+        self.notes = []
+        self.intArr = []
+        self.intStr = []
         if isinstance(nameOrNotes, str):
             root, alt, chrType = re.search(self.regexChord, nameOrNotes).groups()
             self.root = Note(root + alt)
@@ -318,8 +394,7 @@ class Chord:
                 seq = [nameOrNotes]
             for lst in seq:
                 intervals = [n if n >= 0 else n + 12 for n in [Note(n) - Note(lst[0]) for n in lst]]
-                intervals = '-'.join([Chord.intervalsLst[i] for i in intervals])
-                chrdType.extend([lst[0] + k for k, v in self.typesLst.items() if v == intervals])
+                chrdType.extend([lst[0]+cType for cType in self.chrLst if intervals==self.chrLst[cType]])
 
             if len(chrdType) > 1:
                 chrdType.sort(key=len)  # todo: Best match shouldnt be done this way
@@ -334,35 +409,14 @@ class Chord:
                 self.type = '?'
 
         self.name = str(self.root) + self.type
+        self.update()
 
-    def intervals(self, asStr=False):
-        """
-        Return intervals of the chord
-        Args:
-            asStr: if True, returns as strings list, otherwise as list of steps
-        """
-        if self.type not in self.typesLst:
-            return None
-        if asStr:
-            return self.typesLst[self.type].split('-')
-        else:
-            return [self.intervalsLst.index(i) for i in self.typesLst[self.type].split('-')]
 
     def plot(self, ax=0, pos=None, nbOctaves=1, showName=True):
         if pos is None:
             pos = [0, 0, 100, 40]
-        if self.notes()!=[]:
-            plotNotes(self.notes(), ax=ax, pos=pos, nbOctaves=nbOctaves, name=showName * self.name)
-
-    def notes(self, asStr=False):
-        if not self.intervals():
-            return []
-        I = [i - 12 * ('b' in iName) for i, iName in zip(self.intervals(), self.intervals(asStr=True))]
-        # hack to keep flat intervals flat
-        if asStr:
-            return [str(Note(self.root) + i) for i in I]
-        else:
-            return [Note(self.root) + i for i in I]
+        if self.notes != []:
+            plotNotes(self.notes, ax=ax, pos=pos, nbOctaves=nbOctaves, name=showName * self.name)
 
     def guideTones(self, asStr=False):
         """
@@ -374,60 +428,62 @@ class Chord:
         Returns:
             list of guide tones
         """
-        guideTonesLst = ['b3', '3', 'b7', '7']
-        guideTones = [gt for i, gt in zip(self.intervals(asStr=True), self.notes()) if i in guideTonesLst]
-        return [str(gt) for gt in guideTones] if asStr else guideTones
+        if asStr:
+            [self.notes[1].name if len(self.notes)>=2 else [], self.notes[3].name if len(self.notes)>=4 else []  ]
+        else:
+            return [self.notes[1] if len(self.notes)>=2 else [], self.notes[3] if len(self.notes)>=4 else []  ]
 
-    def avoidNotes(self, notesOrScale, asStr=False):
-        """
-        Avoid notes are notes one step above a chord note, use sparingly and while passing
-        """
-        if isinstance(notesOrScale, Scale):
-            notesOrScale = notesOrScale.notes()
-        if isinstance(notesOrScale, str):
-            if ' ' in notesOrScale:
-                notesOrScale = Scale(notesOrScale).notes()
 
-        avoid = [n + 1 for n in self.notes()]
-        avoidNotes = [an for an in notesOrScale if an in avoid]
-        return [str(gt) for gt in avoidNotes] if asStr else avoidNotes
+    # def avoidNotes(self, notesOrScale, asStr=False):
+    #     """
+    #     Avoid notes are notes one step above a chord note, use sparingly and while passing
+    #     """
+    #     if isinstance(notesOrScale, Scale):
+    #         notesOrScale = notesOrScale.notes()
+    #     if isinstance(notesOrScale, str):
+    #         if ' ' in notesOrScale:
+    #             notesOrScale = Scale(notesOrScale).notes()
+    #
+    #     avoid = [n + 1 for n in self.notes()]
+    #     avoidNotes = [an for an in notesOrScale if an in avoid]
+    #     return [str(gt) for gt in avoidNotes] if asStr else avoidNotes
 
     def relativeMinor(self, asStr=False):
-        if self.intervals()[1]==4:
-            if self.type=='':
-                chr= Chord((self.root - 3).name+'m')
+        if self.intArr()[1] == 4:
+            if self.type == '':
+                chr = Chord((self.root - 3).name + 'm')
             else:
-                chr= Chord((self.root - 3).name+self.type.replace('M','m'))
+                chr = Chord((self.root - 3).name + self.type.replace('M', 'm'))
             return chr.name if asStr else chr
         else:
             raise ValueError('Cannot calculate relative minor chord')
 
+
     def relativeMajor(self, asStr=False):
-        if self.intervals()[1]==3:
-            if self.type=='':
-                chr= Chord((self.root + 3).name+'M')
+        if self.intArr()[1] == 3:
+            if self.type == '':
+                chr = Chord((self.root + 3).name + 'M')
             else:
-                chr= Chord((self.root + 3).name+self.type.replace('m','M'))
+                chr = Chord((self.root + 3).name + self.type.replace('m', 'M'))
             return chr.name if asStr else chr
         else:
             raise ValueError('Cannot calculate relative minor chord')
 
     def __str__(self):
-        if not self.intervals():
+        if not self.notes:
             return '{}{} ? | ?'.format(self.root.name, self.type)
         return '{}{} {} | {}'.format(self.root.name, self.type,
-                                     '-'.join(self.intervals(asStr=True)),
-                                     ' '.join([str(n) for n in self.notes()]))
+                                     '-'.join(self.intStr),
+                                     ' '.join([str(n) for n in self.notes]))
 
     def __repr__(self):
         return self.__str__()
 
     def __eq__(self, chordOrStr):
-        x = Chord(chordOrStr).notes(asStr=True)
-
-        y = self.notes(asStr=True)
-        if x and y:
-            return set(x)==set(y)
+        x = Chord(chordOrStr).notes
+        y = self.notes
+        if x and y and len(x) == len(y) and all([n in y for n in x]):
+            return True
         else:
             return False
 
@@ -537,7 +593,7 @@ class Scale():
             ax = fig.add_subplot(grid[i])
             ax.set_xlim(0, 100)
             ax.set_ylim(0, 60)
-            plotNotes(c.notes(), pos=[0, 0, 100, 60], name=c.name + '  ' + d.replace(' ', ' $^{') + '}$', ax=ax)
+            plotNotes(c.notes, pos=[0, 0, 100, 60], name=c.name + '  ' + d.replace(' ', ' $^{') + '}$', ax=ax)
             axis('off')
             i += 1
         suptitle('Chords built from ' + self.root.name + ' ' + self.mode);
@@ -622,7 +678,7 @@ class Scale():
 
     def chordsRoman(self, nbNotes=4):
         return [(self.chrDegLst[d].lower() + c.type
-                 if 3 in c.intervals() else self.chrDegLst[d] + c.type).strip()
+                 if 3 in c.intArr else self.chrDegLst[d] + c.type).strip()
                 for d, c in enumerate(self.chords(nbNotes=nbNotes, asStr=False))]
 
     def hasChord(self, chord):
@@ -635,12 +691,12 @@ class Scale():
             boolean
         """
         if isinstance(chord, str): chord = Chord(chord)
-        if chord.notes() ==[]: return False
+        if chord.notes == []: return False
 
-        if all([n in self.notes() for n in chord.notes()]):
-            if chord in self.chords(nbNotes=len(chord.notes())):
-                return self.chordsRoman(nbNotes=len(chord.notes()))[
-                    self.chords(nbNotes=len(chord.notes())).index(chord)]
+        if all([n in self.notes() for n in chord.notes]):
+            if chord in self.chords(nbNotes=len(chord.notes)):
+                return self.chordsRoman(nbNotes=len(chord.notes))[
+                    self.chords(nbNotes=len(chord.notes)).index(chord)]
             else:
                 print('Found {} in {} but cannot calculate it'.format(chord.name, self.name))
 
@@ -742,7 +798,8 @@ class Progression:
                                   head_length=20, fc='k', lw=1)
             else:
                 if 'fn' in self.chords[chr]:
-                    text(xChr + wChr / 2, yChr + cadh / 2, '/'.join(self.chords[chr]['fn']),color='k', va='center', ha='center',
+                    text(xChr + wChr / 2, yChr + cadh / 2, '/'.join(self.chords[chr]['fn']), color='k', va='center',
+                         ha='center',
                          fontSize=10, weight='bold')
 
         if plotType == 'kbd':
@@ -828,13 +885,14 @@ class Progression:
                 if np.array_equal(lst[i:i + len(seq)], seq):
                     idx.append((i, i + len(seq) - 1))
             return idx
+
         lstCadences = ['3-6-2-5-1', '1-6-2-5-1', '6-2-5-1', '1-6-2-5', '2-5-1', '2-5', '5-1']
         chords = [c['chord'] for c in self.chords]
         cadLst = []
         idx = 0
         # Find all the possible known minor or major cadences:
         for root in Note.chrFlat:
-            #for mode in Scale.modesLst:  # ['Ion', 'Aeo']:
+            # for mode in Scale.modesLst:  # ['Ion', 'Aeo']:
             for mode in ['Ion', 'Aeo']:
                 key = root + ' ' + mode
                 keyChords = Scale(key).chords(3) + Scale(key).chords(4)
@@ -886,7 +944,7 @@ class Progression:
             if 'scale' in c:
                 currentKey = c['scale'][0]
 
-            nextKey = [c.get('scale', [[]])[0] for c in self.chords[(ci + 1):]][0] if ci<len(self.chords)-1 else []
+            nextKey = [c.get('scale', [[]])[0] for c in self.chords[(ci + 1):]][0] if ci < len(self.chords) - 1 else []
 
             for k in [currentKey, nextKey, mainKey]:
 
@@ -939,9 +997,6 @@ class Progression:
         """
         self.findCadences()
         self.findIsolated()
-
-
-
 
 # todo: Profile speed
 # todo: scalecolors find a better way to handle.
