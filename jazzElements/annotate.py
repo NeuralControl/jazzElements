@@ -1,5 +1,7 @@
-from jazzElements.base import Note, Scale, Chord, Progression
-
+from jazzElements.scale import Scale
+from jazzElements.chord import Chord
+from jazzElements.note import Note
+import warnings
 
 class CadenceGraph():
     # todo: add T, SD, D
@@ -43,7 +45,6 @@ class CadenceGraph():
                     F.append(f)
         return F
 
-
 class Annotate():
     def __init__(self, chords):
         self.name = ''
@@ -73,7 +74,6 @@ class Annotate():
                 ','.join(self.degree[c]),
                 ','.join(self.scale[c]),
                 ','.join(self.cadence[c])))
-
 
 class annGraph(Annotate):
     def __init__(self, chords):
@@ -146,10 +146,17 @@ class annGraph(Annotate):
     def run(self, reduce=True):
         self.annChords(reduce=reduce)
 
+# from jazzElements.progression import Progression
+# prg=Progression('Misty')
+# ann=annGraph([chr['chord'] for chr in prg.chords])
+# ann.run(reduce=True)
+#
+#
+# import pandas as pd
+# df=pd.DataFrame(data=[[chr.name for chr in ann.chords],ann.function,ann.degree,ann.scale,ann.cadence],
+#                 index=['chr','fn','deg','sca','cad']).T
+#
 
-prg = Progression('My Romance')
-chords = [c['chord'] for c in prg.chords]
 
-self = annGraph(chords)
-self.run(True)
-self.print()
+
+

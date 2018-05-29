@@ -1,4 +1,12 @@
+import re
 
+import numpy as np
+from matplotlib import gridspec
+from matplotlib.pyplot import figure, axis, suptitle
+
+from jazzElements.chord import Chord
+from jazzElements.note import Note
+from jazzElements.viz import plotNotes
 
 class Scale():
     modesLst = ['Ion', 'Dor', 'Phr', 'Lyd', 'Mix', 'Aeo', 'Loc']
