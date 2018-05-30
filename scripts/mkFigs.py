@@ -1,4 +1,6 @@
-from jazzElements.base import *
+from matplotlib.pyplot import *
+from jazzElements.progression import Progression,progressions
+
 
 def plotKnownProgressions(plotType='fn',tgt='d:\\Code\\jazzElements\\img\\'):
     """
@@ -7,12 +9,15 @@ def plotKnownProgressions(plotType='fn',tgt='d:\\Code\\jazzElements\\img\\'):
         plotType: 'fn' | 'kbd'
     """
     for song in progressions:
-        print('== '+song+' ==')
-        prg = Progression(song)
-        prg.analyze()
-        prg.plot(plotType)
-        savefig(tgt + plotType+'\\' + song.replace(' ',''))
-        close('all')
+        for method in ['graph','std']:
+            print('== '+song+' ==')
+            prg = Progression(song)
+            prg.annotate(method=method,reduce=True)
+            prg.plot(plotType)
+            savefig(tgt + plotType+'\\' + song.replace(' ','')+' '+method)
+            close('all')
 
 # plotKnownProgressions('kbd')
-# plotKnownProgressions('fn')
+plotKnownProgressions('fn')
+
+

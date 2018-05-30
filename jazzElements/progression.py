@@ -4,7 +4,7 @@ from matplotlib.pyplot import *
 from jazzElements.note import Note
 from jazzElements.chord import Chord
 from jazzElements.scale import Scale
-#from jazzElements.annotate import annGraph
+from jazzElements.annotate import annGraph
 
 
 progressions = \
@@ -40,6 +40,7 @@ progressions = \
 
         'unitTest 2-5-1 to 6-2-5-1':
             '|Dm7|Dm7|Eø|Am7|Dm7|G7|CM7|CM7|',
+
     }
 
 class Progression:
@@ -114,7 +115,7 @@ class Progression:
                         ax.add_patch(bgd)
 
                         if chr == 0 or s not in self.chords[chr - 1].get('scale', []):
-                            text(xChr + 2, yChr + cadh / 2 + si * cadh, s.split(' ')[0] + s.split(' ')[1].lower(),
+                            text(xChr + 2, yChr + cadh / 2 + si * cadh, s,
                                  color='k', va='center',
                                  ha='left', fontSize=10, weight='bold')
 
@@ -129,9 +130,11 @@ class Progression:
                         text(xChr + wChr / 2, yChr + ci * cadh + cadh / 2, c[0], color='k', va='center', ha='center',
                              fontSize=10, weight='bold')
                     else:
-                        if c[1] == len(c[0].split('-')) - 1:
+
+                        if len(c)>1 and c[1] == len(c[0].split('-')) - 1:
                             arrow(xChr + 50, yChr + ci * cadh + cadh / 2, wChr - 100, 0, head_width=15, head_length=20,
                                   fc='k', lw=1)
+
                         else:
                             arrow(xChr + 50, yChr + ci * cadh + cadh / 2, wChr - 100 - 20, 0, head_width=0,
                                   head_length=20, fc='k', lw=1)
@@ -308,7 +311,21 @@ class Progression:
                         raise ValueError(
                             'Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chord'])
 
-    def analyze(self):
+    def annotate(self,method='graph',reduce=True):
+
+        if method=='graph':
+            ann=annGraph([chr['chord'] for chr in self.chords])
+            ann.run(reduce=True)
+            for ci,chr in enumerate(self.chords):
+                if ann.function[ci]:
+                    self.chords[ci]['fn']=ann.function[ci]
+                    self.chords[ci]['scale']=ann.scale[ci]
+                    self.chords[ci]['cadence']=ann.cadence[ci]
+                    self.chords[ci]['degree']=ann.function[ci]
+        elif method == 'std':
+            self.findCadences()
+            self.findIsolated()
+
         """
         Harmonic Analysis of the chord progression
         Args:
@@ -334,6 +351,8 @@ class Progression:
         - or in the second level: We use the functionally important chords
         then we can go into crazy stuff i.e. side slipping, cycled patterns, chromatic runs etc...
         """
-        self.findCadences()
-        self.findIsolated()
+
+prg=Progression('My Romance')
+prg.annotate()
+prg.plot()
 
