@@ -1,5 +1,3 @@
-from jazzElements.scale import Scale
-from jazzElements.chord import Chord
 from jazzElements.note import Note
 
 

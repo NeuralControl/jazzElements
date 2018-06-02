@@ -1,7 +1,9 @@
-from jazzElements.scale import Scale
+import pandas as pd
+
 from jazzElements.chord import Chord
 from jazzElements.note import Note
-import warnings
+from jazzElements.scale import Scale
+
 
 class CadenceGraph():
     # todo: add T, SD, D
@@ -45,25 +47,26 @@ class CadenceGraph():
                     F.append(f)
         return F
 
+
 class Annotate():
     def __init__(self, chords):
         self.name = ''
         self.description = ''
+        self.ann = pd.DataFrame(columns=['fn','deg','sca','cad'])
         self.chords = [Chord(c) for c in chords]
         self.cleanup()
 
     def cleanup(self):
-        self.function = [[] for c in self.chords]
-        self.degree = [[] for c in self.chords]
-        self.scale = [[] for c in self.chords]
-        self.cadence = [[] for c in self.chords]
+        self.fn = [[] for c in self.chords]
+        self.deg =  [[] for c in self.chords]
+        self.sca =  [[] for c in self.chords]
+        self.cad =  [[] for c in self.chords]
 
     def run(self, reduce=True):
         """
         Fills self.ann with the annotations
         format: (<function>,<degree>,<scale>,<cadence>)
         """
-        self.cleanup()
 
     def print(self):
         print('{:7}|{:3}|{:3}|{:3}|{:15}'.format('chord', 'fn', 'deg', 'sca', 'cadence'))
@@ -74,6 +77,7 @@ class Annotate():
                 ','.join(self.degree[c]),
                 ','.join(self.scale[c]),
                 ','.join(self.cadence[c])))
+
 
 class annGraph(Annotate):
     def __init__(self, chords):
@@ -119,15 +123,6 @@ class annGraph(Annotate):
         ##
         return Seq
 
-    def _annChord(self, pos, v):
-        if pos < len(self.chords):
-            self.function[pos].append(v[0])
-            self.degree[pos].append(v[1])
-            self.scale[pos].append(v[2])
-            self.cadence[pos].append(v[3])
-        else:
-            warnings.warn('error, fix idx issues')
-
     def annotate(self, reduce=True):
         self.cleanup()
         # Find cadences in all keys
@@ -140,21 +135,19 @@ class annGraph(Annotate):
         for x in X:
             if not reduce or not all(used[x[1]:(x[1] + x[0])]):  # All spots are unused
                 for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
-                    self._annChord(c, [CadenceGraph.fnTypes[x[3][ci]], x[3][ci], x[2], '-'.join(x[3])])
+                    self.fn[c].append(CadenceGraph.fnTypes[x[3][ci]])
+                    self.deg[c].append(x[3][ci])
+                    self.sca[c].append(x[2])
+                    self.cad[c].append('-'.join(x[3]))
                     used[c] = True
 
+        self.ann = pd.DataFrame(dict( fn=self.fn, deg=self.deg, sca=self.sca, cad=self.cad))
 
-# from jazzElements.progression import Progression
-# prg=Progression('Misty')
-# ann=annGraph([chr['chord'] for chr in prg.chords])
-# ann.run(reduce=True)
-#
-#
-# import pandas as pd
-# df=pd.DataFrame(data=[[chr.name for chr in ann.chords],ann.function,ann.degree,ann.scale,ann.cadence],
-#                 index=['chr','fn','deg','sca','cad']).T
-#
+"""
+prg = Progression('My Romance')
 
-
-
-
+ann=annGraph(prg.chords['chr'].values)
+self=ann
+ann.annotate(False)
+ann.ann
+"""

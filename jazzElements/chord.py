@@ -260,10 +260,9 @@ class Chord:
 
     def __str__(self):
         if not self.notes:
-            return '{}{} ? | ?'.format(self.root.name, self.type)
-        return '{}{} {} | {}'.format(self.root.name, self.type,
-                                     '-'.join(self.intStr),
-                                     ' '.join([str(n) for n in self.notes]))
+            return '?'
+        else:
+            return self.root.name+self.type
 
     def __repr__(self):
         return self.__str__()

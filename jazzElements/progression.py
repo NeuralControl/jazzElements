@@ -108,26 +108,26 @@ class Progression:
                  bbox=dict(boxstyle='round4', fc='w'), weight=1000)
             cadh = 40
 
-            if 'scale' in chord:
-                for si, s in enumerate(chord['scale']):
+            if 'sca' in chord:
+                for si, s in enumerate(chord['sca']):
                     if len(s):
                         bgd = patches.Rectangle((xChr, yChr + si * cadh), wChr, cadh, fill=True, clip_on=False,
                                                 color=self.scaleColors[s], alpha=1, ec='k')
                         ax.add_patch(bgd)
 
-                        if chr == 0 or s not in self.chords.loc[chr-1].get('scale', []):
+                        if chr == 0 or s not in self.chords.loc[chr-1].get('sca', []):
                             text(xChr + 2, yChr + cadh / 2 + si * cadh, s,
                                  color='k', va='center',
                                  ha='left', fontSize=10, weight='bold')
 
-            if 'degree' in chord:
-                for di, d in enumerate(chord['degree']):
+            if 'deg' in chord:
+                for di, d in enumerate(chord['deg']):
                     text(xChr + wChr, yChr + cadh / 2 + di * cadh - 1, d, color='k',
                          va='center', ha='right', fontSize=10, weight='bold')
 
             if 'cadence' in chord:
-                for ci, c in enumerate(chord['cadence']):
-                    if chr == 0 or c[0] not in [x[0] for x in self.chords.loc[chr - 1].get('cadence', [])]:
+                for ci, c in enumerate(chord['cad']):
+                    if chr == 0 or c[0] not in [x[0] for x in self.chords.loc[chr - 1].get('cad', [])]:
                         text(xChr + wChr / 2, yChr + ci * cadh + cadh / 2, c[0], color='k', va='center', ha='center',
                              fontSize=10, weight='bold')
                     else:
@@ -163,18 +163,17 @@ class Progression:
                                                        (hChr - 50) / 2],
                                                   nbOctaves=1, showName=False)
 
-            if 'scale' in chord:
-                Scale(chord['scale'][0]).plot(ax=ax, pos=[xChr + 5, yChr + 5, min(wChr - 10, 100), (hChr - 50) / 2],
+            if 'sca' in chord and len(chord['sca']):
+                Scale(chord['sca'][0]).plot(ax=ax, pos=[xChr + 5, yChr + 5, min(wChr - 10, 100), (hChr - 50) / 2],
                                               nbOctaves=1,
                                               showName=False)
 
-
     def plotBar(self, b, pos, plotType='fn'):
         xBar, yBar, wBar, hBar = pos
-        wBeat = (wBar - self.sepx * (len(prg.chords['bar']==b) - 1)) / self.beatsPerBar
+        wBeat = (wBar - self.sepx * (len(self.chords['bar']==b) - 1)) / self.beatsPerBar
         nBeats = 0
         ax = gca()
-        for ic, c in prg.chords[prg.chords['bar']==b].iterrows():
+        for ic, c in self.chords[self.chords['bar']==b].iterrows():
             posChr = [xBar + wBeat * nBeats + self.sepx * (ic), yBar, c['beats'] * wBeat, hBar]
             self.plotChord(ax, ic, posChr, plotType=plotType)
             nBeats += c['beats']
@@ -189,8 +188,8 @@ class Progression:
              bbox=dict(boxstyle='round4', fc='k'))
 
     def countKeys(self):
-        if 'scale' in self.chords:
-            s = [val for sublist in self.chords.scale for val in sublist]
+        if 'sca' in self.chords:
+            s = [val for sublist in self.chords.sca for val in sublist]
             s = [(x, s.count(x)) for x in set(s)]
             s.sort(key=lambda s: s[1], reverse=True)
             return s
@@ -316,15 +315,12 @@ class Progression:
         if method == 'graph':
             ann = annGraph(self.chords['chr'].values)
             ann.annotate(reduce=True)
-
-            for v in ['fn','scale','cadence','degree']:
-                if hasattr(ann,v):
-                    self.chords[v]=getattr(ann,v)
+            self.chords=pd.concat([self.chords,ann.ann],1)
 
         elif method == 'std':
             warnings.warn('not implemented yet') # todo: implement the std annotation
-            self.findCadences()
-            self.findIsolated()
+            # self.findCadences()
+            # self.findIsolated()
 
         """
         Harmonic Analysis of the chord progression
@@ -352,7 +348,7 @@ class Progression:
         then we can go into crazy stuff i.e. side slipping, cycled patterns, chromatic runs etc...
         """
 
-prg = Progression('Misty')
-self=prg
+
+prg=Progression('Misty')
 prg.annotate()
-prg.plot()
+prg.plot('kbd')

@@ -10,14 +10,14 @@ def plotKnownProgressions(plotType='fn',tgt='d:\\Code\\jazzElements\\img\\'):
     """
     for song in progressions:
         for method in ['graph','std']:
-            print('== '+song+' ==')
+            print('== '+song+' == ('+method+')')
             prg = Progression(song)
             prg.annotate(method=method,reduce=True)
             prg.plot(plotType)
             savefig(tgt + plotType+'\\' + song.replace(' ','')+' '+method)
             close('all')
 
-# plotKnownProgressions('kbd')
 plotKnownProgressions('fn')
+plotKnownProgressions('kbd')
 
 
