@@ -67,8 +67,9 @@ class Progression:
                         chr = [bi, c, self.beatsPerBar / len(bar.split(','))]
                     chords.append(chr)
 
-        self.chords = pd.DataFrame(chords,columns=['bar','chr','beats'])
+        self.chords = pd.DataFrame(chords, columns=['bar', 'chr', 'beats'])
         self.nbBars = self.chords['bar'].max() + 1
+        self.ann = None
 
     def findScale(self, chr, degree):
         # todo: There must be a better way
@@ -82,20 +83,25 @@ class Progression:
         lastBar = -1
         print('{:4}|{:7}|{:5}|{:10}|{:12}|{:12}'.format(
             'Bar', 'Chord', 'Fn', 'Degree', 'Scale', 'Cadence'))
+        # todo: will crash if no annotation
 
-        for ci,c in self.chords.iterrows():
+        for ci, c in pd.concat([self.chords,self.ann.ann],1).iterrows():
             print('{:4}|{:7}|{:5}|{:10}|{:12}|{:12}'.format(
                 str(c['bar'] + 1) if c['bar'] != lastBar else '',
                 c['chr'],
                 ','.join(c['fn']) if 'fn' in c else '',
-                ','.join(c['degree']) if 'degree' in c else '',
-                ','.join(c['scale']) if 'scale' in c else '',
-                ','.join([cad[0] for cad in c['cadence']]) if 'cadence' in c else '',
+                ','.join(c['deg']) if 'deg' in c else '',
+                ','.join(c['sca']) if 'sca' in c else '',
+                ','.join([cad[0] for cad in c['cad']]) if 'cad' in c else '',
             ))
             lastBar = c['bar']
 
+
+
     def plotChord(self, ax, chr, pos, plotType='fn'):
-        chord=self.chords.loc[chr]
+        chord = self.chords.loc[chr]
+        ann = self.ann.ann.loc[chr] if self.ann else None
+
         xChr, yChr, wChr, hChr = pos
         bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=False, clip_on=False, color='k')
         ax.add_patch(bgd)
@@ -108,26 +114,26 @@ class Progression:
                  bbox=dict(boxstyle='round4', fc='w'), weight=1000)
             cadh = 40
 
-            if 'sca' in chord:
-                for si, s in enumerate(chord['sca']):
+            if 'sca' in ann:
+                for si, s in enumerate(ann['sca']):
                     if len(s):
                         bgd = patches.Rectangle((xChr, yChr + si * cadh), wChr, cadh, fill=True, clip_on=False,
                                                 color=self.scaleColors[s], alpha=1, ec='k')
                         ax.add_patch(bgd)
 
-                        if chr == 0 or s not in self.chords.loc[chr-1].get('sca', []):
+                        if chr == 0 or s not in self.chords.loc[chr - 1].get('sca', []):
                             text(xChr + 2, yChr + cadh / 2 + si * cadh, s,
                                  color='k', va='center',
                                  ha='left', fontSize=10, weight='bold')
 
-            if 'deg' in chord:
-                for di, d in enumerate(chord['deg']):
+            if 'deg' in ann:
+                for di, d in enumerate(ann['deg']):
                     text(xChr + wChr, yChr + cadh / 2 + di * cadh - 1, d, color='k',
                          va='center', ha='right', fontSize=10, weight='bold')
 
-            if 'cadence' in chord:
-                for ci, c in enumerate(chord['cad']):
-                    if chr == 0 or c[0] not in [x[0] for x in self.chords.loc[chr - 1].get('cad', [])]:
+            if 'cadence' in ann:
+                for ci, c in enumerate(ann['cad']):
+                    if chr == 0 or c[0] not in [x[0] for x in self.ann.ann.loc[chr - 1].get('cad', [])]:
                         text(xChr + wChr / 2, yChr + ci * cadh + cadh / 2, c[0], color='k', va='center', ha='center',
                              fontSize=10, weight='bold')
                     else:
@@ -139,8 +145,8 @@ class Progression:
                             arrow(xChr + 50, yChr + ci * cadh + cadh / 2, wChr - 100 - 20, 0, head_width=0,
                                   head_length=20, fc='k', lw=1)
             else:
-                if 'fn' in chord:
-                    text(xChr + wChr / 2, yChr + cadh / 2, '/'.join(chord['fn']), color='k', va='center',
+                if 'fn' in ann:
+                    text(xChr + wChr / 2, yChr + cadh / 2, '/'.join(ann['fn']), color='k', va='center',
                          ha='center',
                          fontSize=10, weight='bold')
 
@@ -159,21 +165,21 @@ class Progression:
                          va='center', ha='center', fontSize=10, weight=1000)
 
             Chord(chord['chr']).plot(ax=ax,
-                                                  pos=[xChr + 5, yChr + 10 + (hChr - 50) / 2, min(wChr - 10, 100),
-                                                       (hChr - 50) / 2],
-                                                  nbOctaves=1, showName=False)
+                                     pos=[xChr + 5, yChr + 10 + (hChr - 50) / 2, min(wChr - 10, 100),
+                                          (hChr - 50) / 2],
+                                     nbOctaves=1, showName=False)
 
-            if 'sca' in chord and len(chord['sca']):
-                Scale(chord['sca'][0]).plot(ax=ax, pos=[xChr + 5, yChr + 5, min(wChr - 10, 100), (hChr - 50) / 2],
-                                              nbOctaves=1,
-                                              showName=False)
+            if 'sca' in ann and len(ann['sca']):
+                Scale(ann['sca'][0]).plot(ax=ax, pos=[xChr + 5, yChr + 5, min(wChr - 10, 100), (hChr - 50) / 2],
+                                            nbOctaves=1,
+                                            showName=False)
 
     def plotBar(self, b, pos, plotType='fn'):
         xBar, yBar, wBar, hBar = pos
-        wBeat = (wBar - self.sepx * (len(self.chords['bar']==b) - 1)) / self.beatsPerBar
+        wBeat = (wBar - self.sepx * (len(self.chords['bar'] == b) - 1)) / self.beatsPerBar
         nBeats = 0
         ax = gca()
-        for ic, c in self.chords[self.chords['bar']==b].iterrows():
+        for ic, c in self.chords[self.chords['bar'] == b].iterrows():
             posChr = [xBar + wBeat * nBeats + self.sepx * (ic), yBar, c['beats'] * wBeat, hBar]
             self.plotChord(ax, ic, posChr, plotType=plotType)
             nBeats += c['beats']
@@ -188,8 +194,8 @@ class Progression:
              bbox=dict(boxstyle='round4', fc='k'))
 
     def countKeys(self):
-        if 'sca' in self.chords:
-            s = [val for sublist in self.chords.sca for val in sublist]
+        if 'sca' in self.ann.ann:
+            s = [val for sublist in self.ann.ann.sca for val in sublist]
             s = [(x, s.count(x)) for x in set(s)]
             s.sort(key=lambda s: s[1], reverse=True)
             return s
@@ -313,12 +319,11 @@ class Progression:
 
     def annotate(self, method='graph', reduce=True):
         if method == 'graph':
-            ann = annGraph(self.chords['chr'].values)
-            ann.annotate(reduce=True)
-            self.chords=pd.concat([self.chords,ann.ann],1)
+            self.ann = annGraph(self.chords['chr'].values)
+            self.ann.annotate(reduce=True)
 
         elif method == 'std':
-            warnings.warn('not implemented yet') # todo: implement the std annotation
+            warnings.warn('not implemented yet')  # todo: implement the std annotation
             # self.findCadences()
             # self.findIsolated()
 
@@ -349,6 +354,6 @@ class Progression:
         """
 
 
-prg=Progression('Misty')
+prg = Progression('Misty')
 prg.annotate()
-prg.plot('kbd')
+prg.print()
