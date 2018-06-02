@@ -1,5 +1,4 @@
 import pandas as pd
-
 from jazzElements.chord import Chord
 from jazzElements.note import Note
 from jazzElements.scale import Scale
@@ -7,7 +6,7 @@ from jazzElements.scale import Scale
 
 class CadenceGraph():
     # todo: add T, SD, D
-
+    ##
     fnLst = {
         'I': [(1, 'M'), (1, 'M7'), (1, 'M9'), (1, 'M6/9'), (1, 'M')],
         'ii': [(2, 'm'), (2, 'm7'), (2, 'm9'), (4, 'M6')],
@@ -52,15 +51,19 @@ class Annotate():
     def __init__(self, chords):
         self.name = ''
         self.description = ''
-        self.ann = pd.DataFrame(columns=['fn','deg','sca','cad'])
-        self.chords = [Chord(c) for c in chords]
+        self.ann = pd.DataFrame(columns=['fn', 'deg', 'sca', 'cad'])
+        if isinstance(chords,pd.DataFrame):
+            self.chords = [Chord(c) for c in chords['chr'].values]
+        else:
+            self.chords = [Chord(c) for c in chords]
+
         self.cleanup()
 
     def cleanup(self):
         self.fn = [[] for c in self.chords]
-        self.deg =  [[] for c in self.chords]
-        self.sca =  [[] for c in self.chords]
-        self.cad =  [[] for c in self.chords]
+        self.deg = [[] for c in self.chords]
+        self.sca = [[] for c in self.chords]
+        self.cad = [[] for c in self.chords]
 
     def run(self, reduce=True):
         """
@@ -73,10 +76,10 @@ class Annotate():
         for c in range(len(self.chords)):
             print('{:7}|{:3}|{:3}|{:3}|{:15}'.format(
                 self.chords[c].name,
-                ','.join(self.function[c]),
-                ','.join(self.degree[c]),
-                ','.join(self.scale[c]),
-                ','.join(self.cadence[c])))
+                ','.join(self.fn[c]),
+                ','.join(self.deg[c]),
+                ','.join(self.sca[c]),
+                ','.join(self.cad[c])))
 
 
 class annGraph(Annotate):
@@ -141,13 +144,6 @@ class annGraph(Annotate):
                     self.cad[c].append('-'.join(x[3]))
                     used[c] = True
 
-        self.ann = pd.DataFrame(dict( fn=self.fn, deg=self.deg, sca=self.sca, cad=self.cad))
+        self.ann = pd.DataFrame(dict(fn=self.fn, deg=self.deg, sca=self.sca, cad=self.cad))
 
-"""
-prg = Progression('My Romance')
 
-ann=annGraph(prg.chords['chr'].values)
-self=ann
-ann.annotate(False)
-ann.ann
-"""

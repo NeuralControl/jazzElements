@@ -4,7 +4,7 @@ import pandas as pd
 from matplotlib import patches
 from matplotlib.pyplot import *
 
-from jazzElements.annotate import annGraph
+from jazzElements.annotate import annGraph, annStandard
 from jazzElements.chord import Chord
 from jazzElements.note import Note
 from jazzElements.scale import Scale
@@ -85,18 +85,16 @@ class Progression:
             'Bar', 'Chord', 'Fn', 'Degree', 'Scale', 'Cadence'))
         # todo: will crash if no annotation
 
-        for ci, c in pd.concat([self.chords,self.ann.ann],1).iterrows():
+        for ci, c in pd.concat([self.chords, self.ann.ann], 1).iterrows():
             print('{:4}|{:7}|{:5}|{:10}|{:12}|{:12}'.format(
                 str(c['bar'] + 1) if c['bar'] != lastBar else '',
                 c['chr'],
                 ','.join(c['fn']) if 'fn' in c else '',
                 ','.join(c['deg']) if 'deg' in c else '',
                 ','.join(c['sca']) if 'sca' in c else '',
-                ','.join([cad[0] for cad in c['cad']]) if 'cad' in c else '',
+                ','.join(c['cad']) if 'cad' in c else '',
             ))
             lastBar = c['bar']
-
-
 
     def plotChord(self, ax, chr, pos, plotType='fn'):
         chord = self.chords.loc[chr]
@@ -131,7 +129,7 @@ class Progression:
                     text(xChr + wChr, yChr + cadh / 2 + di * cadh - 1, d, color='k',
                          va='center', ha='right', fontSize=10, weight='bold')
 
-            if 'cadence' in ann:
+            if 'cad' in ann:
                 for ci, c in enumerate(ann['cad']):
                     if chr == 0 or c[0] not in [x[0] for x in self.ann.ann.loc[chr - 1].get('cad', [])]:
                         text(xChr + wChr / 2, yChr + ci * cadh + cadh / 2, c[0], color='k', va='center', ha='center',
@@ -171,8 +169,8 @@ class Progression:
 
             if 'sca' in ann and len(ann['sca']):
                 Scale(ann['sca'][0]).plot(ax=ax, pos=[xChr + 5, yChr + 5, min(wChr - 10, 100), (hChr - 50) / 2],
-                                            nbOctaves=1,
-                                            showName=False)
+                                          nbOctaves=1,
+                                          showName=False)
 
     def plotBar(self, b, pos, plotType='fn'):
         xBar, yBar, wBar, hBar = pos
@@ -319,13 +317,12 @@ class Progression:
 
     def annotate(self, method='graph', reduce=True):
         if method == 'graph':
-            self.ann = annGraph(self.chords['chr'].values)
-            self.ann.annotate(reduce=True)
+            self.ann = annGraph(self.chords)
 
         elif method == 'std':
-            warnings.warn('not implemented yet')  # todo: implement the std annotation
-            # self.findCadences()
-            # self.findIsolated()
+            self.ann = annStandard(self.chords)
+
+        self.ann.annotate(reduce=True)
 
         """
         Harmonic Analysis of the chord progression
@@ -354,6 +351,10 @@ class Progression:
         """
 
 
-prg = Progression('Misty')
+
+
+prg = Progression('Dm7|G7|CM7|Dm7|D♭7|CM')
 prg.annotate()
 prg.print()
+
+
