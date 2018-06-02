@@ -128,7 +128,7 @@ class annGraph(Annotate):
         else:
             warnings.warn('error, fix idx issues')
 
-    def annChords(self, reduce=True):
+    def annotate(self, reduce=True):
         self.cleanup()
         # Find cadences in all keys
         X = []  # [(<size>,<start>,<key>,<cadence>),...]
@@ -143,8 +143,6 @@ class annGraph(Annotate):
                     self._annChord(c, [CadenceGraph.fnTypes[x[3][ci]], x[3][ci], x[2], '-'.join(x[3])])
                     used[c] = True
 
-    def run(self, reduce=True):
-        self.annChords(reduce=reduce)
 
 # from jazzElements.progression import Progression
 # prg=Progression('Misty')
