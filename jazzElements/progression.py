@@ -4,7 +4,7 @@ import pandas as pd
 from matplotlib import patches
 from matplotlib.pyplot import *
 
-from jazzElements.annotate import annGraph, annStandard
+from jazzElements.annotate import annGraph
 from jazzElements.chord import Chord
 from jazzElements.note import Note
 from jazzElements.scale import Scale
@@ -49,7 +49,18 @@ progressions = \
 class Progression:
     def __init__(self, prg, name=''):
         # todo: chords are now of equal duration within a bar.
-        self.beatsPerBar = 4
+
+        self.cfg = \
+            {
+                'colors': ['#c0d6e4', '#afeeee', '#dddddd', '#ffb6c1', '#e6e6fa', '#f5f5dc', '#ccff00', '#31698a',
+                           '#f08080', '#ffa500', '#008080'] * 2,
+                'barsPerRow': 4,
+                'sepx': 0,
+                'sepy': 20,
+                'beatsPerBar':4,
+
+            }
+
         self.name = name
 
         if '|' not in prg:
@@ -61,15 +72,17 @@ class Progression:
             if len(bar):
                 for c in bar.split(','):
                     if c == '%':
-                        chr = [bi, chords[-1][1], self.beatsPerBar / len(bar.split(','))]
+                        chr = [bi, chords[-1][1], self.cfg['beatsPerBar'] / len(bar.split(','))]
 
                     else:
-                        chr = [bi, c, self.beatsPerBar / len(bar.split(','))]
+                        chr = [bi, c, self.cfg['beatsPerBar'] / len(bar.split(','))]
                     chords.append(chr)
 
         self.chords = pd.DataFrame(chords, columns=['bar', 'chr', 'beats'])
         self.nbBars = self.chords['bar'].max() + 1
         self.ann = None
+
+
 
     def findScale(self, chr, degree):
         # todo: There must be a better way
@@ -116,7 +129,7 @@ class Progression:
                 for si, s in enumerate(ann['sca']):
                     if len(s):
                         bgd = patches.Rectangle((xChr, yChr + si * cadh), wChr, cadh, fill=True, clip_on=False,
-                                                color=self.scaleColors[s], alpha=1, ec='k')
+                                                color=self.cfg['scaleColors'][s], alpha=1, ec='k')
                         ax.add_patch(bgd)
 
                         if chr == 0 or s not in self.chords.loc[chr - 1].get('sca', []):
@@ -174,20 +187,20 @@ class Progression:
 
     def plotBar(self, b, pos, plotType='fn'):
         xBar, yBar, wBar, hBar = pos
-        wBeat = (wBar - self.sepx * (len(self.chords['bar'] == b) - 1)) / self.beatsPerBar
+        wBeat = (wBar - self.cfg['sepx'] * (len(self.chords['bar'] == b) - 1)) / self.cfg['beatsPerBar']
         nBeats = 0
         ax = gca()
         for ic, c in self.chords[self.chords['bar'] == b].iterrows():
-            posChr = [xBar + wBeat * nBeats + self.sepx * (ic), yBar, c['beats'] * wBeat, hBar]
+            posChr = [xBar + wBeat * nBeats + self.cfg['sepx'] * (ic), yBar, c['beats'] * wBeat, hBar]
             self.plotChord(ax, ic, posChr, plotType=plotType)
             nBeats += c['beats']
-            if nBeats >= self.barsPerRow * self.beatsPerBar:
+            if nBeats >= self.cfg['barsPerRow'] * self.cfg['beatsPerBar']:
                 nBeats = 0
-                yBar -= (hBar + self.sepy)
+                yBar -= (hBar + self.cfg['sepy'])
 
         # Plot Bar
-        plot([xBar - self.sepx / 2, xBar - self.sepx / 2], [yBar, yBar + hBar], color='k', lw=3)
-        text(xBar - self.sepx / 2, yBar + hBar, '{:02}'.format(b + 1), color='w', va='top', ha='center', fontSize=8,
+        plot([xBar - self.cfg['sepx'] / 2, xBar - self.cfg['sepx'] / 2], [yBar, yBar + hBar], color='k', lw=3)
+        text(xBar - self.cfg['sepx'] / 2, yBar + hBar, '{:02}'.format(b + 1), color='w', va='top', ha='center', fontSize=8,
              weight=1000,
              bbox=dict(boxstyle='round4', fc='k'))
 
@@ -202,21 +215,19 @@ class Progression:
 
     def plot(self, plotType='fn', barsPerRow=4):
         # todo: Scaling issues
-        c = ['#c0d6e4', '#afeeee', '#dddddd', '#ffb6c1', '#e6e6fa', '#f5f5dc', '#ccff00', '#31698a', '#f08080',
-             '#ffa500', '#008080'] * 2
-        self.scaleColors = {x[0]: c[i] for i, x in enumerate(self.countKeys())}
+        self.cfg['scaleColors'] = {x[0]: self.cfg['colors'][i] for i, x in enumerate(self.countKeys())}
 
-        self.barsPerRow = barsPerRow
-        nbRows = np.ceil(self.nbBars / self.barsPerRow)
+        nbRows = np.ceil(self.nbBars / self.cfg['barsPerRow'])
         wBar, hBar = 400, 150
         h = nbRows * hBar
-        x, y, self.sepx, self.sepy = [0, 0, 0, 20]
+        x, y = [0, 0]
         fig = figure(figsize=(16, nbRows))
         fig.subplots_adjust(left=0, right=1, bottom=0, top=.9)
 
         for b in self.chords['bar'].unique():
-            posBar = [x + (b % self.barsPerRow) * (wBar + self.sepx),
-                      y + h - hBar * (1 + (b // self.barsPerRow)) - self.sepy * ((b // self.barsPerRow)), wBar, hBar]
+            posBar = [x + (b % self.cfg['barsPerRow']) * (wBar + self.cfg['sepy']),
+                      y + h - hBar * (1 + (b // self.cfg['barsPerRow'])) - self.cfg['sepy'] * (
+                      (b // self.cfg['barsPerRow'])), wBar, hBar]
             self.plotBar(b, posBar, plotType=plotType)
 
         # axis('tight')
@@ -318,11 +329,10 @@ class Progression:
     def annotate(self, method='graph', reduce=True):
         if method == 'graph':
             self.ann = annGraph(self.chords)
+        else:
+            warnings.warn('not implemented')
 
-        elif method == 'std':
-            self.ann = annStandard(self.chords)
-
-        self.ann.annotate(reduce=True)
+        self.ann.annotate(reduce=reduce)
 
         """
         Harmonic Analysis of the chord progression
@@ -351,10 +361,7 @@ class Progression:
         """
 
 
-
-
-prg = Progression('Dm7|G7|CM7|Dm7|D♭7|CM')
+prg=Progression('Misty')
 prg.annotate()
-prg.print()
-
+prg.plot()
 

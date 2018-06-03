@@ -9,7 +9,7 @@ def plotKnownProgressions(plotType='fn',tgt='d:\\Code\\jazzElements\\img\\'):
         plotType: 'fn' | 'kbd'
     """
     for song in progressions:
-        for method in ['graph','std']:
+        for method in ['graph']:
             print('== '+song+' == ('+method+')')
             prg = Progression(song)
             prg.annotate(method=method,reduce=True)

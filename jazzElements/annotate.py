@@ -5,8 +5,6 @@ from jazzElements.scale import Scale
 
 
 class CadenceGraph():
-    # todo: add T, SD, D
-    ##
     fnLst = {
         'I': [(1, 'M'), (1, 'M7'), (1, 'M9'), (1, 'M6/9'), (1, 'M')],
         'ii': [(2, 'm'), (2, 'm7'), (2, 'm9'), (4, 'M6')],

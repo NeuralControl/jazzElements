@@ -8,6 +8,7 @@ from jazzElements.chord import Chord
 from jazzElements.note import Note
 from jazzElements.viz import plotNotes
 
+
 class Scale():
     modesLst = ['Ion', 'Dor', 'Phr', 'Lyd', 'Mix', 'Aeo', 'Loc']
     modesIntervals = {
@@ -18,7 +19,12 @@ class Scale():
         'Mix': [2, 2, 1, 2, 2, 1, 2],
         'Aeo': [2, 1, 2, 2, 1, 2, 2],
         'Loc': [1, 2, 2, 1, 2, 2, 2],
-        'Chr': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        'Chr': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        'natMin': [2, 1, 2, 2, 1, 2, 2], # (Aeolian)
+        'harMin': [2, 1, 2, 2, 1, 3, 1],
+        'melMinUp': [2, 1, 2, 2, 2, 2, 1],
+        'melMinDown': [2, 1, 2, 2, 1, 2, 2],
+
     }
     chrDegLst = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
     chrSubLst = \
