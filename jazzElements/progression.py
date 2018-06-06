@@ -82,8 +82,6 @@ class Progression:
         self.nbBars = self.chords['bar'].max() + 1
         self.ann = None
 
-
-
     def findScale(self, chr, degree):
         # todo: There must be a better way
         # todo: Only looking for major keys
@@ -213,7 +211,7 @@ class Progression:
         else:
             return []
 
-    def plot(self, plotType='fn', barsPerRow=4):
+    def plot(self, plotType='fn'):
         # todo: Scaling issues
         self.cfg['scaleColors'] = {x[0]: self.cfg['colors'][i] for i, x in enumerate(self.countKeys())}
 
@@ -235,100 +233,100 @@ class Progression:
         suptitle(self.name, size=20, weight='bold')
         # axis('equal')
 
-    def findCadences(self):
-        def findSeqInLst(seq, lst):
-            idx = []
-            for i in range(len(lst) - len(seq) + 1):
-                if np.array_equal(lst[i:i + len(seq)], seq):
-                    idx.append((i, i + len(seq) - 1))
-            return idx
+    # def findCadences(self):
+    #     def findSeqInLst(seq, lst):
+    #         idx = []
+    #         for i in range(len(lst) - len(seq) + 1):
+    #             if np.array_equal(lst[i:i + len(seq)], seq):
+    #                 idx.append((i, i + len(seq) - 1))
+    #         return idx
+    #
+    #     lstCadences = ['3-6-2-5-1', '1-6-2-5-1', '6-2-5-1', '1-6-2-5', '2-5-1', '2-5', '5-1']
+    #     chords = [c['chr'] for c in self.chords]
+    #     cadLst = []
+    #     idx = 0
+    #     # Find all the possible known minor or major cadences:
+    #     for root in Note.chrFlat:
+    #         # for mode in Scale.modesLst:  # ['Ion', 'Aeo']:
+    #         for mode in ['Ion', 'Aeo']:
+    #             key = root + ' ' + mode
+    #             keyChords = Scale(key).chords(3) + Scale(key).chords(4)
+    #             keyDegrees = np.tile(np.arange(1, len(Scale(key).chordsRoman(3)) + 1), 2)
+    #             # Diatonic annotation
+    #             dia = np.array([keyDegrees[keyChords.index(c)] if Chord(c) in keyChords else None for c in chords])
+    #
+    #             # Find Cadences:
+    #             for cadence in lstCadences:
+    #                 seq = np.array([int(d) for d in cadence.split('-')])
+    #                 for cad in findSeqInLst(seq, dia):
+    #                     cadLst.append((cad, key, cadence))
+    #                     idx += 1
+    #
+    #     # Sort cadences by length:
+    #     cadLst = sorted(cadLst, key=lambda x: x[0][1] - x[0][0], reverse=True)
+    #     # Remove cadences embedded in another:
+    #     cadLstOk = []
+    #     chrFree = np.array([True] * len(chords))
+    #     for cad in cadLst:
+    #         if any(chrFree[cad[0][0]:cad[0][1] + 1]):
+    #             cadLstOk.append(cad)
+    #             chrFree[cad[0][0]:cad[0][1] + 1] *= False
+    #
+    #     for cad in cadLstOk:
+    #         for idx, c in enumerate(range(cad[0][0], cad[0][1] + 1)):
+    #             for x in ['scale', 'fn', 'cadence', 'degree']:
+    #                 if x not in self.chords[c]:
+    #                     self.chords[c][x] = []
+    #
+    #             if len(self.chords[c]['cadence']) and max([x[1] for x in self.chords[c]['cadence']]) > idx:
+    #                 self.chords[c]['cadence'].append((cad[2], idx))  # Last one is first
+    #                 self.chords[c]['scale'].append(cad[1])
+    #                 self.chords[c]['fn'].append(cad[2].split('-')[idx])  # todo: improve
+    #                 self.chords[c]['degree'].append(Scale(cad[1]).hasChord(self.chords[c]['chr']))
+    #
+    #             else:
+    #                 self.chords[c]['cadence'].insert(0, (cad[2], idx))  # This one is first
+    #                 self.chords[c]['scale'].insert(0, cad[1])
+    #                 self.chords[c]['fn'].insert(0, cad[2].split('-')[idx])  # todo: improve
+    #                 self.chords[c]['degree'].insert(0, Scale(cad[1]).hasChord(self.chords[c]['chr']))
+    #
+    # def findIsolated(self):
+    #     currentKey = []
+    #
+    #     mainKey = self.countKeys()[0][0] if self.countKeys() else []
+    #
+    #     for ci, c in enumerate(self.chords):
+    #         if 'scale' in c:
+    #             currentKey = c['scale'][0]
+    #
+    #         nextKey = [c.get('scale', [[]])[0] for c in self.chords[(ci + 1):]][0] if ci < len(self.chords) - 1 else []
+    #
+    #         for k in [currentKey, nextKey, mainKey]:
+    #
+    #             # Searching if the chord is diatonic
+    #             if 'fn' not in self.chords[ci] and k != []:
+    #                 deg = Scale(k).hasChord(c['chr'])
+    #                 if deg:
+    #                     self.chords[ci]['scale'] = [k]
+    #                     self.chords[ci]['degree'] = [deg]
+    #                     self.chords[ci]['fn'] = ['~']
+    #
+    #             # Searching if the chord is a substitution in currentKey,nextKey,mainKey
+    #             if 'fn' not in self.chords[ci] and k != []:
+    #                 subs = Scale(k).possibleSubstitutions(asStr=True)
+    #                 s = [[s[0][0], s[2]] for s in subs if len(s[1]) == 1 and Chord(s[1][0]) == c['chr']]
+    #
+    #                 if len(s) == 1:
+    #                     self.chords[ci]['scale'] = [k]
+    #                     self.chords[ci]['fn'] = [s[0][1]]
+    #                     self.chords[ci]['degree'] = [Scale(k).hasChord(Chord(s[0][0]))]
+    #                 elif len(s) > 1:
+    #                     raise ValueError(
+    #                         'Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chr'])
 
-        lstCadences = ['3-6-2-5-1', '1-6-2-5-1', '6-2-5-1', '1-6-2-5', '2-5-1', '2-5', '5-1']
-        chords = [c['chr'] for c in self.chords]
-        cadLst = []
-        idx = 0
-        # Find all the possible known minor or major cadences:
-        for root in Note.chrFlat:
-            # for mode in Scale.modesLst:  # ['Ion', 'Aeo']:
-            for mode in ['Ion', 'Aeo']:
-                key = root + ' ' + mode
-                keyChords = Scale(key).chords(3) + Scale(key).chords(4)
-                keyDegrees = np.tile(np.arange(1, len(Scale(key).chordsRoman(3)) + 1), 2)
-                # Diatonic annotation
-                dia = np.array([keyDegrees[keyChords.index(c)] if Chord(c) in keyChords else None for c in chords])
-
-                # Find Cadences:
-                for cadence in lstCadences:
-                    seq = np.array([int(d) for d in cadence.split('-')])
-                    for cad in findSeqInLst(seq, dia):
-                        cadLst.append((cad, key, cadence))
-                        idx += 1
-
-        # Sort cadences by length:
-        cadLst = sorted(cadLst, key=lambda x: x[0][1] - x[0][0], reverse=True)
-        # Remove cadences embedded in another:
-        cadLstOk = []
-        chrFree = np.array([True] * len(chords))
-        for cad in cadLst:
-            if any(chrFree[cad[0][0]:cad[0][1] + 1]):
-                cadLstOk.append(cad)
-                chrFree[cad[0][0]:cad[0][1] + 1] *= False
-
-        for cad in cadLstOk:
-            for idx, c in enumerate(range(cad[0][0], cad[0][1] + 1)):
-                for x in ['scale', 'fn', 'cadence', 'degree']:
-                    if x not in self.chords[c]:
-                        self.chords[c][x] = []
-
-                if len(self.chords[c]['cadence']) and max([x[1] for x in self.chords[c]['cadence']]) > idx:
-                    self.chords[c]['cadence'].append((cad[2], idx))  # Last one is first
-                    self.chords[c]['scale'].append(cad[1])
-                    self.chords[c]['fn'].append(cad[2].split('-')[idx])  # todo: improve
-                    self.chords[c]['degree'].append(Scale(cad[1]).hasChord(self.chords[c]['chr']))
-
-                else:
-                    self.chords[c]['cadence'].insert(0, (cad[2], idx))  # This one is first
-                    self.chords[c]['scale'].insert(0, cad[1])
-                    self.chords[c]['fn'].insert(0, cad[2].split('-')[idx])  # todo: improve
-                    self.chords[c]['degree'].insert(0, Scale(cad[1]).hasChord(self.chords[c]['chr']))
-
-    def findIsolated(self):
-        currentKey = []
-
-        mainKey = self.countKeys()[0][0] if self.countKeys() else []
-
-        for ci, c in enumerate(self.chords):
-            if 'scale' in c:
-                currentKey = c['scale'][0]
-
-            nextKey = [c.get('scale', [[]])[0] for c in self.chords[(ci + 1):]][0] if ci < len(self.chords) - 1 else []
-
-            for k in [currentKey, nextKey, mainKey]:
-
-                # Searching if the chord is diatonic
-                if 'fn' not in self.chords[ci] and k != []:
-                    deg = Scale(k).hasChord(c['chr'])
-                    if deg:
-                        self.chords[ci]['scale'] = [k]
-                        self.chords[ci]['degree'] = [deg]
-                        self.chords[ci]['fn'] = ['~']
-
-                # Searching if the chord is a substitution in currentKey,nextKey,mainKey
-                if 'fn' not in self.chords[ci] and k != []:
-                    subs = Scale(k).possibleSubstitutions(asStr=True)
-                    s = [[s[0][0], s[2]] for s in subs if len(s[1]) == 1 and Chord(s[1][0]) == c['chr']]
-
-                    if len(s) == 1:
-                        self.chords[ci]['scale'] = [k]
-                        self.chords[ci]['fn'] = [s[0][1]]
-                        self.chords[ci]['degree'] = [Scale(k).hasChord(Chord(s[0][0]))]
-                    elif len(s) > 1:
-                        raise ValueError(
-                            'Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chr'])
-
-    def annotate(self, method='graph', reduce=True):
+    def annotate(self, method='graph',model='majKostka', reduce=True):
         if method == 'graph':
-            self.ann = annGraph(self.chords)
+            self.ann = annGraph(self.chords,model)
         else:
             warnings.warn('not implemented')
 
@@ -362,6 +360,9 @@ class Progression:
 
 
 prg=Progression('Misty')
-prg.annotate()
+prg.annotate(method='graph',model='majKostka')
 prg.plot()
 
+prg=Progression('Misty')
+prg.annotate(method='graph',model='minKostka')
+prg.plot()

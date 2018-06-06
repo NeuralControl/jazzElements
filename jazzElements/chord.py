@@ -2,7 +2,7 @@ import re
 from itertools import permutations
 from jazzElements.note import Note
 from jazzElements.viz import plotNotes
-
+import warnings
 class Chord:
     #todo: M6/9, 7#5 ad not recognized
     """
@@ -16,17 +16,16 @@ class Chord:
     chrLst = {
         '1': [0],
         '5': [0, 7],
-
         'm': [0, 3, 7],
         'm6': [0, 3, 7, 9],
         'm7': [0, 3, 7, 10],
+        'mM7':[0, 3, 7,11],
+        'm6/9': [0, 3, 7, 9, 14],
         'm9': [0, 3, 7, 10, 14],
         'm11': [0, 3, 7, 10, 14, 17],
         'm11+': [0, 3, 7, 10, 14, 18],
-        'm6*9': [0, 3, 7, 9, 14],
         'm13': [0, 3, 7, 10, 14, 17, 21],
         'm7-9': [0, 3, 7, 10, 13],
-
         '+5': [0, 4, 8],
         'M': [0, 4, 7],
         '': [0, 4, 7],
@@ -34,20 +33,23 @@ class Chord:
         '6': [0, 4, 7, 9],
         '6/9': [0, 4, 7, 9, 14],
         '7': [0, 4, 7, 10],
+        'M7': [0, 4, 7, 11],
+        'M13': [0, 4, 7, 11,13],
+        'M7+5': [0, 4, 8, 11],
+        'M7#5': [0, 4, 8, 11],
         '7-5': [0, 4, 6, 10],
         '7b5': [0, 4, 6, 10],
         '7-9': [0, 4, 7, 10, 13],
         '7b9': [0, 4, 7, 10, 13],
         '9': [0, 4, 7, 10, 14],
+        'M9': [0, 4, 7, 11, 14],
         '7-10': [0, 4, 7, 10, 15],
         '11': [0, 4, 7, 10, 14, 17],
+        'M11': [0, 4, 7, 11, 14, 17],
         '11+': [0, 4, 7, 10, 14, 18],
         '13': [0, 4, 7, 10, 14, 17, 21],
-        'M7': [0, 4, 7, 11],
-        'M9': [0, 4, 7, 11, 14],
-        'M11': [0, 4, 7, 11, 14, 17],
-        '7+5': [0, 4, 8, 10],
 
+        '7+5': [0, 4, 8, 10],
         '7+5-9': [0, 4, 8, 10, 13],
 
         'sus4': [0, 5, 7],
@@ -65,11 +67,24 @@ class Chord:
         'm9+5': [0, 10, 14],
         'm+5': [0, 3, 8],
         'aug': [0, 3, 8],
-        '+': [0, 3, 8],
+        'aug6': [0, 3, 8,9],
+
         'm7+5': [0, 3, 8, 10],
         'm7+5-9': [0, 3, 8, 10, 13],
     }
-    chrReplace = [('maj', 'M'), ('Maj', 'M'), ('hdim', 'ø'), ('m7-5', 'ø'), ('m7b5', 'ø'), ('dim', 'o'), ('7#5', '7+5')]
+
+    chrReplace = [('maj', 'M'), ('Maj', 'M'), ('hdim', 'ø'), ('m7-5', 'ø'), ('m7b5', 'ø'),
+                  ('dim', 'o'), ('7#5', '7+5')]
+
+    chrFamilies = \
+        {
+            'maj': ['M', 'M6', 'M7', 'M9', 'M13', '6/9'],
+            'min': ['m', 'm6', 'm7', 'm9', 'm11', 'm13'],
+            'dim': ['o', 'o7', 'ø'],
+            'dom': ['7', '9', '13'],
+            'aug': ['aug','aug6', '7+5'],
+            'sus': ['sus4', 'sus2', '7sus4']
+        }
 
     def update(self):
         self.notes = []
@@ -82,6 +97,22 @@ class Chord:
         if self.intArr:
             self.notes = [Note(self.root.name, i - 12 if '♭' in iStr else i) for i, iStr in
                           zip(self.intArr, self.intStr)]
+
+        if self.intStr[:3]==['1','♭3','♭5']: self.quality='dim'
+        elif self.intStr[:4]==['1','3','5','♭7']: self.quality='dom'
+        elif self.intStr[:3] == ['1', '♭3', '♯5']: self.quality = 'aug'
+        elif self.intStr[:3] == ['1', '3', '♯5']: self.quality = 'aug'
+        elif self.intStr[:3] == ['1', '2', '5']: self.quality = 'sus'
+        elif self.intStr[:3] == ['1', '4', '5']: self.quality = 'sus'
+        elif self.intStr[:3] == ['1', '3', '5']: self.quality = 'maj'
+        elif self.intStr[:3] == ['1', '♭3', '5']: self.quality = 'min'
+        else:
+            self.quality='?'
+            warnings.warn('cannot resolve chord quality for '+self.name)
+
+    # todo: Not all chords can be resolved:
+    # for c in Chord.chrLst:
+    #     print(Chord('C'+c).name+'  '+Chord('C'+c).quality)
 
     def __init__(self, nameOrNotes, checkInv=True):
         """
@@ -133,7 +164,6 @@ class Chord:
 
         self.name = str(self.root) + self.type
         self.update()
-
 
     def plot(self, ax=0, pos=None, nbOctaves=1, showName=True):
         if pos is None:

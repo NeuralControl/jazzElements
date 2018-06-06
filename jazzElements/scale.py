@@ -20,10 +20,10 @@ class Scale():
         'Aeo': [2, 1, 2, 2, 1, 2, 2],
         'Loc': [1, 2, 2, 1, 2, 2, 2],
         'Chr': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        'natMin': [2, 1, 2, 2, 1, 2, 2], # (Aeolian)
-        'harMin': [2, 1, 2, 2, 1, 3, 1],
-        'melMinUp': [2, 1, 2, 2, 2, 2, 1],
-        'melMinDown': [2, 1, 2, 2, 1, 2, 2],
+        'Natmin': [2, 1, 2, 2, 1, 2, 2],  # (Aeolian)
+        'Harmin': [2, 1, 2, 2, 1, 3, 1],
+        'Melminup': [2, 1, 2, 2, 2, 2, 1],
+        'Melmindown': [2, 1, 2, 2, 1, 2, 2],
 
     }
     chrDegLst = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
@@ -49,6 +49,8 @@ class Scale():
         - Tritone substitution is good on II-V-I because it provides a chromatic root movement   
           e.g. Dm7–G7–CM7 -> Dm7–D♭7–CM gives a downward walking bass   
     """
+    # todo: use capitals when needed in scale degrees + dim etc
+    # todo: then adapt scale.getFamilies
 
     regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.*)")  # Regular expression to understand Roman Notation
 
@@ -57,6 +59,7 @@ class Scale():
             root = root.name
         if ' ' in root:
             root, mode = root.split(' ')
+        # todo: be able to instanciate Scale('Cmin') or Scale('C#maj')
 
         mode = mode[0].upper() + mode[1:].lower()
 
@@ -174,6 +177,25 @@ class Scale():
         if isinstance(d, str):
             d = self.chrDegLst.index(d) + 1
         return self.chords(nbNotes=nbNotes)[d - 1].name if asStr else self.chords(nbNotes=nbNotes)[d - 1]
+
+    def getDegreeFamily(self,d,asStr=False):
+        if asStr:
+            return [Chord(self.chords()[d-1].root.name+chrType).name for chrType in Chord.chrFamilies[self.degreesQuality(4)[d-1]]]
+        else:
+            return [Chord(self.chords()[d-1].root.name+chrType) for chrType in Chord.chrFamilies[self.degreesQuality(4)[d-1]]]
+
+
+    def degreesQuality(self, nbNotes=4):
+        return [chr.quality for chr in self.chords(nbNotes)]
+
+    def degrees(self):
+        return \
+            [
+                (self.chrDegLst[d].lower() if q in ['min', 'dim'] else self.chrDegLst[d].upper())
+                + ('o' if q == 'dim' else '')
+                for d, q in enumerate(self.degreesQuality())
+            ]
+
 
     def notes(self, asStr=False):
         if asStr:
