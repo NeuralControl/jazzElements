@@ -121,8 +121,7 @@ class Progression:
             text(xChr + wChr / 2, yChr + hChr, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
                  va='top', ha='center', fontSize=10,
                  bbox=dict(boxstyle='round4', fc='w'), weight=1000)
-            cadh = 40
-
+            cadh = 15
             if 'sca' in ann:
                 for si, s in enumerate(ann['sca']):
                     if len(s):
@@ -143,7 +142,7 @@ class Progression:
             if 'cad' in ann:
                 for ci, c in enumerate(ann['cad']):
                     if chr == 0 or c[0] not in [x[0] for x in self.ann.ann.loc[chr - 1].get('cad', [])]:
-                        text(xChr + wChr / 2, yChr + ci * cadh + cadh / 2, c[0], color='k', va='center', ha='center',
+                        text(xChr + wChr / 2, yChr + ci * cadh + cadh / 2, c, color='k', va='center', ha='center',
                              fontSize=10, weight='bold')
                     else:
                         if len(c) > 1 and c[1] == len(c[0].split('-')) - 1:
@@ -359,10 +358,20 @@ class Progression:
         """
 
 
-prg=Progression('Misty')
-prg.annotate(method='graph',model='majKostka')
+# prg=Progression('unitTest 2-5-1 to 6-2-5-1')
+# prg.annotate(method='graph',model='majKostka',reduce=False)
+# prg.plot()
+#
+# prg=Progression('unitTest 2-5-1 to 6-2-5-1')
+# prg.annotate(method='graph',model='minKostka')
+# prg.plot()
+
+
+prg=Progression('My Romance')
+prg.annotate(method='graph',model='majKostka',reduce=False)
 prg.plot()
 
-prg=Progression('Misty')
-prg.annotate(method='graph',model='minKostka')
-prg.plot()
+todo: 2 and 4 are registered
+self=CadenceGraph('C')
+self.degrees
+so should we give priority to chords that are with the right root?

@@ -157,9 +157,6 @@ class CadenceGraph():
         except ImportError:
             warnings.warn('graphviz needs to be installed to plot cadence graphs')
 
-self=CadenceGraph('C','minKostka')
-
-##
 
 class Annotate():
     def __init__(self, chords):
@@ -259,4 +256,7 @@ class annGraph(Annotate):
                     used[c] = True
 
         self.ann = pd.DataFrame(dict(fn=self.fn, deg=self.deg, sca=self.sca, cad=self.cad))
+
+
+
 
