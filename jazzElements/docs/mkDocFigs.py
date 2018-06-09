@@ -25,6 +25,7 @@ Scale('C minor').plotChords()
 savefig('./img/allChords.png')
 close('all')
 
+
 root = 'C'
 fig = figure(figsize=(15, 5))
 nCols = 10
