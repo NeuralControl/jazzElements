@@ -12,6 +12,10 @@ Welcome to jazzElements' documentation!
 
 .. include:: readme.rst
 
+.. toctree::
+    :maxdepth: 3
+    :glob:
 
+    demos.ipynb
 
 
