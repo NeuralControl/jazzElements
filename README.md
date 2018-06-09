@@ -29,12 +29,12 @@ Plot all Chords in a given Scale:
 ```python
 Scale('C minor').plotChords()
 ```
-![SatinDoll](img/allChords.png)  
+![SatinDoll](jazzElements/docs/img/allChords.png)  
 
 Plot all m7 for all roots:  
 
-![SatinDoll](img/allKeys.png)  
+![SatinDoll](jazzElements/docs/img/allKeys.png)  
 
 Plot implemented chords:  
-![SatinDoll](img/ImplementedChords.png)
+![SatinDoll](jazzElements/docs/img/ImplementedChords.png)
 

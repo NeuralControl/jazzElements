@@ -107,7 +107,7 @@ class Scale():
             ax = fig.add_subplot(grid[i])
             ax.set_xlim(0, 100)
             ax.set_ylim(0, 60)
-            plotNotes(c.notes, pos=[0, 0, 100, 60], name=c.name + '  ' + d.replace(' ', ' $^{') + '}$', ax=ax)
+            plotNotes(c.notes, pos=[0, 0, 100, 60], name=c.name + '  ' + d, ax=ax)
             axis('off')
             i += 1
         suptitle('Chords built from ' + self.root.name + ' ' + self.mode);
