@@ -1,4 +1,9 @@
-The primary goal of this package is to help in the analysis of a chord progression and facilitate learning of jazz standards.  
+.. image:: https://readthedocs.org/projects/jazzelements/badge/?version=latest
+:target: https://jazzelements.readthedocs.io/en/latest/?badge=latest
+:alt: Documentation Status
+
+
+The primary goal of this package is to help in the analysis of a chord progression and facilitate learning of jazz standards.
 It will also suggest alternative chords, progressions, scales etc     
 For example, we can enter a progression as a string, ask to analyse then plot the results.   
 Each cell shows the chord, its degree in the corresponding scale, and optionally the corresponding notes.  
