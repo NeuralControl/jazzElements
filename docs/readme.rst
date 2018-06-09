@@ -19,7 +19,7 @@ We can annotate a chord progression:
 >>> prg.plot('fn')
 
 We can plot the harmonic analysis
- .. image:: docs/img/MyRomanceFn.png
+ .. image:: img/MyRomanceFn.png
     :width: 500pt
 
 or the chords (top) and scales (bottom):
@@ -34,7 +34,7 @@ The analysis is now made using the major/minor chord progression from Tonal Harm
 .. image:: img/majKostka.png
     :width: 200pt
 
-.. image:: docs/img/minKostka.png
+.. image:: img/minKostka.png
     :width: 200pt
 
 
@@ -42,15 +42,15 @@ Plot all Chords in a given Scale:
 
 >>> Scale('C minor').plotChords()
 
-.. image:: docs/img/allChords.png
+.. image:: img/allChords.png
     :width: 500pt
 
 Plot m7 for all roots:
 
-.. image:: docs/img/allKeys.png
+.. image:: img/allKeys.png
     :width: 500pt
 
 Plot implemented chords:
 
-.. image:: docs/img/implementedChords.png
+.. image:: img/implementedChords.png
     :width: 500pt
