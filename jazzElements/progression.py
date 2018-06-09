@@ -102,7 +102,7 @@ class Progression:
             text(xChr + wChr / 2, yChr + hChr, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
                  va='top', ha='center', fontSize=10,
                  bbox=dict(boxstyle='round4', fc='w'), weight=1000)
-            cadh = 15
+            cadh = 30
             if 'sca' in ann:
                 for si, s in enumerate(ann['sca']):
                     if len(s):
@@ -346,9 +346,9 @@ class Progression:
 # self.annotate(reduce=False)
 # self.plot()
 
-# prg=Progression('My Romance')
-# prg.annotate(method='graph',model='majKostka',reduce=False)
-# prg.plot()
+prg=Progression('My Romance')
+prg.annotate(method='graph',model='majKostka',reduce=False)
+prg.plot()
 
 
 # todo: Not all chords can be resolved:

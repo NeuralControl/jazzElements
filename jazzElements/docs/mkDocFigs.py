@@ -55,3 +55,4 @@ close('all')
 
 CadenceGraph('C').plot(tgt='./img/majKostka', showChords=True)
 CadenceGraph('C','minKostka').plot(tgt='./img/minKostka', showChords=True)
+
