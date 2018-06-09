@@ -42,70 +42,46 @@ class CadenceGraph():
             'majKostka':
                 {
                     'description': 'major chord progression from Tonal Harmony by Stefan Kostka',
-                    'key': 'maj',
+                    'key': 'major',
                     'next':
                         {
-                            1: [1,2,3,4,5,6,7],
-                            2: [2,1,5,7],
-                            3: [3,2,6,4],
-                            4: [4,2,5,7,1],
-                            5: [5,6,7,1],
-                            6: [6,2,4],
-                            7: [7,6,5,1],
+                            1: [1, 2, 3, 4, 5, 6, 7], 2: [2, 1, 5, 7], 3: [3, 2, 6, 4], 4: [4, 2, 5, 7, 1],
+                            5: [5, 6, 7, 1], 6: [6, 2, 4], 7: [7, 6, 5, 1],
                         },
                 },
-
             'minKostka':
                 {
                     # todo: add bVII
                     # todo: this one uses only the harmonic minor scale, should we do all three?
-                    # todo: check all minor chords
-                    # todo: find a way to find which chords should be there, maybe move to scale...
                     'description': 'minor chord progression from Tonal Harmony by Stefan Kostka',
                     'key': 'harMin',
                     'next':
                         {
-                            1: [1, 2, 3, 4, 5, 6, 7],
-                            2: [2, 1, 5, 7],
-                            3: [3, 2, 6, 5],
-                            4: [4, 2, 5, 7, 1],
-                            5: [5, 6, 7, 1],
-                            6: [6, 2, 4],
-                            7: [7, 6, 5, 1],
-
-                            # 'i': ['i', 'iio', 'III+', 'iv', 'V', 'VI', 'viio'],
-                            # 'iio': ['iio', 'V', 'viio', 'i'],
-                            # 'III+': ['III+', 'VI', 'V', 'iio'],
-                            # 'iv': ['iv', 'iio', 'V', 'viio', 'i'],
-                            # 'V': ['V', 'viio', 'VI', 'i'],
-                            # 'VI': ['VI', 'iv', 'iio'],
-                            # 'viio': ['viio', 'V', 'VI', 'i'],
+                            1: [1, 2, 3, 4, 5, 6, 7], 2: [2, 1, 5, 7], 3: [3, 2, 6, 5], 4: [4, 2, 5, 7, 1],
+                            5: [5, 6, 7, 1], 6: [6, 2, 4], 7: [7, 6, 5, 1],
                         },
-                    'types':
-                        {'i': 'T', 'iio': 'SD', 'III+': 'T', 'iv': 'SD', 'V': 'D', 'VI': 'T', 'viio': 'D'}
                 },
-
         }
 
-    def __init__(self, root, cadGraph='majKostka'):
-        if cadGraph not in self.cadGraphs:
+    def __init__(self, root, model='majKostka'):
+        if model not in self.cadGraphs:
             raise ValueError(
                 'scale type not implemented for cadence analysis (' + '|'.join(
                     [_ for _ in self.cadGraphs.keys()]) + ')')
-        self.root = root
-        self.cadGraph = cadGraph
-        self.scaleType = self.cadGraphs[cadGraph]['key']
-        self.fnSeq = self.cadGraphs[cadGraph]['next']
-        self.fnTypes = {1:'T', 2:'ST', 3:'M', 4:'SD', 5:'D', 6:'SM', 7:'L'} #todo: can types be generic or moved to scale?
-        self.degreesRoman=Scale(self.root,self.cadGraphs[cadGraph]['key']).degrees()
-        self.degrees = {d+1:Scale(self.root, self.cadGraphs[cadGraph]['key']).getDegreeFamily(d+1) for d in range(len(self.degreesRoman))}
-        self.chords = [Chord(chr) for chr in
-                         set([item.name for sublist in [self.degrees[f] for f in self.degrees] for item in sublist])]
 
-    def inCadence(self, chr):
+        self.scale = Scale(root, self.cadGraphs[model]['key'])
+        self.model = model
+        self.fnSeq = self.cadGraphs[model]['next']  # -> Sequence
+        self.fnTypes = {1: 'T', 2: 'ST', 3: 'M', 4: 'SD', 5: 'D', 6: 'SM', 7: 'L'}  # todo: can types be generic or moved to scale?
+        self.degreesRoman = self.scale.degrees()
+        self.degrees = {d + 1: self.scale.getDegreeFamily(d + 1) for d in range(len(self.degreesRoman))}
+        self.chords = [Chord(chr) for chr in
+                       set([item.name for sublist in [self.degrees[f] for f in self.degrees] for item in sublist])]
+
+    def hadChord(self, chr):
         return chr in self.chords
 
-    def getDegree(self, chr,strict=True):
+    def getDegree(self, chr, strict=True):
         """
         Get the degree of a chord in a given cadence
         Args:
@@ -129,9 +105,10 @@ class CadenceGraph():
     def plot(self, tgt='', showChords=True):
         try:
             if not len(tgt):
-                tgt = self.root + ' ' + self.scaleType
+                tgt = 'CadenceGraph' + self.scale.name
             from graphviz import Digraph
-            fnColor = dict(T='darkslategray3',M='darkslategray3',SM='darkslategray3', D='darkolivegreen1',L='darkolivegreen1', SD='darksalmon', ST='darksalmon')
+            fnColor = dict(T='darkslategray3', M='darkslategray3', SM='darkslategray3', D='darkolivegreen1',
+                           L='darkolivegreen1', SD='darksalmon', ST='darksalmon')
             g = Digraph('g', node_attr={'shape': 'Mrecord', 'height': '.1'}, engine='dot', format='png')
             g.attr(size='20')
             ok = []
@@ -139,7 +116,7 @@ class CadenceGraph():
                 for n2 in self.fnSeq[n1]:
                     if (str(n1), str(n2)) not in ok and n1 != n2:
                         if n1 in self.fnSeq[n2]:
-                            g.edge(str(n1),str(n2), rank='same', dir='both', color='red')
+                            g.edge(str(n1), str(n2), rank='same', dir='both', color='red')
                         else:
                             g.edge(str(n1), str(n2), rank='same')
                         ok.append((str(n1), str(n2)))
@@ -147,10 +124,12 @@ class CadenceGraph():
 
             for n in self.fnTypes:
                 if showChords:
-                    g.node(str(n), label=self.degreesRoman[n-1] + '\\n' + ', '.join([_.name for _ in self.degrees[n]]),
+                    g.node(str(n),
+                           label=self.degreesRoman[n - 1] + '\\n' + ', '.join([_.name for _ in self.degrees[n]]),
                            color=fnColor.get(self.fnTypes[n], 'white'), style='filled')
                 else:
-                    g.node(str(n), label=self.degreesRoman[n-1] + '\\n' + ', '.join([str(_[0]) + ' ' + _[1] for _ in self.fnLst[n]]),
+                    g.node(str(n), label=self.degreesRoman[n - 1] + '\\n' + ', '.join(
+                        [str(_[0]) + ' ' + _[1] for _ in self.fnLst[n]]),
                            color=fnColor.get(self.fnTypes[n], 'white'), style='filled')
 
             g.render(filename=tgt)
@@ -228,11 +207,11 @@ class annGraph(Annotate):
 
             else:  # current chord isnt in keyCad
                 for x in cur:
-                    Seq.append((len(x[1]), x[0], key + keyCad.scaleType, [keyCad.degreesRoman[xi-1] for xi in x[1]]))
+                    Seq.append((len(x[1]), x[0], keyCad.scale.name, [keyCad.degreesRoman[xi - 1] for xi in x[1]]))
                 cur = []
         if cur:
             for x in cur:
-                Seq.append((len(x[1]), x[0], key + keyCad.scaleType, [keyCad.degreesRoman[xi-1] for xi in x[1]]))
+                Seq.append((len(x[1]), x[0], keyCad.scale.name, [keyCad.degreesRoman[xi - 1] for xi in x[1]]))
 
         ##
         return Seq
@@ -256,7 +235,3 @@ class annGraph(Annotate):
                     used[c] = True
 
         self.ann = pd.DataFrame(dict(fn=self.fn, deg=self.deg, sca=self.sca, cad=self.cad))
-
-
-
-

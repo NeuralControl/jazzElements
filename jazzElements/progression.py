@@ -371,7 +371,9 @@ prg=Progression('My Romance')
 prg.annotate(method='graph',model='majKostka',reduce=False)
 prg.plot()
 
+"""
 todo: 2 and 4 are registered
 self=CadenceGraph('C')
 self.degrees
 so should we give priority to chords that are with the right root?
+"""
