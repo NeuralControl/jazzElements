@@ -2,8 +2,7 @@
     :target: https://jazzelements.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-More information on rtd_.
-.. _rtd: https://jazzelements.readthedocs.io/en/latest/?badge=latest
+More information on `ReadTheDocs <https://jazzelements.readthedocs.io/en/latest/?badge=latest>`_
 
 The primary goal of this package is to help in the analysis of a chord progression and facilitate learning of jazz standards.
 It will also suggest alternative chords, progressions, scales etc     
