@@ -1,10 +1,9 @@
 import warnings
-
 import pandas as pd
-
 from jazzElements.chord import Chord
 from jazzElements.note import Note
 from jazzElements.scale import Scale
+from matplotlib.pyplot import *
 
 
 class CadenceGraph():
@@ -78,7 +77,7 @@ class CadenceGraph():
         self.chords = [Chord(chr) for chr in
                        set([item.name for sublist in [self.degrees[f] for f in self.degrees] for item in sublist])]
 
-    def hadChord(self, chr):
+    def hasChord(self, chr):
         return chr in self.chords
 
     def getDegree(self, chr, strict=True):
@@ -87,15 +86,13 @@ class CadenceGraph():
         Args:
             chr:
             strict:
-
         Returns:
-
         """
         F = []
         for f in self.degrees:
             for c in self.degrees[f]:
                 if strict:
-                    if c.name == chr and f not in F:
+                    if c.name == chr.name and f not in F:
                         F.append(f)
                 else:
                     if c == chr and f not in F:
@@ -152,8 +149,6 @@ class Annotate():
         format: (<function>,<degree>,<scale>,<cadence>)
         """
 
-
-
 class annGraph(Annotate):
     def __init__(self, chords, model='majKostka'):
         Annotate.__init__(self, chords)
@@ -167,37 +162,39 @@ class annGraph(Annotate):
         Returns:
             list of cadences: (<size>,<start>,<key>,<cadenceList>)
         """
-        ##
+
         keyCad = CadenceGraph(key, model)
         Seq = []
         cur = []  # [(<start>,<list>),...]
 
         for ci, c in enumerate(self.chords):
-            if c in keyCad.chords:  # Current chord is in cadence graph
+            if c in keyCad.chords:  # Current chord is in key of interest
                 if len(cur):  # At least an ongoing cadence
                     newCur = []
                     for x in cur:
-                        for d in keyCad.getDegree(c):
+                        for d in keyCad.getDegree(c,strict=True):
                             if d in keyCad.fnSeq[x[1][-1]]:  # The current chord can continue this sequence
                                 newCur.append((x[0], x[1] + [d]))
                             else:  # A new sequence starts here
-                                newCur.append((ci, [d]))
+                                Seq.append((len(x[1]), x[0], keyCad.scale.name,
+                                             [keyCad.degreesRoman[xi - 1] for xi in x[1]])) # store this cadence
+                                newCur.append((ci, [d])) # add new sequence
+
                     cur = newCur.copy()
 
                 else:  # No cadence ongoing
                     cur = [(ci, [x]) for x in keyCad.getDegree(c)]
 
-            else:  # current chord isnt in keyCad, add isolated chord
+            else:  # current chord isnt in key, append all current cadences to Seq
                 for x in cur:
                     Seq.append((len(x[1]), x[0], keyCad.scale.name, [keyCad.degreesRoman[xi - 1] for xi in x[1]]))
                 cur = []
-
         if cur:
             for x in cur:
                 Seq.append((len(x[1]), x[0], keyCad.scale.name, [keyCad.degreesRoman[xi - 1] for xi in x[1]]))
 
-        ##
         return Seq
+
     def annotate(self, reduce=True):
         fn = [[] for c in self.chords]
         deg = [[] for c in self.chords]
@@ -228,51 +225,40 @@ class annGraph(Annotate):
         self.ann = pd.DataFrame(dict(fn=fn, deg=deg, sca=sca, cad=cad,cadPos=rank,chrPos=pos))
 
 
-from jazzElements.progression import Progression
-prg=Progression('|Gm7|Gm7|Gm7|')
-self=annGraph(prg.chords)
-self.annotate(reduce=False)
 
 
-for x in self.findCadencesInKey('F','majKostka'):
-    print(x)
+    def plot(self):
+        figure()
+        chrSpcX=100
+        cadSpcY=5
+        chrSpcY=cadSpcY*(max([max(p) for p in self.ann.cadPos if len(p)])+1)+2*cadSpcY
+        chrPerRow=16
+
+        def chrPos(ci):
+            return (ci%chrPerRow)*chrSpcX,-((ci)//chrPerRow)*chrSpcY
+
+        cad = []
+        for idx,r in self.ann.iterrows():
+            for i in range(len(r['cad'])):
+                if r['chrPos'][i]==0:
+                    cad.append((idx,
+                                idx+len( r['cad'][i].split('-'))-1,
+                                r['chrPos'][i],
+                                r['cadPos'][i],
+                                r['cad'][i],
+                                         r['sca'][i] )  )
+        # cad = [<start>,<stop>,<chrPos>,<cadPos>,<cadence>,<scale> ]
 
 
+        for ci,chr in enumerate(self.chords): #todo: add duration to chord?
+            text(chrPos(ci)[0],chrPos(ci)[1],chr.name,va='bottom',ha='center',fontweight='bold',fontSize=9)
+        for c in cad:
+            text(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,c[5].replace(' Ion','M')+': '+c[4],fontSize=8,ha='left',va='bottom')
+            if c[1]>c[0]:
+                arrow(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,(len(c[4].split('-'))-.5)*chrSpcX,0,
+                      shape='right',width=5,head_width=10,alpha=.3,edgecolor='w')
 
-##
-#figure(figsize=(16,8))
-clf()
-from matplotlib.pyplot import *
-chrSpcX=100
-chrSpcY=100
-chrPerRow=16
-cadSpcY=8
+        xlim(-50,chrSpcX*chrPerRow+50)
+        ylim(chrPos(len(self.chords))[1]-100,0)
 
-def chrPos(ci):
-    return (ci%chrPerRow)*chrSpcX,-((ci)//chrPerRow)*chrSpcY
-
-cad = []
-for idx,r in self.ann.iterrows():
-    for i in range(len(r['cad'])):
-        if r['chrPos'][i]==0:
-            cad.append((idx,
-                        idx+len( r['cad'][i].split('-'))-1,
-                        r['chrPos'][i],
-                        r['cadPos'][i],
-                        r['cad'][i],
-                                 r['sca'][i] )  )
-# cad = [<start>,<stop>,<chrPos>,<cadPos>,<cadence>,<scale> ]
-
-
-for ci,chr in enumerate(self.chords): #todo: add duration to chord?
-    text(chrPos(ci)[0],chrPos(ci)[1],chr.name,va='bottom',ha='center',fontweight='bold')
-for c in cad:
-    text(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,c[5].replace(' Ion','M')+': '+c[4],fontSize=10,ha='left',va='bottom')
-    if c[1]>c[0]:
-        arrow(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,(len(c[4].split('-'))-.5)*chrSpcX,0,
-              shape='right',width=5,head_width=10,alpha=.3,edgecolor='w')
-
-xlim(-50,chrSpcX*chrPerRow+50)
-ylim(chrPos(len(self.chords))[1]-100,0)
-
-axis('off');box('off')
+        axis('off');box('off')

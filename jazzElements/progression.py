@@ -13,8 +13,8 @@ progressions = \
     {
         'Satin Doll': '|Dm7,G7|%|Em7,A7|%|Am7,D7|Abm7,Db7|CM7|%|',
 
-        'Misty': '|B7b9|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7'
-                 '|B7b9|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|EbM7#5,Ab7|EbM7,Do7,G7alt,Cm7,Bm7'
+        'Misty': '|Fm7,Bb7|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7'
+                         '|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|EbM7#5,Ab7|EbM7,Do7,G7alt,Cm7,Bm7'
                  '|Bbm7|Eb7b9|AbM7|%'
                  '|Am7|D7,F67|Gm7b5|C7b9|Fm7,Bb7'
                  '|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7|Eb6|Fm7,Bb7|',
@@ -358,22 +358,17 @@ class Progression:
         """
 
 
-# prg=Progression('unitTest 2-5-1 to 6-2-5-1')
-# prg.annotate(method='graph',model='majKostka',reduce=False)
-# prg.plot()
+prg=Progression('My Romance')
+prg.annotate(method='graph',model='majKostka',reduce=False)
+
+self=annGraph(prg.chords)
+self.annotate(reduce=False)
+self.plot()
 #
 # prg=Progression('unitTest 2-5-1 to 6-2-5-1')
 # prg.annotate(method='graph',model='minKostka')
 # prg.plot()
 
-
-prg=Progression('My Romance')
-prg.annotate(method='graph',model='majKostka',reduce=False)
-prg.plot()
-
-"""
-todo: 2 and 4 are registered
-self=CadenceGraph('C')
-self.degrees
-so should we give priority to chords that are with the right root?
-"""
+# prg=Progression('My Romance')
+# prg.annotate(method='graph',model='majKostka',reduce=False)
+# prg.plot()

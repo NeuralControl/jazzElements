@@ -81,7 +81,7 @@ class Chord:
             'maj': ['M', 'M6', 'M7', 'M9', 'M13', '6/9'],
             'min': ['m', 'm6', 'm7', 'm9', 'm11', 'm13'],
             'dim': ['o', 'o7', 'ø'],
-            'dom': ['7', '9', '13'],
+            'dom': ['7', '7b5', '9', '13'],
             'aug': ['aug','aug6', '7+5'],
             'sus': ['sus4', 'sus2', '7sus4']
         }
@@ -97,9 +97,9 @@ class Chord:
         if self.intArr:
             self.notes = [Note(self.root.name, i - 12 if '♭' in iStr else i) for i, iStr in
                           zip(self.intArr, self.intStr)]
-
         if self.intStr[:3]==['1','♭3','♭5']: self.quality='dim'
         elif self.intStr[:4]==['1','3','5','♭7']: self.quality='dom'
+        elif self.intStr[:4]==['1','3','♭5','♭7']: self.quality='dom'
         elif self.intStr[:3] == ['1', '♭3', '♯5']: self.quality = 'aug'
         elif self.intStr[:3] == ['1', '3', '♯5']: self.quality = 'aug'
         elif self.intStr[:3] == ['1', '2', '5']: self.quality = 'sus'
