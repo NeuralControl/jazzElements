@@ -136,7 +136,6 @@ class CadenceGraph():
         except ImportError:
             warnings.warn('graphviz needs to be installed to plot cadence graphs')
 
-
 class Annotate():
     def __init__(self, chords):
         self.name = ''
@@ -147,29 +146,12 @@ class Annotate():
         else:
             self.chords = [Chord(c) for c in chords]
 
-        self.cleanup()
-
-    def cleanup(self):
-        self.fn = [[] for c in self.chords]
-        self.deg = [[] for c in self.chords]
-        self.sca = [[] for c in self.chords]
-        self.cad = [[] for c in self.chords]
-
     def run(self, reduce=True):
         """
         Fills self.ann with the annotations
         format: (<function>,<degree>,<scale>,<cadence>)
         """
 
-    def print(self):
-        print('{:7}|{:3}|{:3}|{:3}|{:15}'.format('chord', 'fn', 'deg', 'sca', 'cadence'))
-        for c in range(len(self.chords)):
-            print('{:7}|{:3}|{:3}|{:3}|{:15}'.format(
-                self.chords[c].name,
-                ','.join(self.fn[c]),
-                ','.join(self.deg[c]),
-                ','.join(self.sca[c]),
-                ','.join(self.cad[c])))
 
 
 class annGraph(Annotate):
@@ -191,7 +173,7 @@ class annGraph(Annotate):
         cur = []  # [(<start>,<list>),...]
 
         for ci, c in enumerate(self.chords):
-            if c in keyCad.chords:  # Current chord is in keyCad
+            if c in keyCad.chords:  # Current chord is in cadence graph
                 if len(cur):  # At least an ongoing cadence
                     newCur = []
                     for x in cur:
@@ -205,19 +187,25 @@ class annGraph(Annotate):
                 else:  # No cadence ongoing
                     cur = [(ci, [x]) for x in keyCad.getDegree(c)]
 
-            else:  # current chord isnt in keyCad
+            else:  # current chord isnt in keyCad, add isolated chord
                 for x in cur:
                     Seq.append((len(x[1]), x[0], keyCad.scale.name, [keyCad.degreesRoman[xi - 1] for xi in x[1]]))
                 cur = []
+
         if cur:
             for x in cur:
                 Seq.append((len(x[1]), x[0], keyCad.scale.name, [keyCad.degreesRoman[xi - 1] for xi in x[1]]))
 
         ##
         return Seq
-
     def annotate(self, reduce=True):
-        self.cleanup()
+        fn = [[] for c in self.chords]
+        deg = [[] for c in self.chords]
+        sca = [[] for c in self.chords]
+        cad = [[] for c in self.chords]
+        rank=[[] for c in self.chords]
+        pos=[[] for c in self.chords]
+
         # Find cadences in all keys
         X = []  # [(<size>,<start>,<key>,<cadence>),...]
         for key in Note.chrFlat:
@@ -227,11 +215,64 @@ class annGraph(Annotate):
         used = [False] * len(self.chords)
         for x in X:
             if not reduce or not all(used[x[1]:(x[1] + x[0])]):  # All spots are unused
+                rnk=max([len(sca[c]) for c in range(x[1], (x[1] + x[0]))])
+
                 for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
                     # self.fn[c].append(CadenceGraph.fnTypes[x[3][ci]]) #todo: fix
-                    self.deg[c].append(x[3][ci])
-                    self.sca[c].append(x[2])
-                    self.cad[c].append('-'.join(x[3]))
+                    deg[c].append(x[3][ci])
+                    sca[c].append(x[2])
+                    cad[c].append('-'.join(x[3]))
                     used[c] = True
+                    rank[c].append(rnk)
+                    pos[c].append(ci)
+        self.ann = pd.DataFrame(dict(fn=fn, deg=deg, sca=sca, cad=cad,cadPos=rank,chrPos=pos))
 
-        self.ann = pd.DataFrame(dict(fn=self.fn, deg=self.deg, sca=self.sca, cad=self.cad))
+
+from jazzElements.progression import Progression
+prg=Progression('|Gm7|Gm7|Gm7|')
+self=annGraph(prg.chords)
+self.annotate(reduce=False)
+
+
+for x in self.findCadencesInKey('F','majKostka'):
+    print(x)
+
+
+
+##
+#figure(figsize=(16,8))
+clf()
+from matplotlib.pyplot import *
+chrSpcX=100
+chrSpcY=100
+chrPerRow=16
+cadSpcY=8
+
+def chrPos(ci):
+    return (ci%chrPerRow)*chrSpcX,-((ci)//chrPerRow)*chrSpcY
+
+cad = []
+for idx,r in self.ann.iterrows():
+    for i in range(len(r['cad'])):
+        if r['chrPos'][i]==0:
+            cad.append((idx,
+                        idx+len( r['cad'][i].split('-'))-1,
+                        r['chrPos'][i],
+                        r['cadPos'][i],
+                        r['cad'][i],
+                                 r['sca'][i] )  )
+# cad = [<start>,<stop>,<chrPos>,<cadPos>,<cadence>,<scale> ]
+
+
+for ci,chr in enumerate(self.chords): #todo: add duration to chord?
+    text(chrPos(ci)[0],chrPos(ci)[1],chr.name,va='bottom',ha='center',fontweight='bold')
+for c in cad:
+    text(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,c[5].replace(' Ion','M')+': '+c[4],fontSize=10,ha='left',va='bottom')
+    if c[1]>c[0]:
+        arrow(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,(len(c[4].split('-'))-.5)*chrSpcX,0,
+              shape='right',width=5,head_width=10,alpha=.3,edgecolor='w')
+
+xlim(-50,chrSpcX*chrPerRow+50)
+ylim(chrPos(len(self.chords))[1]-100,0)
+
+axis('off');box('off')
