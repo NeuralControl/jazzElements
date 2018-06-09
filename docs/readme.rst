@@ -26,12 +26,12 @@ or the chords (top) and scales (bottom):
 
 >>> prg.plot('kbd')
 
-.. image:: docs/img/MyRomanceKbd.png
+.. image:: img/MyRomanceKbd.png
     :width: 500pt
 
 The analysis is now made using the major/minor chord progression from Tonal Harmony by Stefan Kostka
 
-.. image:: docs/img/majKostka.png
+.. image:: img/majKostka.png
     :width: 200pt
 
 .. image:: docs/img/minKostka.png
