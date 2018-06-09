@@ -47,6 +47,7 @@ Plot all Chords in a given Scale:
 
 Plot m7 for all roots:
 
+
 .. image:: img/allKeys.png
     :width: 500pt
 
