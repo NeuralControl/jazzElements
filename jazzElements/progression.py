@@ -358,12 +358,12 @@ class Progression:
         """
 
 
-prg=Progression('My Romance')
-prg.annotate(method='graph',model='majKostka',reduce=False)
-
-self=annGraph(prg.chords)
-self.annotate(reduce=False)
-self.plot()
+# prg=Progression('My Romance')
+# prg.annotate(method='graph',model='majKostka',reduce=False)
+#
+# self=annGraph(prg.chords)
+# self.annotate(reduce=False)
+# self.plot()
 #
 # prg=Progression('unitTest 2-5-1 to 6-2-5-1')
 # prg.annotate(method='graph',model='minKostka')
