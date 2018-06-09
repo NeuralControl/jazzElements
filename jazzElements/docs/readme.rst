@@ -38,14 +38,14 @@ Plot all Chords in a given Scale:
 >>> Scale('C minor').plotChords()
 
 .. image:: img/allChords.png
-    :width: 200pt
+    :width: 500pt
 
 Plot m7 for all roots:
 
 .. image:: img/allKeys.png
-    :width: 200pt
+    :width: 500pt
 
 Plot implemented chords:
 
 .. image:: img/implementedChords.png
-    :width: 200pt
+    :width: 500pt
