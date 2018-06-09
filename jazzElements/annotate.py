@@ -5,7 +5,6 @@ from jazzElements.note import Note
 from jazzElements.scale import Scale
 from matplotlib.pyplot import *
 
-
 class CadenceGraph():
     cadGraphs = \
         {
@@ -149,6 +148,42 @@ class Annotate():
         format: (<function>,<degree>,<scale>,<cadence>)
         """
 
+    def plot(self):
+        figure()
+        chrSpcX=100
+        cadSpcY=5
+        chrSpcY=cadSpcY*(max([max(p) for p in self.ann.cadPos if len(p)])+1)+2*cadSpcY
+        chrPerRow=8
+
+        def chrPos(ci):
+            return (ci%chrPerRow)*chrSpcX,-((ci)//chrPerRow)*chrSpcY
+
+        cad = []
+        for idx,r in self.ann.iterrows():
+            for i in range(len(r['cad'])):
+                if r['chrPos'][i]==0:
+                    cad.append((idx,
+                                idx+len( r['cad'][i].split('-'))-1,
+                                r['chrPos'][i],
+                                r['cadPos'][i],
+                                r['cad'][i],
+                                         r['sca'][i] )  )
+        # cad = [<start>,<stop>,<chrPos>,<cadPos>,<cadence>,<scale> ]
+
+
+        for ci,chr in enumerate(self.chords): #todo: add duration to chord?
+            text(chrPos(ci)[0],chrPos(ci)[1],chr.name,va='bottom',ha='center',fontweight='bold',fontSize=9)
+        for c in cad:
+            text(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,c[5].replace(' Ion','M')+': '+c[4],fontSize=8,ha='left',va='bottom')
+            if c[1]>c[0]:
+                arrow(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,(len(c[4].split('-'))-.5)*chrSpcX,0,
+                      shape='right',width=5,head_width=10,alpha=.3,edgecolor='w')
+
+        xlim(-50,chrSpcX*chrPerRow+50)
+        ylim(chrPos(len(self.chords))[1]-100,0)
+
+        axis('off');box('off')
+
 class annGraph(Annotate):
     def __init__(self, chords, model='majKostka'):
         Annotate.__init__(self, chords)
@@ -192,7 +227,6 @@ class annGraph(Annotate):
         if cur:
             for x in cur:
                 Seq.append((len(x[1]), x[0], keyCad.scale.name, [keyCad.degreesRoman[xi - 1] for xi in x[1]]))
-
         return Seq
 
     def annotate(self, reduce=True):
@@ -207,13 +241,15 @@ class annGraph(Annotate):
         X = []  # [(<size>,<start>,<key>,<cadence>),...]
         for key in Note.chrFlat:
             X.extend(self.findCadencesInKey(key, self.model))
+
+
         X.sort(key=lambda x: x[0], reverse=True)  # Sort by size
 
         used = [False] * len(self.chords)
         for x in X:
             if not reduce or not all(used[x[1]:(x[1] + x[0])]):  # All spots are unused
                 rnk=max([len(sca[c]) for c in range(x[1], (x[1] + x[0]))])
-
+                # todo rank bug, e.g. myromance chord 2, two cadences have the same rank
                 for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
                     # self.fn[c].append(CadenceGraph.fnTypes[x[3][ci]]) #todo: fix
                     deg[c].append(x[3][ci])
@@ -222,43 +258,9 @@ class annGraph(Annotate):
                     used[c] = True
                     rank[c].append(rnk)
                     pos[c].append(ci)
+
+
         self.ann = pd.DataFrame(dict(fn=fn, deg=deg, sca=sca, cad=cad,cadPos=rank,chrPos=pos))
 
 
 
-
-    def plot(self):
-        figure()
-        chrSpcX=100
-        cadSpcY=5
-        chrSpcY=cadSpcY*(max([max(p) for p in self.ann.cadPos if len(p)])+1)+2*cadSpcY
-        chrPerRow=16
-
-        def chrPos(ci):
-            return (ci%chrPerRow)*chrSpcX,-((ci)//chrPerRow)*chrSpcY
-
-        cad = []
-        for idx,r in self.ann.iterrows():
-            for i in range(len(r['cad'])):
-                if r['chrPos'][i]==0:
-                    cad.append((idx,
-                                idx+len( r['cad'][i].split('-'))-1,
-                                r['chrPos'][i],
-                                r['cadPos'][i],
-                                r['cad'][i],
-                                         r['sca'][i] )  )
-        # cad = [<start>,<stop>,<chrPos>,<cadPos>,<cadence>,<scale> ]
-
-
-        for ci,chr in enumerate(self.chords): #todo: add duration to chord?
-            text(chrPos(ci)[0],chrPos(ci)[1],chr.name,va='bottom',ha='center',fontweight='bold',fontSize=9)
-        for c in cad:
-            text(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,c[5].replace(' Ion','M')+': '+c[4],fontSize=8,ha='left',va='bottom')
-            if c[1]>c[0]:
-                arrow(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,(len(c[4].split('-'))-.5)*chrSpcX,0,
-                      shape='right',width=5,head_width=10,alpha=.3,edgecolor='w')
-
-        xlim(-50,chrSpcX*chrPerRow+50)
-        ylim(chrPos(len(self.chords))[1]-100,0)
-
-        axis('off');box('off')

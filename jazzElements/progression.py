@@ -90,23 +90,6 @@ class Progression:
         return [[Scale(k, mode), Scale(k, mode).hasChord(chr)] for k in Note.chrSharp if
                 Scale(k, mode).getDegree(degree) == chr]
 
-    def print(self):
-        lastBar = -1
-        print('{:4}|{:7}|{:5}|{:10}|{:12}|{:12}'.format(
-            'Bar', 'Chord', 'Fn', 'Degree', 'Scale', 'Cadence'))
-        # todo: will crash if no annotation
-
-        for ci, c in pd.concat([self.chords, self.ann.ann], 1).iterrows():
-            print('{:4}|{:7}|{:5}|{:10}|{:12}|{:12}'.format(
-                str(c['bar'] + 1) if c['bar'] != lastBar else '',
-                c['chr'],
-                ','.join(c['fn']) if 'fn' in c else '',
-                ','.join(c['deg']) if 'deg' in c else '',
-                ','.join(c['sca']) if 'sca' in c else '',
-                ','.join(c['cad']) if 'cad' in c else '',
-            ))
-            lastBar = c['bar']
-
     def plotChord(self, ax, chr, pos, plotType='fn'):
         chord = self.chords.loc[chr]
         ann = self.ann.ann.loc[chr] if self.ann else None
@@ -364,11 +347,15 @@ class Progression:
 # self=annGraph(prg.chords)
 # self.annotate(reduce=False)
 # self.plot()
-#
-# prg=Progression('unitTest 2-5-1 to 6-2-5-1')
-# prg.annotate(method='graph',model='minKostka')
-# prg.plot()
 
 # prg=Progression('My Romance')
 # prg.annotate(method='graph',model='majKostka',reduce=False)
 # prg.plot()
+
+
+# todo: Not all chords can be resolved:
+# for c in Chord.chrLst:
+#     print(Chord('C' + c).name + '  ' + Chord('C' + c).quality)
+
+
+

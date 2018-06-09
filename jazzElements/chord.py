@@ -4,7 +4,6 @@ from jazzElements.note import Note
 from jazzElements.viz import plotNotes
 import warnings
 class Chord:
-    #todo: M6/9, 7#5 ad not recognized
     """
 
     """
@@ -32,6 +31,7 @@ class Chord:
         'M6': [0, 4, 7, 9],
         '6': [0, 4, 7, 9],
         '6/9': [0, 4, 7, 9, 14],
+        'M6/9': [0, 4, 7, 9, 14],
         '7': [0, 4, 7, 10],
         'M7': [0, 4, 7, 11],
         'M13': [0, 4, 7, 11,13],
@@ -110,9 +110,6 @@ class Chord:
             self.quality='?'
             warnings.warn('cannot resolve chord quality for '+self.name)
 
-    # todo: Not all chords can be resolved:
-    # for c in Chord.chrLst:
-    #     print(Chord('C'+c).name+'  '+Chord('C'+c).quality)
 
     def __init__(self, nameOrNotes, checkInv=True):
         """

@@ -49,8 +49,6 @@ class Scale():
         - Tritone substitution is good on II-V-I because it provides a chromatic root movement   
           e.g. Dm7–G7–CM7 -> Dm7–D♭7–CM gives a downward walking bass   
     """
-    # todo: use capitals when needed in scale degrees + dim etc
-    # todo: then adapt scale.getFamilies
 
     regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.*)")  # Regular expression to understand Roman Notation
 
