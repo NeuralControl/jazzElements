@@ -12,17 +12,17 @@ from jazzElements.annotate import CadenceGraph
 prg = Progression('My Romance')
 prg.annotate(method='graph',model='majKostka', reduce=False)
 prg.plot('fn')
-savefig('./img2/MyRomanceFn.png')
+savefig('./img/MyRomanceFn.png')
 close('all')
 
 prg = Progression('My Romance')
 prg.annotate(method='graph',model='majKostka', reduce=False)
 prg.plot('kbd')
-savefig('./img2/MyRomanceKbd.png')
+savefig('./img/MyRomanceKbd.png')
 close('all')
 
 Scale('C minor').plotChords()
-savefig('./img2/allChords.png')
+savefig('./img/allChords.png')
 close('all')
 
 
@@ -38,7 +38,7 @@ for i, n in enumerate(Chord.chrLst):
     plotNotes(Chord(root + n).notes, pos=[0, 0, 100, 60], name=root + str(n),ax=ax)
     axis('off')
 suptitle('Implemented chord types in ' + root)
-savefig('./img2/implementedChords.png')
+savefig('./img/implementedChords.png')
 close('all')
 
 fig = figure(figsize=(12, 5))
@@ -50,10 +50,10 @@ for i, n in enumerate(Note.chrSharp):
     plotNotes(Chord(str(n) + 'm7').notes, pos=[0, 0, 100, 60], name=str(n) + 'm7',ax=ax)
     axis('off')
 suptitle('Xm7 in all keys');
-savefig('./img2/allKeys.png')
+savefig('./img/allKeys.png')
 close('all')
 
 
-CadenceGraph('C').plot(tgt='./img2/majKostka', showChords=True)
-CadenceGraph('C','minKostka').plot(tgt='./img2/minKostka', showChords=True)
+CadenceGraph('C').plot(tgt='./img/majKostka', showChords=True)
+CadenceGraph('C','minKostka').plot(tgt='./img/minKostka', showChords=True)
 
