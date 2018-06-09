@@ -45,7 +45,6 @@ Plot all Chords in a given Scale:
 
 Plot m7 for all roots:
 
-
 .. image:: img/allKeys.png
     :width: 500pt
 
@@ -53,3 +52,12 @@ Plot implemented chords:
 
 .. image:: img/implementedChords.png
     :width: 500pt
+
+
+Contents
+========
+.. toctree::
+   :hidden:
+   :maxdepth: 5
+
+   note
