@@ -39,10 +39,8 @@ progressions = \
             '|DbM7|Dbm7|Cm7|Bo7|Bbm7|Eb7|AbM7|G7,C7|',
 
         'Giant Steps': '|DbM7,E9|AM7,C9|FM7|Bm9,E9|AM7,C9|FM7,Ab9|DbM7|Gm9,C9|FM9|Bm9,E9|AM7|Ebm7,Ab9|DbM7|Gm9,C9|FM7|Ebm7,Ab9|',
-
         'unitTest 2-5-1 to 6-2-5-1':
             '|Dm7|Dm7|Eø|Am7|Dm7|G7|CM7|CM7|',
-
     }
 
 
