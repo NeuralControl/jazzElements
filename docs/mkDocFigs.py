@@ -57,3 +57,16 @@ close('all')
 CadenceGraph('C').plot(tgt='./img/majKostka', showChords=True)
 CadenceGraph('C','minKostka').plot(tgt='./img/minKostka', showChords=True)
 
+
+
+# Major 2-5-1
+seq=''.join(['|{},{}|{}'.format(
+    Scale(key,'Ion').getDegree(2,nbNotes=4),
+    Scale(key,'Ion').getDegree(5,nbNotes=4),
+    Scale(key,'Ion').getDegree(1,nbNotes=4) ) for key in Note.chrFlat])
+prg=Progression(chr,name='Maj 2-5-1s')
+prg.annotate()
+prg.plot('kbd')
+savefig('./img/maj251sKbd.png')
+prg.plot('fn')
+savefig('./img/maj251sFn.png')

@@ -1,7 +1,7 @@
 from matplotlib.pyplot import *
 from jazzElements.progression import Progression,progressions
 
-def plotKnownProgressions(plotType='fn',tgt='d:\\Code\\jazzElements\\img\\'):
+def plotKnownProgressions(plotType='fn',reduce=False,tgt='d:\\Code\\jazzElements\\img\\'):
     """
         Analyze known progressions and store to disk
     Args:
@@ -11,7 +11,7 @@ def plotKnownProgressions(plotType='fn',tgt='d:\\Code\\jazzElements\\img\\'):
         for method in ['graph']:
             print('== '+song+' == ('+method+')')
             prg = Progression(song)
-            prg.annotate(method=method,reduce=True)
+            prg.annotate(method=method,reduce=reduce)
             prg.plot(plotType)
             savefig(tgt + plotType+'\\' + song.replace(' ','')+' '+method)
             close('all')

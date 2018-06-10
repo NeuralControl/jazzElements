@@ -1,7 +1,8 @@
 Examples
 ===========
 
-More Coming soon
+.. WARNING::
+    Dev in progress, more coming soon
 
 
 Scale
@@ -28,4 +29,30 @@ Returns:
 >>>   C Lyd  CM7    D7   Em7  F♯ø   GM7   Am7   Bm7
 >>>   C Mix   C7   Dm7    Eø  FM7   Gm7   Am7  A♯M7
 >>>   C Phr  Cm7  C♯M7   D♯7  Fm7    Gø  G♯M7  A♯m7
+
+Progressions
+------------
+
+Training on 2-5-1s
+^^^^^^^^^^^^^^^^^^
+To train on 2-5-1 cadences, one can generate the progression then plot the analysis and the associated keyboards.
+We can then use the keyboard view to play the chords (upper keyboard) with the left hand, and the associated scale
+(lower keyboard) with the right hand.
+
+>>> # Generating the 4 notes 2-5-1s for every root:
+>>> seq=''.join(['|{},{}|{}'.format(
+>>>     Scale(key,'Ion').getDegree(2,nbNotes=4),
+>>>     Scale(key,'Ion').getDegree(5,nbNotes=4),
+>>>     Scale(key,'Ion').getDegree(1,nbNotes=4) ) for key in Note.chrFlat])
+
+>>> prg=Progression(chr,name='Maj 2-5-1s')
+>>> prg.annotate()
+>>> prg.plot('fn') # Plot the analysis view
+>>> prg.plot('kbd') # Plot the keyboard view
+
+.. image:: img/maj251sFn.png
+    :width: 500pt
+
+.. image:: img/maj251sKbd.png
+    :width: 500pt
 
