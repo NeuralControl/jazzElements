@@ -1,3 +1,7 @@
+jazzElements
+============
+
+
 .. image:: https://readthedocs.org/projects/jazzelements/badge/?version=latest
     :target: https://jazzelements.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
@@ -74,14 +78,5 @@ Plot implemented chords:
     :width: 500pt
 
 
-.. toctree::
-    :hidden:
-    :maxdepth: 5
 
-    examples
-    note
-    chord
-    scale
-    progression
-    annotate
 

@@ -4,12 +4,20 @@
    contain the root `toctree` directive.
 
 
-Welcome to jazzElements' documentation!
-=======================================
-
 .. toctree::
-   :maxdepth: 4
+   :hidden:
+   :maxdepth: 5
    :caption: Contents:
+
+   readme
+   examples
+   note
+   chord
+   scale
+   progression
+   annotate
+
+
 
 .. include:: readme.rst
 
