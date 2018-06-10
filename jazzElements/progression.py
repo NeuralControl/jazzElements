@@ -43,7 +43,6 @@ progressions = \
             '|Dm7|Dm7|Eø|Am7|Dm7|G7|CM7|CM7|',
     }
 
-
 class Progression:
     def __init__(self, prg, name=''):
         # todo: chords are now of equal duration within a bar.
@@ -56,7 +55,6 @@ class Progression:
                 'sepx': 0,
                 'sepy': 20,
                 'beatsPerBar':4,
-
             }
 
         self.name = name
@@ -89,55 +87,70 @@ class Progression:
                 Scale(k, mode).getDegree(degree) == chr]
 
     def plotChord(self, ax, chr, pos, plotType='fn'):
+
         chord = self.chords.loc[chr]
         ann = self.ann.ann.loc[chr] if self.ann else None
 
         xChr, yChr, wChr, hChr = pos
-        bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=False, clip_on=False, color='k')
+        bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=False, clip_on=False, color='k',alpha=1)
         ax.add_patch(bgd)
 
         # Function
         if plotType == 'fn':
+            cadh = 30
+            # Plot chord name
             root, alt, chrType = re.search(Chord.regexChord, chord['chr']).groups()
             text(xChr + wChr / 2, yChr + hChr, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
                  va='top', ha='center', fontSize=10,
                  bbox=dict(boxstyle='round4', fc='w'), weight=1000)
-            cadh = 30
-            if 'sca' in ann:
-                for si, s in enumerate(ann['sca']):
-                    if len(s):
-                        bgd = patches.Rectangle((xChr, yChr + si * cadh), wChr, cadh, fill=True, clip_on=False,
-                                                color=self.cfg['scaleColors'][s], alpha=1, ec='k')
-                        ax.add_patch(bgd)
 
-                        if chr == 0 or s not in self.chords.loc[chr - 1].get('sca', []):
-                            text(xChr + 2, yChr + cadh / 2 + si * cadh, s,
-                                 color='k', va='center',
-                                 ha='left', fontSize=10, weight='bold')
-
-            if 'deg' in ann:
-                for di, d in enumerate(ann['deg']):
-                    text(xChr + wChr, yChr + cadh / 2 + di * cadh - 1, d, color='k',
-                         va='center', ha='right', fontSize=10, weight='bold')
+            # if 'sca' in ann:
+            #     for si, s in enumerate(ann['sca']):
+            #         if len(s):
+            #             if chr == 0 or s not in self.chords.loc[chr - 1].get('sca', []):
+            #                 text(xChr + 2, yChr + cadh / 2 + ann['cadPos'][si] * cadh, s,
+            #                      color='k', va='center',
+            #                      ha='left', fontSize=10, weight='bold')
+            #
+            # if 'deg' in ann:
+            #     for di, d in enumerate(ann['deg']):
+            #         text(xChr + wChr, yChr + cadh / 2 + ann['cadPos'][di] * cadh - 1, d, color='k',
+            #              va='center', ha='right', fontSize=10, weight='bold')
 
             if 'cad' in ann:
                 for ci, c in enumerate(ann['cad']):
-                    if chr == 0 or c[0] not in [x[0] for x in self.ann.ann.loc[chr - 1].get('cad', [])]:
-                        text(xChr + wChr / 2, yChr + ci * cadh + cadh / 2, c, color='k', va='center', ha='center',
-                             fontSize=10, weight='bold')
-                    else:
-                        if len(c) > 1 and c[1] == len(c[0].split('-')) - 1:
-                            arrow(xChr + 50, yChr + ci * cadh + cadh / 2, wChr - 100, 0, head_width=15, head_length=20,
-                                  fc='k', lw=1)
+                    if len(c.split('-')) == 1: # Isolated chord
+                        text(xChr , yChr + ann['cadPos'][ci] * cadh + cadh / 2,
+                             ' '+ann['cad'][ci]+'('+ann['sca'][ci].replace(' Ion','')+')',
+                             color='k', va='center', ha='left',
+                             fontSize=8)
 
-                        else:
-                            arrow(xChr + 50, yChr + ci * cadh + cadh / 2, wChr - 100 - 20, 0, head_width=0,
-                                  head_length=20, fc='k', lw=1)
-            else:
-                if 'fn' in ann:
-                    text(xChr + wChr / 2, yChr + cadh / 2, '/'.join(ann['fn']), color='k', va='center',
-                         ha='center',
-                         fontSize=10, weight='bold')
+                    else: # Cadence
+                        # plot bgd
+                        bgd = patches.Rectangle((xChr+2, yChr + ann['cadPos'][ci] * cadh+2), wChr-2, cadh-3, fill=True,
+                                                clip_on=False, color=self.cfg['scaleColors'][ann['sca'][ci]], alpha=1, ec=None)
+                        ax.add_patch(bgd)
+
+                        # Print cadence if first chord
+                        if ann['chrPos'][ci]==0:
+                            text(xChr , yChr + ann['cadPos'][ci] * cadh + cadh / 2,' '+ann['sca'][ci].replace(' Ion','')+': '+ann['cad'][ci],
+                                 color='k', va='center', ha='left',
+                                 fontSize=10, weight='bold')
+
+
+                    # else:
+                    #     if len(c) > 1 and c[1] == len(c[0].split('-')) - 1:
+                    #         arrow(xChr + 50, yChr + ann['cadPos'][ci] * cadh + cadh / 2, wChr - 100, 0, head_width=15, head_length=20,
+                    #               fc='k', lw=1)
+                    #
+                    #     else:
+                    #         arrow(xChr + 50, yChr + ann['cadPos'][ci] * cadh + cadh / 2, wChr - 100 - 20, 0, head_width=0,
+                    #               head_length=20, fc='k', lw=1)
+            # else:
+            #     if 'fn' in ann:
+            #         text(xChr + wChr / 2, yChr + cadh / 2, '/'.join(ann['fn']), color='k', va='center',
+            #              ha='center',
+            #              fontSize=10, weight='bold')
 
         if plotType == 'kbd':
             root, alt, chrType = re.search(Chord.regexChord, chord['chr']).groups()
@@ -177,7 +190,7 @@ class Progression:
                 yBar -= (hBar + self.cfg['sepy'])
 
         # Plot Bar
-        plot([xBar - self.cfg['sepx'] / 2, xBar - self.cfg['sepx'] / 2], [yBar, yBar + hBar], color='k', lw=3)
+        plot([xBar - self.cfg['sepx'] / 2, xBar - self.cfg['sepx'] / 2], [yBar, yBar + hBar], color='k', lw=3,alpha=1)
         text(xBar - self.cfg['sepx'] / 2, yBar + hBar, '{:02}'.format(b + 1), color='w', va='top', ha='center', fontSize=8,
              weight=1000,
              bbox=dict(boxstyle='round4', fc='k'))
@@ -337,23 +350,5 @@ class Progression:
         - or in the second level: We use the functionally important chords
         then we can go into crazy stuff i.e. side slipping, cycled patterns, chromatic runs etc...
         """
-
-
-# prg=Progression('My Romance')
-# prg.annotate(method='graph',model='majKostka',reduce=False)
-#
-# self=annGraph(prg.chords)
-# self.annotate(reduce=False)
-# self.plot()
-
-prg=Progression('My Romance')
-prg.annotate(method='graph',model='majKostka',reduce=False)
-prg.plot()
-
-
-# todo: Not all chords can be resolved:
-# for c in Chord.chrLst:
-#     print(Chord('C' + c).name + '  ' + Chord('C' + c).quality)
-
 
 

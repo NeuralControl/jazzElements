@@ -1,24 +1,43 @@
-import warnings
-import pandas as pd
-from jazzElements.chord import Chord
-from jazzElements.note import Note
-from jazzElements.scale import Scale
+# import warnings
+# import pandas as pd
+# from jazzElements.chord import Chord
+# from jazzElements.note import Note
+# from jazzElements.scale import Scale
+# from jazzElements.progression import Progression
+# from jazzElements.annotate import annGraph
+
+"""
+todo:
+ok - dont color single chords
+ok - lighten scales etc
+- fix bar separation
+- some cadPos arent right e.g. My romance chord 3
+"""
+
+self=Progression('Misty')
+self.annotate(reduce=False)
+self.plot('kbd')
 
 
 
-for x in Chord.chrFamilies:
-    print(x + ' ----------------------')
-    for y in Chord.chrFamilies[x]:
-        print('   {} {}'.format(y,'-'.join([_ for _ in Chord('C'+y).intStr])))
-
-for d in range(7):
-    print(Scale('C min').getFamily(d+1))
-
-
-    print(Scale('C min').getFamilies())
+ann=annGraph(self.chords)
+ann.annotate(reduce=False)
+ann.plot()
 
 
 
-TODO:
-#todo: REPLACE degree by getFamily?
-#todo: USE getFamily in progression analysis...
+# todo: Not all chords quality can be resolved:
+# for c in Chord.chrLst:
+#     print(Chord('C' + c).name + '  ' + Chord('C' + c).quality)
+
+# prg=Progression('My Romance')
+# prg.annotate(method='graph',model='majKostka',reduce=False)
+#
+# self=annGraph(prg.chords)
+# self.annotate(reduce=False)
+# self.plot()
+
+
+
+
+

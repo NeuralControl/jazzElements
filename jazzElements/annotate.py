@@ -149,6 +149,8 @@ class Annotate():
         """
 
     def plot(self):
+        if len(ann.ann)==0:
+            warnings.warn('run annotate first, nothing to plot')
         figure()
         chrSpcX=100
         cadSpcY=5

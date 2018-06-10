@@ -28,22 +28,22 @@ The full documentation can be found on `ReadTheDocs <https://jazzelements.readth
 .. WARNING:: I am coding this in parallel to trying to finally understand music theory.
     This is in active dev with surely a good amount of hacks and bugs. Feel free to contribute/submit issues or ideas.
 
+A chord progression can be defined using a chord string (e.g. '|DbM7,E9|AM7,C9|FM7|Bm9,E9|AM7,C9|FM7,Ab9|') or using a named progression (e.g. 'Misty')
+We can then annotate a chord progression:
 
-We can annotate a chord progression:
-
->>> prg = Progression('|CM7,FM7|Em7,Am7|Dm7,G7|CM7,E7#5|Am7,E7#5|Am7,A7#5|Dm7,G7|CM7,C7|FM7,Bb7|CM7,C7|FM7,Bb7|CM7|F#m7b5,B7|Em7,Bb7|Am7,D7|Dm7,G7|',name='My Romance')
+>>> prg = Progression('Misty')
 >>> prg.annotate()
 >>> prg.plot('fn')
 
-We can plot the harmonic analysis
- .. image:: img/MyRomanceFn.png
+and plot the harmonic analysis
+ .. image:: img/MistyFn.png
     :width: 500pt
 
-or the chords (top) and scales (bottom):
+or a keyboard representation chords (top) and scales (bottom):
 
 >>> prg.plot('kbd')
 
-.. image:: img/MyRomanceKbd.png
+.. image:: img/MistyKbd.png
     :width: 500pt
 
 The analysis can be made for example using the major/minor chord progression from the book Tonal Harmony by Stefan Kostka

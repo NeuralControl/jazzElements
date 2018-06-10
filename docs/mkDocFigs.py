@@ -9,16 +9,16 @@ from jazzElements.annotate import CadenceGraph
 
 #todo: automatize mkDocFigs on sphynx build
 
-prg = Progression('My Romance')
+prg = Progression('Misty')
 prg.annotate(method='graph',model='majKostka', reduce=False)
 prg.plot('fn')
-savefig('./img/MyRomanceFn.png')
+savefig('./img/MistyFn.png')
 close('all')
 
-prg = Progression('My Romance')
+prg = Progression('Misty')
 prg.annotate(method='graph',model='majKostka', reduce=False)
 prg.plot('kbd')
-savefig('./img/MyRomanceKbd.png')
+savefig('./img/MistyKbd.png')
 close('all')
 
 Scale('C minor').plotChords()
