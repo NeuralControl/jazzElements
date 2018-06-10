@@ -8,44 +8,69 @@ They have the following attributes:
     - Scale('D# min').mode -> 'Aeo'
     - Scale('D# min').name -> 'D♯ Aeo'
 
-Basic operations:
+Basic operations
+-----------------
 
-Notes:
-    Scale('C').notes() -> [C, D, E, F, G, A, B]
-Transposition:
-    (Scale('C')+3).notes() -> [D♯, F, G, G♯, A♯, C, D]
-Comparison:
-    Scale('C')== Scale('D') -> False
-Diatonic Chords:
-    Scale('C').chords() -> [CM7, Dm7, Em7, FM7, G7, Am7, Bø]
-Roman Notation:
-    Chords:Scale('C').chordsRoman() -> ['IM7', 'iim7', 'iiim7', 'IVM7', 'V7', 'vim7', 'viiø']
-Degrees Quality:
-    Scale('C').degreesQuality() -> ['maj', 'min', 'min', 'maj', 'dom', 'min', 'dim']
-Check if a chord is diatonic:
-    Scale('C').hasChord('Cm') -> False, or degree if in scale
-Intervals:
-    Scale('C').intervals() -> [2, 2, 1, 2, 2, 2, 1] in semitones
-Intervals (strings):
-    Scale('C').intervals(asStr=True) -> 'w-w-h-w-w-w-h'
-Parallel minor:
-    Scale('C').parallelMinor() -> C Aeo  | C D D♯ F G G♯ A♯
-Parallel modes:
-    Scale('C').parallelModes() -> [C Dor, C Phr, C Lyd, C Mix, C Aeo, C Loc]
-RelativeMinor:
-    Scale('C').relativeMinor() -> A Aeo  | A B C D E F G
-RelativeMajor:
-    Scale('C Aeo').relativeMajor() -> D♯ Ion  | D♯ F G G♯ A♯ C D
-RelativeModes:
-    Scale('C').relativeModes() -> [D Dor, E Phr, F Lyd, G Mix, A Aeo, B Loc]
-Plotting:
-    Scale('C min').plot()
+Field list
+----------
 
-.. image:: img/scaleCmin.png
-    :width: 150pt
+.. list-table::
+    :header-rows: 1
+    :stub-columns: 1
 
-Scale('C min').plotChords()
+    * -
+      - code
+      - output
+    * - Notes
+      - Scale('C').notes()
+      - [C, D, E, F, G, A, B]
+    * - Transposition
+      - (Scale('C')+3).notes()
+      - [D♯, F, G, G♯, A♯, C, D]
+    * - Comparison
+      - Scale('C')== Scale('D')
+      - False
+    * - Diatonic Chords
+      - Scale('C').chords()
+      - [CM7, Dm7, Em7...]
+    * - Roman Notation
+      - Scale('C').chordsRoman()
+      - ['IM7', 'iim7', 'iiim7'...]
+    * - Degrees Quality
+      - Scale('C').degreesQuality()
+      - ['maj', 'min', 'min'...]
+    * - Check if a chord is diatonic
+      - Scale('C').hasChord('Cm')
+      - False, or degree if in scale
+    * - Intervals
+      - Scale('C').intervals()
+      - [2, 2, 1, 2, 2, 2, 1] in semitones
+    * - Intervals (strings)
+      - Scale('C').intervals(asStr=True)
+      - 'w-w-h-w-w-w-h'
+    * - Parallel minor
+      - Scale('C').parallelMinor()
+      - C Aeo  | C D D♯ F G G♯ A♯
+    * - Parallel modes
+      - Scale('C').parallelModes()
+      - [C Dor, C Phr, C Lyd...]
+    * - RelativeMinor
+      - Scale('C').relativeMinor()
+      - A Aeo  | A B C D E F G
+    * - RelativeMajor
+      - Scale('C Aeo').relativeMajor()
+      - D♯ Ion  | D♯ F G G♯ A♯ C D
+    * - Plotting scale chords
+      - Scale('C min').plotChords()
+      - .. image:: img/scaleCminChords.png
+           :width: 150pt
+    * - RelativeModes
+      - Scale('C').relativeModes()
+      - [D Dor, E Phr, F Lyd...]
+    * - Plotting a chord
+      - Scale('C min').plot()
+      - .. image:: img/scaleCmin.png
+           :width: 150pt
 
-.. image:: img/scaleCminChords.png
-    :width: 300pt
+
 

@@ -2,13 +2,28 @@
     :target: https://jazzelements.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-More information on `ReadTheDocs <https://jazzelements.readthedocs.io/en/latest/?badge=latest>`_
 
 The primary goal of this package is to help in the analysis of a chord progression and facilitate learning of jazz standards.
 It will also suggest alternative chords, progressions, scales etc     
 For example, we can enter a progression as a string, ask to analyse then plot the results.   
 Each cell shows the chord, its degree in the corresponding scale, and optionally the corresponding notes.  
-**Right now we have a skeleton with the basics, working on the analysis.**
+
+
+The full documentation can be found on `ReadTheDocs <https://jazzelements.readthedocs.io/en/latest/?badge=latest>`_
+
+.. Hint:: The best resource i found to learn about jazz and music theory, check it out:
+
+        - "WalkThatBass_" youtube channel.
+        - "TheJazzPianoSite_" website.
+
+
+.. _WalkThatBass: https://www.youtube.com/c/walkthatbass
+.. _TheJazzPianoSite: http://www.thejazzpianosite.com/jazz-piano-lessons
+
+
+.. WARNING:: I am coding this in parallel to trying to finally understand music theory.
+    This is in active dev with surely a good amount of hacks and bugs. Feel free to contribute/submit issues.
+
 
 We can annotate a chord progression:
 
@@ -27,13 +42,18 @@ or the chords (top) and scales (bottom):
 .. image:: img/MyRomanceKbd.png
     :width: 500pt
 
-The analysis is now made using the major/minor chord progression from Tonal Harmony by Stefan Kostka
+The analysis can be made for example using the major/minor chord progression from the book Tonal Harmony by Stefan Kostka
 
-.. image:: img/majKostka.png
-    :width: 200pt
+.. list-table::
 
-.. image:: img/minKostka.png
-    :width: 200pt
+    * - .. figure:: img/seqMajKostka.png
+
+           Major Kostka Progression
+
+      - .. figure:: img/seqMinKostka.png
+
+           Minor Kostka Progression
+
 
 
 Plot all Chords in a given Scale:

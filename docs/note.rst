@@ -5,8 +5,23 @@ Notes
 Notes are the most basic element, they can be defined as Note('E♯'),Note('Cb'),
 and perform simplification (e.g. Note('Gb♭#♯')) or alteration (e.g. Note('C',-2) in semitones).
 
-Applications:
+Applications
+------------
 
-- Note('C')+2 gives D♯
-- Note('A')-Note('F#') gives 3
-- Note('F##')==Note('Abb') gives True
+.. list-table::
+    :header-rows: 1
+    :stub-columns: 1
+
+    * -
+      - code
+      - output
+    * - Transposition
+      - Note('C')+2
+      - D♯
+    * - Note difference
+      - Note('A')-Note('F#')
+      - 3
+    * - Comparison
+      - Note('F##')==Note('Abb')
+      - True
+
