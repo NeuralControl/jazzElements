@@ -54,10 +54,10 @@ Plot implemented chords:
     :width: 500pt
 
 
-Contents
-========
 .. toctree::
-   :hidden:
-   :maxdepth: 5
+    :hidden:
+    :maxdepth: 5
 
-   note
+    note
+    chord
+    scale

@@ -5,7 +5,14 @@ from jazzElements.viz import plotNotes
 import warnings
 class Chord:
     """
+    Create a chord from chord name or list of notes
 
+    Args:
+        nameOrNotes: chord names or notes within chord
+
+    Examples:
+        c=Chord('Em7')
+        c=Chord(['C','E','G'])
     """
     intLst = ['1', '♭2', '2', '♭3', '3', '4', '♭5', '5', '♯5', '6', '♭7', '7', '8', '♭9', '9', '♯9', '10', '11', '♯11',
               '12', '♯12', '13']
@@ -112,14 +119,7 @@ class Chord:
 
 
     def __init__(self, nameOrNotes, checkInv=True):
-        """
-        Create a chord from chord name or list of notes
-        Args:
-            nameOrNotes: chord names or notes within chord
-        Examples:
-            c=Chord('Em7')
-            c=Chord(['C','E','G'])
-        """
+
 
         self.notes = []
         self.intArr = []
@@ -199,7 +199,7 @@ class Chord:
     #     return [str(gt) for gt in avoidNotes] if asStr else avoidNotes
 
     def relativeMinor(self, asStr=False):
-        if self.intArr()[1] == 4:
+        if self.intArr[1] == 4:
             if self.type == '':
                 chr = Chord((self.root - 3).name + 'm')
             else:
@@ -210,14 +210,14 @@ class Chord:
 
 
     def relativeMajor(self, asStr=False):
-        if self.intArr()[1] == 3:
+        if self.intArr[1] == 3:
             if self.type == '':
                 chr = Chord((self.root + 3).name + 'M')
             else:
                 chr = Chord((self.root + 3).name + self.type.replace('m', 'M'))
             return chr.name if asStr else chr
         else:
-            raise ValueError('Cannot calculate relative minor chord')
+            raise ValueError('Cannot calculate relative major chord')
 
     def __str__(self):
         if not self.notes:

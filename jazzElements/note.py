@@ -3,9 +3,11 @@
 class Note:
     """
     Create a new note with format verification and simplification
+
     Args:
         note: note string format (can use unicode b,♭,#,♯ )
         alt: additional alteration
+
     Examples:
         n=Note('Db')
         n=Note('D♭')
@@ -54,10 +56,13 @@ class Note:
     def __add__(self, alt):
         """
         Adds alt half steps to a given note
+
         Args:
             alt: number of half steps to add
+
         Returns:
             Altered Note
+
         Examples:
             Note('C')+2 returns Note('D')
         """
@@ -92,8 +97,10 @@ class Note:
     def __eq__(self, note):
         """
         Tests if self is equivalent to another Note
+
         Args:
             note: Note to compare to
+
         Returns:
             bool
         """
