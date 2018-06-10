@@ -58,6 +58,10 @@ Plot implemented chords:
     :hidden:
     :maxdepth: 5
 
+    examples
     note
     chord
     scale
+    progression
+    annotate
+
