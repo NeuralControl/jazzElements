@@ -39,7 +39,7 @@ and plot the harmonic analysis
  .. image:: img/MistyFn.png
     :width: 500pt
 
-or a keyboard representation chords (top) and scales (bottom):
+or a keyboard representation of chords (top) and scales (bottom):
 
 >>> prg.plot('kbd')
 
