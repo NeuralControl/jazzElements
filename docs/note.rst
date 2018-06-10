@@ -5,8 +5,8 @@ Notes
 Notes are the most basic element, they can be defined as Note('E♯'),Note('Cb'),
 and perform simplification (e.g. Note('Gb♭#♯')) or alteration (e.g. Note('C',-2) in semitones).
 
-Applications
-------------
+Uses
+-----
 
 .. list-table::
     :header-rows: 1

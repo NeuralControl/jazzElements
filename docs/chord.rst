@@ -17,7 +17,7 @@ Basic attributes
       - output
     * - Chord notes
       - Chord('Cdim').notes
-      - [C, E♭, G♭] ->
+      - [C, E♭, G♭]
     * - Distances from root in semitones
       - Chord('Cdim').intArr
       - [0, 3, 6]

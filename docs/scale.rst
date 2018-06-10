@@ -3,16 +3,28 @@
 Scales
 ======
 Scales can be instantiated as s=Scale(root='C', mode='Ion') or Scale('C harMin').
-They have the following attributes:
-    - Scale('D# min').root -> Note('D♯')
-    - Scale('D# min').mode -> 'Aeo'
-    - Scale('D# min').name -> 'D♯ Aeo'
+Attributes
+----------
+
+.. list-table::
+    :header-rows: 1
+    :stub-columns: 1
+
+    * -
+      - code
+      - output
+    * - Root
+      - Scale('D# min').root
+      - Note('D♯')
+    * - Mode
+      - Scale('D# min').mode
+      - 'Aeo'
+    * - Name
+      - Scale('D# min').name
+      - 'D♯ Aeo'
 
 Basic operations
 -----------------
-
-Field list
-----------
 
 .. list-table::
     :header-rows: 1

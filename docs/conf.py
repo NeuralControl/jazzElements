@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'jazzElements'
-copyright = '2018, Remy Wahnoun'
+copyright = '2018, jazzElements'
 author = 'Remy Wahnoun'
 
 # The short X.Y version
@@ -166,8 +166,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'jazzElements', 'jazzElements Documentation',
-     author, 'jazzElements', 'One line description of project.',
-     'Miscellaneous'),
+     author, 'jazzElements', 'Harmonic Analysis',
+     'Music'),
 ]
 
 
