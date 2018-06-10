@@ -3,4 +3,5 @@
 Annotate
 ===========
 
-Coming soon
+.. WARNING::
+    Dev in progress, more coming soon
