@@ -26,7 +26,7 @@ The full documentation can be found on `ReadTheDocs <https://jazzelements.readth
 
 
 .. WARNING:: I am coding this in parallel to trying to finally understand music theory.
-    This is in active dev with surely a good amount of hacks and bugs. Feel free to contribute/submit issues.
+    This is in active dev with surely a good amount of hacks and bugs. Feel free to contribute/submit issues or ideas.
 
 
 We can annotate a chord progression:
