@@ -186,84 +186,6 @@ class Annotate():
 
         axis('off');box('off')
 
-class EXannGraph(Annotate):
-    def __init__(self, chords, model='majKostka'):
-        Annotate.__init__(self, chords)
-        self.name = 'Graph Method'
-        self.description = 'We annotate first the longest sequences using a cadence graph'
-        self.model = model
-
-    def findCadencesInKey(self, key, model):
-        """
-        Returns possible cadences in self.chords using key
-        Returns:
-            list of cadences: (<size>,<start>,<key>,<cadenceList>)
-        """
-
-        keyCad = CadenceGraph(key, model)
-        Seq = []
-        cur = []  # [(<start>,<list>),...]
-
-        for ci, c in enumerate(self.chords):
-            if c in keyCad.chords:  # Current chord is in key of interest
-                if len(cur):  # At least an ongoing cadence
-                    newCur = []
-                    for x in cur:
-                        for d in keyCad.getDegree(c,strict=True):
-                            if d in keyCad.fnSeq[x[1][-1]]:  # The current chord can continue this sequence
-                                newCur.append((x[0], x[1] + [d]))
-                            else:  # A new sequence starts here
-                                Seq.append((len(x[1]), x[0], keyCad.scale.name,
-                                             [keyCad.degreesRoman[xi - 1] for xi in x[1]])) # store this cadence
-                                newCur.append((ci, [d])) # add new sequence
-
-                    cur = newCur.copy()
-
-                else:  # No cadence ongoing
-                    cur = [(ci, [x]) for x in keyCad.getDegree(c)]
-
-            else:  # current chord isnt in key, append all current cadences to Seq
-                for x in cur:
-                    Seq.append((len(x[1]), x[0], keyCad.scale.name, [keyCad.degreesRoman[xi - 1] for xi in x[1]]))
-                cur = []
-        if cur:
-            for x in cur:
-                Seq.append((len(x[1]), x[0], keyCad.scale.name, [keyCad.degreesRoman[xi - 1] for xi in x[1]]))
-        return Seq
-
-    def annotate(self, reduce=True):
-        fn = [[] for c in self.chords]
-        deg = [[] for c in self.chords]
-        sca = [[] for c in self.chords]
-        cad = [[] for c in self.chords]
-        rank=[[] for c in self.chords]
-        pos=[[] for c in self.chords]
-
-        # Find cadences in all keys
-        X = []  # [(<size>,<start>,<key>,<cadence>),...]
-        for key in Note.chrFlat:
-            X.extend(self.findCadencesInKey(key, self.model))
-
-
-        X.sort(key=lambda x: x[0], reverse=True)  # Sort by size
-
-        used = [False] * len(self.chords)
-        for x in X:
-            if not reduce or not all(used[x[1]:(x[1] + x[0])]):  # All spots are unused
-                rnk=max([len(sca[c]) for c in range(x[1], (x[1] + x[0]))])
-                # todo rank bug, e.g. myromance chord 2, two cadences have the same rank
-                for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
-                    # self.fn[c].append(CadenceGraph.fnTypes[x[3][ci]]) #todo: fix
-                    deg[c].append(x[3][ci])
-                    sca[c].append(x[2])
-                    cad[c].append('-'.join(x[3]))
-                    used[c] = True
-                    rank[c].append(rnk)
-                    pos[c].append(ci)
-
-
-        self.ann = pd.DataFrame(dict(fn=fn, deg=deg, sca=sca, cad=cad,cadPos=rank,chrPos=pos))
-
 
 class annGraph(Annotate):
     def __init__(self, chords):
@@ -344,13 +266,3 @@ class annGraph(Annotate):
 
         self.ann = pd.DataFrame(dict(fn=fn, deg=deg, sca=sca, cad=cad,cadPos=rank,chrPos=pos))
 
-
-from jazzElements.progression import Progression
-seq=''.join(['|{},{}|{}'.format(
-    Scale(key,'hMin').getDegree(2,nbNotes=4),
-    Scale(key,'hMin').getDegree(5,nbNotes=4),
-    Scale(key,'hMin').getDegree(1,nbNotes=4) ) for key in Note.chrFlat])
-
-self=Progression(seq,'Minor 251s')
-self.annotate(reduce=False)
-self.plot('fn')
