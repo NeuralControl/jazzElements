@@ -50,7 +50,7 @@ class Progression:
         self.cfg = \
             {
                 'colors': ['#c0d6e4', '#afeeee', '#dddddd', '#ffb6c1', '#e6e6fa', '#f5f5dc', '#ccff00', '#31698a',
-                           '#f08080', '#ffa500', '#008080'] * 2,
+                           '#f08080', '#ffa500', '#008080'] * 3,
                 'barsPerRow': 4,
                 'sepx': 0,
                 'sepy': 20,
@@ -317,9 +317,9 @@ class Progression:
     #                     raise ValueError(
     #                         'Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chr'])
 
-    def annotate(self, method='graph',model='majKostka', reduce=True):
+    def annotate(self, method='graph', reduce=True):
         if method == 'graph':
-            self.ann = annGraph(self.chords,model)
+            self.ann = annGraph(self.chords)
         else:
             warnings.warn('not implemented')
 

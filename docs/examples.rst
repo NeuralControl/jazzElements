@@ -56,3 +56,22 @@ We can then use the keyboard view to play the chords (upper keyboard) with the l
 .. image:: img/maj251sKbd.png
     :width: 500pt
 
+Likewise, we can train on 4 notes chords in the harmonic minor 2-5-1s
+
+>>> # Generating the 4 notes 2-5-1s for every root:
+>>> seq=''.join(['|{},{}|{}'.format(
+>>>     Scale(key,'hMin').getDegree(2,nbNotes=4),
+>>>     Scale(key,'hMin').getDegree(5,nbNotes=4),
+>>>     Scale(key,'hMin').getDegree(1,nbNotes=4) ) for key in Note.chrFlat])
+
+>>> prg=Progression(chr,name='Min 2-5-1s')
+>>> prg.annotate()
+>>> prg.plot('fn') # Plot the analysis view
+>>> prg.plot('kbd') # Plot the keyboard view
+
+.. image:: img/min251sFn.png
+    :width: 500pt
+
+.. image:: img/min251sKbd.png
+    :width: 500pt
+

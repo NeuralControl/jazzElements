@@ -20,11 +20,9 @@ class Scale():
         'Aeo': [2, 1, 2, 2, 1, 2, 2],
         'Loc': [1, 2, 2, 1, 2, 2, 2],
         'Chr': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        'Natmin': [2, 1, 2, 2, 1, 2, 2],  # (Aeolian)
-        'Harmin': [2, 1, 2, 2, 1, 3, 1],
-        'Melminup': [2, 1, 2, 2, 2, 2, 1],
-        'Melmindown': [2, 1, 2, 2, 1, 2, 2],
-
+        'Hmin': [2, 1, 2, 2, 1, 3, 1], # Harmonic Minor
+        'Mmin+': [2, 1, 2, 2, 2, 2, 1], # melodic Minor up
+        'Mmin-': [2, 1, 2, 2, 1, 2, 2], # melodic Minor down
     }
     chrDegLst = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
     chrSubLst = \
@@ -62,7 +60,7 @@ class Scale():
         mode = mode[0].upper() + mode[1:].lower()
 
         if mode in ['Major', 'Maj']: mode = 'Ion'
-        if mode in ['Minor', 'Min']: mode = 'Aeo'
+        if mode in ['Minor', 'Min', 'Nmin']: mode = 'Aeo'
         if mode not in self.modesIntervals: raise ValueError('mode {} not implemented'.format(mode))
 
         self.root = Note(root)
