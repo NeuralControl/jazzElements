@@ -33,8 +33,8 @@ Returns:
 Progressions
 ------------
 
-Training on 2-5-1s
-^^^^^^^^^^^^^^^^^^
+Training on major 2-5-1s
+^^^^^^^^^^^^^^^^^^^^^^^^
 To train on 2-5-1 cadences, one can generate the progression then plot the analysis and the associated keyboards.
 We can then use the keyboard view to play the chords (upper keyboard) with the left hand, and the associated scale
 (lower keyboard) with the right hand.
@@ -55,6 +55,10 @@ We can then use the keyboard view to play the chords (upper keyboard) with the l
 
 .. image:: img/maj251sKbd.png
     :width: 500pt
+
+
+Training on minor 2-5-1s
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Likewise, we can train on 4 notes chords in the harmonic minor 2-5-1s
 
