@@ -7,11 +7,10 @@ from jazzElements.progression import Progression
 from jazzElements.annotate import annGraph
 
 
-prg = Progression('Misty')
+prg = Progression('|C|F|D7|G7|C|')
 prg.annotate()
-print(prg.ann.ann.loc[13])
-
-
+prg.plot()
+print(prg.ann.ann)
 
 """
 todo: fix bar separation
@@ -42,7 +41,11 @@ Improvisation:
 - or in the second level: We use the functionally important chords
 then we can go into crazy stuff i.e. side slipping, cycled patterns, chromatic runs etc...
 """
-
+"""
+    - Tritone substitution: we can replace a dom7 by a dom7 that is 6halfSteps above the root   
+    - Tritone substitution is good on II-V-I because it provides a chromatic root movement   
+      e.g. Dm7–G7–CM7 -> Dm7–D♭7–CM gives a downward walking bass   
+"""
 
 self=Progression('Misty')
 self.annotate(reduce=False)
@@ -54,9 +57,26 @@ ann=annGraph(self.chords)
 ann.annotate(reduce=False)
 ann.plot()
 
+# The Following should give I IV V/V V I
+# fn: T S D D T
+# https://www.semanticscholar.org/paper/HarmTrace-%3A-Automatic-functional-harmonic-analysis-Remco/257c1b75d56c7a13975ea0f000a9ba4ff833cd6c/figure/0
+# prg = Progression('|C|F|D7|G7|C|')
+# prg.annotate()
+# prg.plot()
+# print(prg.ann.ann)
+
+
+# PRACTICAL ANALYSIS
+# In addition to IIm7-V7-Is created through secondary dominants, many tunes are made up of IIm7-V7-Is with different key centres that may appear to be entirely random or may be related logically:
+# Misty: key centres in bridge move down a semitone then a major 3rd
+# Autumn Leaves: key centres Bb – Gm (major to relative minor)
+# Giant Steps: (key centres move up in major 3rds)
 
 
 # todo: Not all chords quality can be resolved:
+
+
+
 # for c in Chord.chrLst:
 #     print(Chord('C' + c).name + '  ' + Chord('C' + c).quality)
 

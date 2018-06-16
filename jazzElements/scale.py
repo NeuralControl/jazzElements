@@ -10,6 +10,7 @@ from jazzElements.viz import plotNotes
 
 
 class Scale():
+    fnTypes = {1: 'T', 2: 'ST', 3: 'M', 4: 'SD', 5: 'D', 6: 'SM', 7: 'L'}
     modesLst = ['Ion', 'Dor', 'Phr', 'Lyd', 'Mix', 'Aeo', 'Loc']
     modesIntervals = {
         'Ion': [2, 2, 1, 2, 2, 2, 1],
@@ -25,7 +26,8 @@ class Scale():
         'Mmin-': [2, 1, 2, 2, 1, 2, 2], # melodic Minor down
     }
     chrDegLst = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
-    chrSubLst = \
+    # todo: What do we do with this  (chrSubLst)
+    chrSubLst =\
         [  # List of chord substitutions,  Format ['<old>-><new>','name']
             ['IM7->iiim7', '3sub1'],  # I -> iii common on I-vi-ii-V
             ['im7->IIIM7', '3sub1'],
@@ -42,11 +44,7 @@ class Scale():
             ['V7->#Vdim7', '#5sub5'],
             ['V7->bii7', 'trisub5'],
         ]
-    """
-        - Tritone substitution: we can replace a dom7 by a dom7 that is 6halfSteps above the root   
-        - Tritone substitution is good on II-V-I because it provides a chromatic root movement   
-          e.g. Dm7–G7–CM7 -> Dm7–D♭7–CM gives a downward walking bass   
-    """
+
 
     regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.*)")  # Regular expression to understand Roman Notation
 

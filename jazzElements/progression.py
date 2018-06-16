@@ -217,13 +217,13 @@ class Progression:
         suptitle(self.name, size=20, weight='bold')
         # axis('equal')
 
-    def annotate(self, method='graph', reduce=True):
+    def annotate(self, method='graph'):
         if method == 'graph':
             self.ann = annGraph(self.chords)
         else:
             warnings.warn('not implemented')
 
-        self.ann.annotate(reduce=reduce)
+        self.ann.annotate()
 
 
 

@@ -71,8 +71,6 @@ class CadenceGraph():
         self.scale = Scale(root, self.cadGraphs[model]['key'])
         self.model = model
         self.fnSeq = self.cadGraphs[model]['next']  # -> Sequence
-        self.fnTypes = {1: 'T', 2: 'ST', 3: 'M', 4: 'SD', 5: 'D', 6: 'SM',
-                        7: 'L'}  # todo: can types be generic or moved to scale?
         self.degreesRoman = self.scale.degrees()
         self.degrees = {d + 1: self.scale.getDegreeFamily(d + 1) for d in range(len(self.degreesRoman))}
         self.chords = [Chord(chr) for chr in
@@ -173,14 +171,7 @@ class annWalkThatBass():
         self.description = ''
 
     def run(self):
-        fn = [[] for c in self.chords]
-        deg = [[] for c in self.chords]
-        sca = [[] for c in self.chords]
-        cad = [[] for c in self.chords]
-        rank = [[] for c in self.chords]
-        pos = [[] for c in self.chords]
-
-        self.ann = pd.DataFrame(dict(fn=fn, deg=deg, sca=sca, cad=cad, cadPos=rank, chrPos=pos))
+        pass
 
     # def findCadences(self):
     #     def findSeqInLst(seq, lst):
@@ -318,7 +309,7 @@ class annGraph(Annotate):
                 Seq.append((len(x[1]), x[0], keyCad.scale.name, [keyCad.degreesRoman[xi - 1] for xi in x[1]]))
         return Seq
 
-    def annotate(self, reduce=True):
+    def annotate(self):
         # Find cadences in all keys
         X = []  # [(<size>,<start>,<key>,<cadence>),...]
         for key in Note.chrFlat:
@@ -330,13 +321,14 @@ class annGraph(Annotate):
 
         used = [False] * len(self.chords)
         for x in X:  # x=(<size>,<start>,<key>,<cadenceList>)
-            if not reduce or not all(used[x[1]:(x[1] + x[0])]):  # All spots are unused
-                rnk = max([max(self.ann.loc[c]['cadPos']) if self.ann.loc[c]['cadPos'] else -1 for c in range(x[1], (x[1] + x[0]))])+1
-                # todo rank bug, e.g. myromance chord 2, two cadences have the same rank
-                for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
-                    # self.fn[c].append(CadenceGraph.fnTypes[x[3][ci]]) #todo: fix
-                    self.append(c,
-                                dict(deg=x[3][ci], sca=x[2],
-                                     cad='-'.join(x[3]), cadPos=rnk,
-                                     chrPos=ci))
-                    used[c] = True
+            rnk = max([max(self.ann.loc[c]['cadPos']) if self.ann.loc[c]['cadPos'] else -1 for c in range(x[1], (x[1] + x[0]))])+1
+            # todo rank bug, e.g. myromance chord 2, two cadences have the same rank
+            for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
+                self.append(c,
+                            dict(deg    = x[3][ci],
+                                 sca=x[2],
+                                 cad    = '-'.join(x[3]), cadPos=rnk,
+                                 chrPos = ci,
+                                 fn     = Scale.fnTypes[Scale(x[2]).degrees().index(x[3][ci]) + 1]
+                                 ))
+                used[c] = True
