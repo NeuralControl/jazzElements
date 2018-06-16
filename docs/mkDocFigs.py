@@ -10,13 +10,13 @@ from jazzElements.annotate import CadenceGraph
 #todo: automatize mkDocFigs on sphynx build
 
 prg = Progression('Misty')
-prg.annotate(method='graph',model='majKostka', reduce=False)
+prg.annotate(method='graph', reduce=False)
 prg.plot('fn')
 savefig('./img/MistyFn.png')
 close('all')
 
 prg = Progression('Misty')
-prg.annotate(method='graph',model='majKostka', reduce=False)
+prg.annotate(method='graph', reduce=False)
 prg.plot('kbd')
 savefig('./img/MistyKbd.png')
 close('all')
@@ -49,13 +49,14 @@ for i, n in enumerate(Note.chrSharp):
     ax.set_ylim(0, 60)
     plotNotes(Chord(str(n) + 'm7').notes, pos=[0, 0, 100, 60], name=str(n) + 'm7',ax=ax)
     axis('off')
-suptitle('Xm7 in all keys');
+suptitle('Xm7 in all keys')
 savefig('./img/allKeys.png')
 close('all')
 
 
-CadenceGraph('C').plot(tgt='./img/majKostka', showChords=True)
+CadenceGraph('C','majKostka').plot(tgt='./img/majKostka', showChords=True)
 CadenceGraph('C','minKostka').plot(tgt='./img/minKostka', showChords=True)
+close('all')
 
 
 
@@ -70,6 +71,7 @@ prg.plot('kbd')
 savefig('./img/maj251sKbd.png')
 prg.plot('fn')
 savefig('./img/maj251sFn.png')
+close('all')
 
 # Minor2-5-1
 seq=''.join(['|{},{}|{}'.format(
@@ -82,3 +84,8 @@ prg.plot('kbd')
 savefig('./img/min251sKbd.png')
 prg.plot('fn')
 savefig('./img/min251sFn.png')
+
+close('all')
+
+
+

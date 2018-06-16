@@ -134,27 +134,26 @@ class CadenceGraph():
         except ImportError:
             warnings.warn('graphviz needs to be installed to plot cadence graphs')
 
+
 ##
 class Annotate():
-    def __init__(self, chords,ann=None):
+    def __init__(self, chords, ann=None):
+        fields = ['fn', 'deg', 'sca', 'cad', 'cadPos', 'chrPos']
         self.name = ''
         self.description = ''
-        if isinstance(ann,pd.DataFrame):
-            self.ann=ann
+        if isinstance(ann, pd.DataFrame):
+            self.ann = ann
         else:
-            self.ann = pd.DataFrame([ [ [] for _ in range(4)] for _ in range(len(chords))],
-                      columns=['fn', 'deg', 'sca', 'cad'],
-                      index=range(len(chords)))
+            self.ann = pd.DataFrame([[[] for _ in range(len(fields))] for _ in range(len(chords))],
+                                    columns=fields,
+                                    index=range(len(chords)))
         if isinstance(chords, pd.DataFrame):
             self.chords = [Chord(c) for c in chords['chr'].values]
         else:
             self.chords = [Chord(c) for c in chords]
 
-    def append(self,idx,v):
-        if isinstance(v,list) and len(v)==len(self.ann.columns):
-            for k,vi in zip(self.ann.columns,v):
-                self.ann.loc[idx][k].append(vi)
-        elif isinstance(v,dict):
+    def append(self, idx, v):
+        if isinstance(v, dict):
             for k in v:
                 self.ann.loc[idx][k].append(v[k])
         else:
@@ -320,13 +319,6 @@ class annGraph(Annotate):
         return Seq
 
     def annotate(self, reduce=True):
-        fn = [[] for c in self.chords]
-        deg = [[] for c in self.chords]
-        sca = [[] for c in self.chords]
-        cad = [[] for c in self.chords]
-        rank = [[] for c in self.chords]
-        pos = [[] for c in self.chords]
-
         # Find cadences in all keys
         X = []  # [(<size>,<start>,<key>,<cadence>),...]
         for key in Note.chrFlat:
@@ -337,24 +329,14 @@ class annGraph(Annotate):
         X.sort(key=lambda x: x[0], reverse=True)  # Sort by size
 
         used = [False] * len(self.chords)
-        for x in X:
+        for x in X:  # x=(<size>,<start>,<key>,<cadenceList>)
             if not reduce or not all(used[x[1]:(x[1] + x[0])]):  # All spots are unused
-                rnk = max([len(sca[c]) for c in range(x[1], (x[1] + x[0]))])
+                rnk = max([max(self.ann.loc[c]['cadPos']) if self.ann.loc[c]['cadPos'] else -1 for c in range(x[1], (x[1] + x[0]))])+1
                 # todo rank bug, e.g. myromance chord 2, two cadences have the same rank
                 for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
                     # self.fn[c].append(CadenceGraph.fnTypes[x[3][ci]]) #todo: fix
-                    deg[c].append(x[3][ci])
-                    sca[c].append(x[2])
-                    cad[c].append('-'.join(x[3]))
+                    self.append(c,
+                                dict(deg=x[3][ci], sca=x[2],
+                                     cad='-'.join(x[3]), cadPos=rnk,
+                                     chrPos=ci))
                     used[c] = True
-                    rank[c].append(rnk)
-                    pos[c].append(ci)
-
-        self.ann = pd.DataFrame(dict(fn=fn, deg=deg, sca=sca, cad=cad, cadPos=rank, chrPos=pos))
-
-
-from jazzElements.progression import Progression
-
-prg = Progression('Misty')
-
-self = annWalkThatBass(prg.chords)

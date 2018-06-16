@@ -1,10 +1,17 @@
-# import warnings
-# import pandas as pd
-# from jazzElements.chord import Chord
-# from jazzElements.note import Note
-# from jazzElements.scale import Scale
-# from jazzElements.progression import Progression
-# from jazzElements.annotate import annGraph
+import warnings
+import pandas as pd
+from jazzElements.chord import Chord
+from jazzElements.note import Note
+from jazzElements.scale import Scale
+from jazzElements.progression import Progression
+from jazzElements.annotate import annGraph
+
+
+prg = Progression('Misty')
+prg.annotate()
+print(prg.ann.ann.loc[13])
+
+
 
 """
 todo: fix bar separation
@@ -59,6 +66,7 @@ ann.plot()
 # self=annGraph(prg.chords)
 # self.annotate(reduce=False)
 # self.plot()
+
 
 
 

@@ -3,6 +3,8 @@ import re
 import pandas as pd
 from matplotlib import patches
 from matplotlib.pyplot import *
+import matplotlib.colors as colors
+import matplotlib.cm as cmx
 
 from jazzElements.annotate import annGraph
 from jazzElements.chord import Chord
@@ -104,19 +106,6 @@ class Progression:
                  va='top', ha='center', fontSize=10,
                  bbox=dict(boxstyle='round4', fc='w'), weight=1000)
 
-            # if 'sca' in ann:
-            #     for si, s in enumerate(ann['sca']):
-            #         if len(s):
-            #             if chr == 0 or s not in self.chords.loc[chr - 1].get('sca', []):
-            #                 text(xChr + 2, yChr + cadh / 2 + ann['cadPos'][si] * cadh, s,
-            #                      color='k', va='center',
-            #                      ha='left', fontSize=10, weight='bold')
-            #
-            # if 'deg' in ann:
-            #     for di, d in enumerate(ann['deg']):
-            #         text(xChr + wChr, yChr + cadh / 2 + ann['cadPos'][di] * cadh - 1, d, color='k',
-            #              va='center', ha='right', fontSize=10, weight='bold')
-
             if 'cad' in ann:
                 for ci, c in enumerate(ann['cad']):
                     if len(c.split('-')) == 1: # Isolated chord
@@ -128,7 +117,7 @@ class Progression:
                     else: # Cadence
                         # plot bgd
                         bgd = patches.Rectangle((xChr+2, yChr + ann['cadPos'][ci] * cadh+2), wChr-2, cadh-3, fill=True,
-                                                clip_on=False, color=self.cfg['scaleColors'][ann['sca'][ci]], alpha=1, ec=None)
+                                                clip_on=False, color=self.cfg['scaleColors'][ann['sca'][ci]], ec=None)
                         ax.add_patch(bgd)
 
                         # Print cadence if first chord
@@ -205,8 +194,10 @@ class Progression:
             return []
 
     def plot(self, plotType='fn'):
-        # todo: Scaling issues
-        self.cfg['scaleColors'] = {x[0]: self.cfg['colors'][i] for i, x in enumerate(self.countKeys())}
+        keys = self.countKeys()
+        cNorm = colors.Normalize(vmin=min([k[1] for k in keys]), vmax=1.5 * max([k[1] for k in keys]))
+        scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=get_cmap('Blues'))
+        self.cfg['scaleColors'] = {x[0]: scalarMap.to_rgba(x[1]) for i, x in enumerate(keys)}
 
         nbRows = np.ceil(self.nbBars / self.cfg['barsPerRow'])
         wBar, hBar = 400, 150
@@ -233,6 +224,8 @@ class Progression:
             warnings.warn('not implemented')
 
         self.ann.annotate(reduce=reduce)
+
+
 
 
 
