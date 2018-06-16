@@ -1,9 +1,10 @@
-import warnings
 import pandas as pd
+from matplotlib.pyplot import *
+
 from jazzElements.chord import Chord
 from jazzElements.note import Note
 from jazzElements.scale import Scale
-from matplotlib.pyplot import *
+
 
 class CadenceGraph():
     cadGraphs = \
@@ -70,7 +71,8 @@ class CadenceGraph():
         self.scale = Scale(root, self.cadGraphs[model]['key'])
         self.model = model
         self.fnSeq = self.cadGraphs[model]['next']  # -> Sequence
-        self.fnTypes = {1: 'T', 2: 'ST', 3: 'M', 4: 'SD', 5: 'D', 6: 'SM', 7: 'L'}  # todo: can types be generic or moved to scale?
+        self.fnTypes = {1: 'T', 2: 'ST', 3: 'M', 4: 'SD', 5: 'D', 6: 'SM',
+                        7: 'L'}  # todo: can types be generic or moved to scale?
         self.degreesRoman = self.scale.degrees()
         self.degrees = {d + 1: self.scale.getDegreeFamily(d + 1) for d in range(len(self.degreesRoman))}
         self.chords = [Chord(chr) for chr in
@@ -132,15 +134,31 @@ class CadenceGraph():
         except ImportError:
             warnings.warn('graphviz needs to be installed to plot cadence graphs')
 
+##
 class Annotate():
-    def __init__(self, chords):
+    def __init__(self, chords,ann=None):
         self.name = ''
         self.description = ''
-        self.ann = pd.DataFrame(columns=['fn', 'deg', 'sca', 'cad'])
+        if isinstance(ann,pd.DataFrame):
+            self.ann=ann
+        else:
+            self.ann = pd.DataFrame([ [ [] for _ in range(4)] for _ in range(len(chords))],
+                      columns=['fn', 'deg', 'sca', 'cad'],
+                      index=range(len(chords)))
         if isinstance(chords, pd.DataFrame):
             self.chords = [Chord(c) for c in chords['chr'].values]
         else:
             self.chords = [Chord(c) for c in chords]
+
+    def append(self,idx,v):
+        if isinstance(v,list) and len(v)==len(self.ann.columns):
+            for k,vi in zip(self.ann.columns,v):
+                self.ann.loc[idx][k].append(vi)
+        elif isinstance(v,dict):
+            for k in v:
+                self.ann.loc[idx][k].append(v[k])
+        else:
+            warnings.warn('arg error')
 
     def run(self, reduce=True):
         """
@@ -148,43 +166,113 @@ class Annotate():
         format: (<function>,<degree>,<scale>,<cadence>)
         """
 
-    def plot(self):
-        if len(ann.ann)==0:
-            warnings.warn('run annotate first, nothing to plot')
-        figure()
-        chrSpcX=100
-        cadSpcY=5
-        chrSpcY=cadSpcY*(max([max(p) for p in self.ann.cadPos if len(p)])+1)+2*cadSpcY
-        chrPerRow=8
 
-        def chrPos(ci):
-            return (ci%chrPerRow)*chrSpcX,-((ci)//chrPerRow)*chrSpcY
+class annWalkThatBass():
+    def __init__(self, chords):
+        Annotate.__init__(self, chords)
+        self.name = 'Walk That Bass Method'
+        self.description = ''
 
-        cad = []
-        for idx,r in self.ann.iterrows():
-            for i in range(len(r['cad'])):
-                if r['chrPos'][i]==0:
-                    cad.append((idx,
-                                idx+len( r['cad'][i].split('-'))-1,
-                                r['chrPos'][i],
-                                r['cadPos'][i],
-                                r['cad'][i],
-                                         r['sca'][i] )  )
-        # cad = [<start>,<stop>,<chrPos>,<cadPos>,<cadence>,<scale> ]
+    def run(self):
+        fn = [[] for c in self.chords]
+        deg = [[] for c in self.chords]
+        sca = [[] for c in self.chords]
+        cad = [[] for c in self.chords]
+        rank = [[] for c in self.chords]
+        pos = [[] for c in self.chords]
 
+        self.ann = pd.DataFrame(dict(fn=fn, deg=deg, sca=sca, cad=cad, cadPos=rank, chrPos=pos))
 
-        for ci,chr in enumerate(self.chords): #todo: add duration to chord?
-            text(chrPos(ci)[0],chrPos(ci)[1],chr.name,va='bottom',ha='center',fontweight='bold',fontSize=9)
-        for c in cad:
-            text(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,c[5].replace(' Ion','M')+': '+c[4],fontSize=8,ha='left',va='bottom')
-            if c[1]>c[0]:
-                arrow(chrPos(c[0])[0]-chrSpcX/2,-cadSpcY+chrPos(c[0])[1]-c[3]*cadSpcY,(len(c[4].split('-'))-.5)*chrSpcX,0,
-                      shape='right',width=5,head_width=10,alpha=.3,edgecolor='w')
-
-        xlim(-50,chrSpcX*chrPerRow+50)
-        ylim(chrPos(len(self.chords))[1]-100,0)
-
-        axis('off');box('off')
+    # def findCadences(self):
+    #     def findSeqInLst(seq, lst):
+    #         idx = []
+    #         for i in range(len(lst) - len(seq) + 1):
+    #             if np.array_equal(lst[i:i + len(seq)], seq):
+    #                 idx.append((i, i + len(seq) - 1))
+    #         return idx
+    #
+    #     lstCadences = ['3-6-2-5-1', '1-6-2-5-1', '6-2-5-1', '1-6-2-5', '2-5-1', '2-5', '5-1']
+    #     chords = [c['chr'] for c in self.chords]
+    #     cadLst = []
+    #     idx = 0
+    #     # Find all the possible known minor or major cadences:
+    #     for root in Note.chrFlat:
+    #         # for mode in Scale.modesLst:  # ['Ion', 'Aeo']:
+    #         for mode in ['Ion', 'Aeo']:
+    #             key = root + ' ' + mode
+    #             keyChords = Scale(key).chords(3) + Scale(key).chords(4)
+    #             keyDegrees = np.tile(np.arange(1, len(Scale(key).chordsRoman(3)) + 1), 2)
+    #             # Diatonic annotation
+    #             dia = np.array([keyDegrees[keyChords.index(c)] if Chord(c) in keyChords else None for c in chords])
+    #
+    #             # Find Cadences:
+    #             for cadence in lstCadences:
+    #                 seq = np.array([int(d) for d in cadence.split('-')])
+    #                 for cad in findSeqInLst(seq, dia):
+    #                     cadLst.append((cad, key, cadence))
+    #                     idx += 1
+    #
+    #     # Sort cadences by length:
+    #     cadLst = sorted(cadLst, key=lambda x: x[0][1] - x[0][0], reverse=True)
+    #     # Remove cadences embedded in another:
+    #     cadLstOk = []
+    #     chrFree = np.array([True] * len(chords))
+    #     for cad in cadLst:
+    #         if any(chrFree[cad[0][0]:cad[0][1] + 1]):
+    #             cadLstOk.append(cad)
+    #             chrFree[cad[0][0]:cad[0][1] + 1] *= False
+    #
+    #     for cad in cadLstOk:
+    #         for idx, c in enumerate(range(cad[0][0], cad[0][1] + 1)):
+    #             for x in ['scale', 'fn', 'cadence', 'degree']:
+    #                 if x not in self.chords[c]:
+    #                     self.chords[c][x] = []
+    #
+    #             if len(self.chords[c]['cadence']) and max([x[1] for x in self.chords[c]['cadence']]) > idx:
+    #                 self.chords[c]['cadence'].append((cad[2], idx))  # Last one is first
+    #                 self.chords[c]['scale'].append(cad[1])
+    #                 self.chords[c]['fn'].append(cad[2].split('-')[idx])  # todo: improve
+    #                 self.chords[c]['degree'].append(Scale(cad[1]).hasChord(self.chords[c]['chr']))
+    #
+    #             else:
+    #                 self.chords[c]['cadence'].insert(0, (cad[2], idx))  # This one is first
+    #                 self.chords[c]['scale'].insert(0, cad[1])
+    #                 self.chords[c]['fn'].insert(0, cad[2].split('-')[idx])  # todo: improve
+    #                 self.chords[c]['degree'].insert(0, Scale(cad[1]).hasChord(self.chords[c]['chr']))
+    #
+    # def findIsolated(self):
+    #     currentKey = []
+    #
+    #     mainKey = self.countKeys()[0][0] if self.countKeys() else []
+    #
+    #     for ci, c in enumerate(self.chords):
+    #         if 'scale' in c:
+    #             currentKey = c['scale'][0]
+    #
+    #         nextKey = [c.get('scale', [[]])[0] for c in self.chords[(ci + 1):]][0] if ci < len(self.chords) - 1 else []
+    #
+    #         for k in [currentKey, nextKey, mainKey]:
+    #
+    #             # Searching if the chord is diatonic
+    #             if 'fn' not in self.chords[ci] and k != []:
+    #                 deg = Scale(k).hasChord(c['chr'])
+    #                 if deg:
+    #                     self.chords[ci]['scale'] = [k]
+    #                     self.chords[ci]['degree'] = [deg]
+    #                     self.chords[ci]['fn'] = ['~']
+    #
+    #             # Searching if the chord is a substitution in currentKey,nextKey,mainKey
+    #             if 'fn' not in self.chords[ci] and k != []:
+    #                 subs = Scale(k).possibleSubstitutions(asStr=True)
+    #                 s = [[s[0][0], s[2]] for s in subs if len(s[1]) == 1 and Chord(s[1][0]) == c['chr']]
+    #
+    #                 if len(s) == 1:
+    #                     self.chords[ci]['scale'] = [k]
+    #                     self.chords[ci]['fn'] = [s[0][1]]
+    #                     self.chords[ci]['degree'] = [Scale(k).hasChord(Chord(s[0][0]))]
+    #                 elif len(s) > 1:
+    #                     raise ValueError(
+    #                         'Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chr'])
 
 
 class annGraph(Annotate):
@@ -209,13 +297,13 @@ class annGraph(Annotate):
                 if len(cur):  # At least an ongoing cadence
                     newCur = []
                     for x in cur:
-                        for d in keyCad.getDegree(c,strict=True):
+                        for d in keyCad.getDegree(c, strict=True):
                             if d in keyCad.fnSeq[x[1][-1]]:  # The current chord can continue this sequence
                                 newCur.append((x[0], x[1] + [d]))
                             else:  # A new sequence starts here
                                 Seq.append((len(x[1]), x[0], keyCad.scale.name,
-                                             [keyCad.degreesRoman[xi - 1] for xi in x[1]])) # store this cadence
-                                newCur.append((ci, [d])) # add new sequence
+                                            [keyCad.degreesRoman[xi - 1] for xi in x[1]]))  # store this cadence
+                                newCur.append((ci, [d]))  # add new sequence
 
                     cur = newCur.copy()
 
@@ -236,8 +324,8 @@ class annGraph(Annotate):
         deg = [[] for c in self.chords]
         sca = [[] for c in self.chords]
         cad = [[] for c in self.chords]
-        rank=[[] for c in self.chords]
-        pos=[[] for c in self.chords]
+        rank = [[] for c in self.chords]
+        pos = [[] for c in self.chords]
 
         # Find cadences in all keys
         X = []  # [(<size>,<start>,<key>,<cadence>),...]
@@ -246,13 +334,12 @@ class annGraph(Annotate):
         for key in Note.chrFlat:
             X.extend(self.findCadencesInKey(key, 'majKostka'))
 
-
         X.sort(key=lambda x: x[0], reverse=True)  # Sort by size
 
         used = [False] * len(self.chords)
         for x in X:
             if not reduce or not all(used[x[1]:(x[1] + x[0])]):  # All spots are unused
-                rnk=max([len(sca[c]) for c in range(x[1], (x[1] + x[0]))])
+                rnk = max([len(sca[c]) for c in range(x[1], (x[1] + x[0]))])
                 # todo rank bug, e.g. myromance chord 2, two cadences have the same rank
                 for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
                     # self.fn[c].append(CadenceGraph.fnTypes[x[3][ci]]) #todo: fix
@@ -263,6 +350,11 @@ class annGraph(Annotate):
                     rank[c].append(rnk)
                     pos[c].append(ci)
 
+        self.ann = pd.DataFrame(dict(fn=fn, deg=deg, sca=sca, cad=cad, cadPos=rank, chrPos=pos))
 
-        self.ann = pd.DataFrame(dict(fn=fn, deg=deg, sca=sca, cad=cad,cadPos=rank,chrPos=pos))
 
+from jazzElements.progression import Progression
+
+prg = Progression('Misty')
+
+self = annWalkThatBass(prg.chords)

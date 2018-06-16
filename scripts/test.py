@@ -7,12 +7,35 @@
 # from jazzElements.annotate import annGraph
 
 """
-todo:
-ok - dont color single chords
-ok - lighten scales etc
-- fix bar separation
-- some cadPos arent right e.g. My romance chord 3
+todo: fix bar separation
+todo: some cadPos arent right e.g. My romance chord 3
 """
+"""
+Harmonic Analysis of the chord progression
+Args:
+    key: force a given key (str)
+
+Following WalkThatBass:
+http://www.thejazzpianosite.com/jazz-piano-lessons/jazz-chord-progressions/how-to-analyse-a-chord-progression-harmonic-analysis/
+
+Level 1:
+- Find the most represented key
+- Annotate chords using this key
+Level 2:
+- Annotate Function: (PD,D,T)
+- Annotate Second Level Chords
+    Everything before PD-D-T is a Tonic Prolongation (prolongs the tonic without a cadence)
+    They can be Substitutions, or Quick Passing Chords
+- Look for non-diatonic chords:
+    Long period (>1bar): Modulation
+    Short Period (.5-1 bar): Passing Chord | Borrowed Chord | Secondary Dominant
+
+Improvisation:
+- first level: We can use the relevant mode under each chord, but we change scale all the time
+- or in the second level: We use the functionally important chords
+then we can go into crazy stuff i.e. side slipping, cycled patterns, chromatic runs etc...
+"""
+
 
 self=Progression('Misty')
 self.annotate(reduce=False)
