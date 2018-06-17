@@ -27,7 +27,7 @@
 #         ['V7->bii7', 'trisub5'],
 #     ]
 
-# todo: Tritone substitution:
+# todo: check for Tritone substitution: (trit is in Chords)
 # - Tritone substitution: we can replace a dom7 by a dom7 that is 6halfSteps above the root
 # - Tritone substitution is good on II-V-I because it provides a chromatic root movement
 #   e.g. Dm7–G7–CM7 -> Dm7–D♭7–CM gives a downward walking bass

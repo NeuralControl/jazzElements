@@ -1,8 +1,11 @@
 import re
+import warnings
 from itertools import permutations
+
 from jazzElements.note import Note
 from jazzElements.viz import plotNotes
-import warnings
+
+
 class Chord:
     """
     Create a chord from chord name or list of notes
@@ -25,7 +28,7 @@ class Chord:
         'm': [0, 3, 7],
         'm6': [0, 3, 7, 9],
         'm7': [0, 3, 7, 10],
-        'mM7':[0, 3, 7,11],
+        'mM7': [0, 3, 7, 11],
         'm6/9': [0, 3, 7, 9, 14],
         'm9': [0, 3, 7, 10, 14],
         'm11': [0, 3, 7, 10, 14, 17],
@@ -41,7 +44,7 @@ class Chord:
         'M6/9': [0, 4, 7, 9, 14],
         '7': [0, 4, 7, 10],
         'M7': [0, 4, 7, 11],
-        'M13': [0, 4, 7, 11,13],
+        'M13': [0, 4, 7, 11, 13],
         'M7+5': [0, 4, 8, 11],
         'M7#5': [0, 4, 8, 11],
         '7-5': [0, 4, 6, 10],
@@ -74,7 +77,7 @@ class Chord:
         'm9+5': [0, 10, 14],
         'm+5': [0, 3, 8],
         'aug': [0, 3, 8],
-        'aug6': [0, 3, 8,9],
+        'aug6': [0, 3, 8, 9],
 
         'm7+5': [0, 3, 8, 10],
         'm7+5-9': [0, 3, 8, 10, 13],
@@ -85,11 +88,11 @@ class Chord:
 
     chrFamilies = \
         {
-            'maj': ['M', 'M6', 'M7', 'M9', 'M13', '6/9',''],
-            'min': ['m', 'm6', 'm7', 'm9', 'm11', 'm13','mM7'],
+            'maj': ['M', 'M6', 'M7', 'M9', 'M13', '6/9', ''],
+            'min': ['m', 'm6', 'm7', 'm9', 'm11', 'm13', 'mM7'],
             'dim': ['o', 'o7', 'ø'],
             'dom': ['7', '7b5', '9', '13'],
-            'aug': ['aug','aug6', '7+5'],
+            'aug': ['aug', 'aug6', '7+5'],
             'sus': ['sus4', 'sus2', '7sus4']
         }
 
@@ -104,22 +107,29 @@ class Chord:
         if self.intArr:
             self.notes = [Note(self.root.name, i - 12 if '♭' in iStr else i) for i, iStr in
                           zip(self.intArr, self.intStr)]
-        if self.intStr[:3]==['1','♭3','♭5']: self.quality='dim'
-        elif self.intStr[:4]==['1','3','5','♭7']: self.quality='dom'
-        elif self.intStr[:4]==['1','3','♭5','♭7']: self.quality='dom'
-        elif self.intStr[:3] == ['1', '♭3', '♯5']: self.quality = 'aug'
-        elif self.intStr[:3] == ['1', '3', '♯5']: self.quality = 'aug'
-        elif self.intStr[:3] == ['1', '2', '5']: self.quality = 'sus'
-        elif self.intStr[:3] == ['1', '4', '5']: self.quality = 'sus'
-        elif self.intStr[:3] == ['1', '3', '5']: self.quality = 'maj'
-        elif self.intStr[:3] == ['1', '♭3', '5']: self.quality = 'min'
+        if self.intStr[:3] == ['1', '♭3', '♭5']:
+            self.quality = 'dim'
+        elif self.intStr[:4] == ['1', '3', '5', '♭7']:
+            self.quality = 'dom'
+        elif self.intStr[:4] == ['1', '3', '♭5', '♭7']:
+            self.quality = 'dom'
+        elif self.intStr[:3] == ['1', '♭3', '♯5']:
+            self.quality = 'aug'
+        elif self.intStr[:3] == ['1', '3', '♯5']:
+            self.quality = 'aug'
+        elif self.intStr[:3] == ['1', '2', '5']:
+            self.quality = 'sus'
+        elif self.intStr[:3] == ['1', '4', '5']:
+            self.quality = 'sus'
+        elif self.intStr[:3] == ['1', '3', '5']:
+            self.quality = 'maj'
+        elif self.intStr[:3] == ['1', '♭3', '5']:
+            self.quality = 'min'
         else:
-            self.quality='?'
-            warnings.warn('cannot resolve chord quality for '+self.name)
-
+            self.quality = '?'
+            warnings.warn('cannot resolve chord quality for ' + self.name)
 
     def __init__(self, nameOrNotes, checkInv=True):
-
 
         self.notes = []
         self.intArr = []
@@ -129,7 +139,7 @@ class Chord:
             self.root = Note(root + alt)
 
             for r in self.chrReplace:
-                chrType = chrType.replace(r[0],r[1])
+                chrType = chrType.replace(r[0], r[1])
 
             self.type = chrType
 
@@ -145,7 +155,7 @@ class Chord:
                 seq = [nameOrNotes]
             for lst in seq:
                 intervals = [n if n >= 0 else n + 12 for n in [Note(n) - Note(lst[0]) for n in lst]]
-                chrdType.extend([lst[0]+cType for cType in self.chrLst if intervals==self.chrLst[cType]])
+                chrdType.extend([lst[0] + cType for cType in self.chrLst if intervals == self.chrLst[cType]])
 
             if len(chrdType) > 1:
                 chrdType.sort(key=len)  # todo: Best match shouldnt be done this way
@@ -179,10 +189,9 @@ class Chord:
             list of guide tones
         """
         if asStr:
-            [self.notes[1].name if len(self.notes)>=2 else [], self.notes[3].name if len(self.notes)>=4 else []  ]
+            [self.notes[1].name if len(self.notes) >= 2 else [], self.notes[3].name if len(self.notes) >= 4 else []]
         else:
-            return [self.notes[1] if len(self.notes)>=2 else [], self.notes[3] if len(self.notes)>=4 else []  ]
-
+            return [self.notes[1] if len(self.notes) >= 2 else [], self.notes[3] if len(self.notes) >= 4 else []]
 
     # def avoidNotes(self, notesOrScale, asStr=False):
     #     """
@@ -208,7 +217,6 @@ class Chord:
         else:
             raise ValueError('Cannot calculate relative minor chord')
 
-
     def relativeMajor(self, asStr=False):
         if self.intArr[1] == 3:
             if self.type == '':
@@ -219,11 +227,24 @@ class Chord:
         else:
             raise ValueError('Cannot calculate relative major chord')
 
+    def tritoneSubstitution(self, asStr=False, dir='down'):
+        """
+        Tritone substitution for dominant chords
+        Args:
+            asStr: return string if true, else Chord
+        """
+        Dirs = dict(down=-1, up=1)
+        if self.type not in self.chrFamilies['dom']:
+            return None
+        else:
+            return Chord((self.root + Dirs[dir] * 6).name + self.type).name if asStr \
+                else Chord((self.root + Dirs[dir] * 6).name + self.type)
+
     def __str__(self):
         if not self.notes:
             return '?'
         else:
-            return self.root.name+self.type
+            return self.root.name + self.type
 
     def __repr__(self):
         return self.__str__()
