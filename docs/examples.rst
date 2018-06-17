@@ -79,3 +79,42 @@ Likewise, we can train on 4 notes chords in the harmonic minor 2-5-1s
 .. image:: img/min251sKbd.png
     :width: 500pt
 
+Annotation
+----------
+
+Implemented cadence Graphs
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Following are examples of detected cadences.
+They can be obtained using CadenceGraph().plot()
+
+Minor Kostka transitions:
+
+.. image:: img/kostkaMaj.png
+    :width: 300pt
+
+Major Kostka transitions:
+
+.. image:: img/kostkaMin.png
+    :width: 300pt
+
+Allow all transitions Major:
+
+.. image:: img/allTransMaj.png
+    :width: 300pt
+
+Allow all transitions Minor:
+
+.. image:: img/allTransMin.png
+    :width: 300pt
+
+Only allow Minor main cadences:
+
+.. image:: img/mainCadMin.png
+    :width: 300pt
+
+Only allow Major main cadences:
+
+.. image:: img/mainCadMaj.png
+    :width: 300pt
+
+

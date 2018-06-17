@@ -1,9 +1,12 @@
 
 ## SIMPLE TODOS:
 # todo: -- fix bar separation
+
 # todo: -- Not all chords quality can be resolved:
+# for c in Chord.chrLst:
+#     print(Chord('C' + c).name + '  ' + Chord('C' + c).quality)
+
 # todo: ++ Layer the analysis, add borrowed chords etc
-# todo: + automatize mkDocFigs on sphynx build
 
 # todo: What do we do with this  (chrSubLst)
 # chrSubLst = \

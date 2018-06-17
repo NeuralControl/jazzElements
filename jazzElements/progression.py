@@ -205,15 +205,8 @@ class Progression:
         suptitle(self.name, size=20, weight='bold')
         # axis('equal')
 
-    def annotate(self, method='graph'):
-        if method == 'graph':
-            self.ann = annGraph(self.chords)
-        else:
-            warnings.warn('not implemented')
-        self.ann.annotate()
+    def annotate(self, model='kostka'):
+        self.ann = annGraph(self.chords,model=model)
+        self.ann.run()
 
 
-prg = Progression('My Romance')
-prg.annotate()
-prg.plot()
-print(prg.ann.ann)

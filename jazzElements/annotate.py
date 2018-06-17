@@ -131,8 +131,6 @@ class CadenceGraph():
                 Seq.append((len(x[1]), x[0], self.scale.name, [self.degreesRoman[xi - 1] for xi in x[1]]))
         return Seq
 
-
-
     def plot(self, tgt='', showChords=True):
         try:
             if not len(tgt):
@@ -153,37 +151,39 @@ class CadenceGraph():
                         ok.append((str(n1), str(n2)))
                         ok.append((str(n2), str(n1)))
 
-            for n in self.fnTypes:
+            for n in Scale.fnTypes:
                 if showChords:
                     g.node(str(n),
                            label=self.degreesRoman[n - 1] + '\\n' + ', '.join([_.name for _ in self.degrees[n]]),
-                           color=fnColor.get(self.fnTypes[n], 'white'), style='filled')
+                           color=fnColor.get(Scale.fnTypes[n], 'white'), style='filled')
                 else:
                     g.node(str(n), label=self.degreesRoman[n - 1] + '\\n' + ', '.join(
                         [str(_[0]) + ' ' + _[1] for _ in self.fnLst[n]]),
-                           color=fnColor.get(self.fnTypes[n], 'white'), style='filled')
+                           color=fnColor.get(Scale.fnTypes[n], 'white'), style='filled')
 
             g.render(filename=tgt)
         except ImportError:
             warnings.warn('graphviz needs to be installed to plot cadence graphs')
 
 
-##
-class Annotate():
-    def __init__(self, chords, ann=None):
-        fields = ['fn', 'deg', 'sca', 'cad', 'cadPos', 'chrPos']
+
+class annGraph():
+    def __init__(self, chords,model):
         self.name = ''
         self.description = ''
-        if isinstance(ann, pd.DataFrame):
-            self.ann = ann
-        else:
-            self.ann = pd.DataFrame([[[] for _ in range(len(fields))] for _ in range(len(chords))],
-                                    columns=fields,
-                                    index=range(len(chords)))
+        self.model = model
+
         if isinstance(chords, pd.DataFrame):
             self.chords = [Chord(c) for c in chords['chr'].values]
         else:
             self.chords = [Chord(c) for c in chords]
+        self.resetAnnotations()
+
+    def resetAnnotations(self):
+        fields = ['fn', 'deg', 'sca', 'cad', 'cadPos', 'chrPos']
+        self.ann = pd.DataFrame([[[] for _ in range(len(fields))] for _ in range(len(self.chords))],
+                                columns=fields,
+                                index=range(len(self.chords)))
 
     def append(self, idx, values):
         """
@@ -198,11 +198,64 @@ class Annotate():
         else:
             warnings.warn('arg error')
 
-    def run(self, reduce=True):
+    def run(self,model=None):
+        if model:
+            self.model = model
+
+        self.resetAnnotations()
+        if self.model == 'kostka':
+            self.annKostka()
+        elif self.model == 'allTrans':
+            self.annAllTrans()
+        elif self.model == 'mainCad':
+            self.annMainCad()
+        else:
+            raise ValueError('annotation model unknown ({})'.format(self.model))
+
+    def findCadences(self,cads,updateAnn=True):
         """
-        Fills self.ann with the annotations
-        format: (<function>,<degree>,<scale>,<cadence>)
+        Uses the graph models to find all cadences in a progression
+        Args:
+            cads: list of cadence graphs
+
+        Returns:
+            [(<size>,<start>,<key>,<cadence>),...]
         """
+        X = []
+        for cad in cads:
+            for key in Note.chrFlat:
+                if cad in CadenceGraph.cadGraphs:
+                    X.extend(CadenceGraph(key, cad).findCadences(self.chords))
+                else:
+                    raise ValueError('cadence unknown ({})'.format(cad))
+        X.sort(key=lambda x: x[0], reverse=True)  # Sort by size
+
+        if updateAnn:
+            used = [False] * len(self.chords)
+            for x in X:  # x=(<size>,<start>,<key>,<cadenceList>)
+                rnk = max([max(self.ann.loc[c]['cadPos']) if self.ann.loc[c]['cadPos'] else -1 for c in
+                           range(x[1], (x[1] + x[0]))]) + 1
+                for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
+                    self.append(c,
+                                dict(deg=x[3][ci],
+                                     sca=x[2],
+                                     cad='-'.join(x[3]), cadPos=rnk,
+                                     chrPos=ci,
+                                     fn=Scale.fnTypes[Scale(x[2]).degrees().index(x[3][ci]) + 1] if len(
+                                         x[3]) > 1 else ''
+                                     ))
+                    used[c] = True
+        return X
+
+    def annKostka(self):
+        self.findCadences(['kostkaMaj','kostkaMin'])
+
+    def annAllTrans(self):
+        self.findCadences(['allTransMaj','allTransMin'])
+
+    def annMainCad(self):
+        self.findCadences(['mainCadMin','mainCadMaj'])
+
 
 
 class annWalkThatBass():
@@ -304,35 +357,3 @@ class annWalkThatBass():
     #                 elif len(s) > 1:
     #                     raise ValueError(
     #                         'Found multiple substitutions at bar ' + str(c['bar']) + ' ' + c['chr'])
-
-
-class annGraph(Annotate):
-    def __init__(self, chords):
-        Annotate.__init__(self, chords)
-        self.name = 'Graph Method'
-        self.description = 'We annotate first the longest sequences using a cadence graph'
-
-    def annotate(self):
-        # Find cadences in all keys
-        X = []  # [(<size>,<start>,<key>,<cadence>),...]
-        for key in Note.chrFlat:
-            X.extend(CadenceGraph(key, 'mainCadMin').findCadences(self.chords))
-
-        for key in Note.chrFlat:
-            X.extend(CadenceGraph(key, 'mainCadMaj').findCadences(self.chords))
-
-        X.sort(key=lambda x: x[0], reverse=True)  # Sort by size
-
-        used = [False] * len(self.chords)
-        for x in X:  # x=(<size>,<start>,<key>,<cadenceList>)
-            rnk = max([max(self.ann.loc[c]['cadPos']) if self.ann.loc[c]['cadPos'] else -1 for c in
-                       range(x[1], (x[1] + x[0]))]) + 1
-            for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
-                self.append(c,
-                            dict(deg=x[3][ci],
-                                 sca=x[2],
-                                 cad='-'.join(x[3]), cadPos=rnk,
-                                 chrPos=ci,
-                                 fn=Scale.fnTypes[Scale(x[2]).degrees().index(x[3][ci]) + 1] if len(x[3])>1 else ''
-                                 ))
-                used[c] = True
