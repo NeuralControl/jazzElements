@@ -26,24 +26,7 @@ class Scale():
         'Mmin-': [2, 1, 2, 2, 1, 2, 2], # melodic Minor down
     }
     chrDegLst = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
-    # todo: What do we do with this  (chrSubLst)
-    chrSubLst =\
-        [  # List of chord substitutions,  Format ['<old>-><new>','name']
-            ['IM7->iiim7', '3sub1'],  # I -> iii common on I-vi-ii-V
-            ['im7->IIIM7', '3sub1'],
 
-            ['IM7->vim7', '6sub1'],
-            ['im7->VIM7', '6sub1'],
-
-            ['V7->iim7,V7', '2-5sub5'],
-            ['V7->II7,V7', '2-5sub5'],
-
-            ['V7->iiim7,VI7,iim7,V7', '3-6-2-5sub5'],
-            ['V7->III7,VI7,II7,V7', '3-6-2-5sub5'],
-
-            ['V7->#Vdim7', '#5sub5'],
-            ['V7->bii7', 'trisub5'],
-        ]
 
 
     regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.*)")  # Regular expression to understand Roman Notation
@@ -53,7 +36,6 @@ class Scale():
             root = root.name
         if ' ' in root:
             root, mode = root.split(' ')
-        # todo: be able to instanciate Scale('Cmin') or Scale('C#maj')
 
         mode = mode[0].upper() + mode[1:].lower()
 

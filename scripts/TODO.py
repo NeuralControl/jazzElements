@@ -2,9 +2,27 @@
 ## SIMPLE TODOS:
 # todo: -- fix bar separation
 # todo: -- Not all chords quality can be resolved:
-# todo: Layer the analysis, add borrowed chords etc
+# todo: ++ Layer the analysis, add borrowed chords etc
+# todo: + automatize mkDocFigs on sphynx build
 
-
+# todo: What do we do with this  (chrSubLst)
+# chrSubLst = \
+#     [  # List of chord substitutions,  Format ['<old>-><new>','name']
+#         ['IM7->iiim7', '3sub1'],  # I -> iii common on I-vi-ii-V
+#         ['im7->IIIM7', '3sub1'],
+#
+#         ['IM7->vim7', '6sub1'],
+#         ['im7->VIM7', '6sub1'],
+#
+#         ['V7->iim7,V7', '2-5sub5'],
+#         ['V7->II7,V7', '2-5sub5'],
+#
+#         ['V7->iiim7,VI7,iim7,V7', '3-6-2-5sub5'],
+#         ['V7->III7,VI7,II7,V7', '3-6-2-5sub5'],
+#
+#         ['V7->#Vdim7', '#5sub5'],
+#         ['V7->bii7', 'trisub5'],
+#     ]
 
 # todo: Tritone substitution:
 # - Tritone substitution: we can replace a dom7 by a dom7 that is 6halfSteps above the root

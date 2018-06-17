@@ -80,14 +80,6 @@ class Progression:
         self.nbBars = self.chords['bar'].max() + 1
         self.ann = None
 
-    def findScale(self, chr, degree):
-        # todo: There must be a better way
-        # todo: Only looking for major keys
-        # todo: Taking now the first one found
-        mode = 'Ion'
-        return [[Scale(k, mode), Scale(k, mode).hasChord(chr)] for k in Note.chrSharp if
-                Scale(k, mode).getDegree(degree) == chr]
-
     def plotChord(self, ax, chr, pos, plotType='fn'):
 
         chord = self.chords.loc[chr]
@@ -126,20 +118,10 @@ class Progression:
                                  color='k', va='center', ha='left',
                                  fontSize=10, weight='bold')
 
-
-                    # else:
-                    #     if len(c) > 1 and c[1] == len(c[0].split('-')) - 1:
-                    #         arrow(xChr + 50, yChr + ann['cadPos'][ci] * cadh + cadh / 2, wChr - 100, 0, head_width=15, head_length=20,
-                    #               fc='k', lw=1)
-                    #
-                    #     else:
-                    #         arrow(xChr + 50, yChr + ann['cadPos'][ci] * cadh + cadh / 2, wChr - 100 - 20, 0, head_width=0,
-                    #               head_length=20, fc='k', lw=1)
-            # else:
-            #     if 'fn' in ann:
-            #         text(xChr + wChr / 2, yChr + cadh / 2, '/'.join(ann['fn']), color='k', va='center',
-            #              ha='center',
-            #              fontSize=10, weight='bold')
+            if 'fn' in ann:
+                for fi, f in enumerate(ann['fn']):
+                    text(xChr + wChr, yChr + ann['cadPos'][fi] * cadh + cadh / 2,ann['fn'][fi] ,
+                         color='k', va='center', ha='right',fontSize=8)
 
         if plotType == 'kbd':
             root, alt, chrType = re.search(Chord.regexChord, chord['chr']).groups()
@@ -228,5 +210,8 @@ class Progression:
 
 
 
-
+prg = Progression('My Romance')
+prg.annotate()
+prg.plot()
+print(prg.ann.ann)
 

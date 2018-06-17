@@ -9,35 +9,6 @@ from jazzElements.scale import Scale
 class CadenceGraph():
     cadGraphs = \
         {
-            # majLotus deprecated, need to update to new format
-            # 'majLotus':
-            #     {
-            #         'description': 'major chord progression from lotusmusic.com',
-            #         'key': 'maj',
-            #         'degrees':
-            #             {
-            #                 'I': [(1, 'M'), (1, 'M7'), (1, 'M9'), (1, 'M6/9'), (1, 'M')],
-            #                 'ii': [(2, 'm'), (2, 'm7'), (2, 'm9'), (4, 'M6')],
-            #                 'iii': [(3, 'm'), (3, 'm7'), (3, 'm9'), (3, 'M6')],
-            #                 'IV': [(4, 'M'), (4, 'M7'), (4, 'M9'), (4, 'M6/9'), (4, 'M6'), (2, 'm7')],
-            #                 'V': [(5, 'M'), (5, '7'), (5, '9'), (5, '7#5')],  # todo: add ,(2b,'7')
-            #                 'vi': [(6, 'm'), (6, 'm7'), (6, 'm9'), (1, 'M6')],
-            #                 'vii': [(7, 'dim'), (7, 'hdim'), (7, 'm6')]
-            #             },
-            #         'next':
-            #             {
-            #                 'I': ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii'],
-            #                 'ii': ['ii', 'IV', 'V', 'vii'],
-            #                 'iii': ['iii', 'ii', 'vi'],
-            #                 'IV': ['IV', 'I', 'V', 'vi', 'vii'],
-            #                 'V': ['V', 'I', 'vi', 'IV'],
-            #                 'vi': ['vi', 'ii', 'IV', 'V'],
-            #                 'vii': ['vii', 'I', 'iii'],
-            #             },
-            #         'types':
-            #             dict(I='T', ii='SD', iii='T', IV='SD', V='D', vi='T', vii='D')
-            #     },
-
             'majKostka':
                 {
                     'description': 'major chord progression from Tonal Harmony by Stefan Kostka',
@@ -150,10 +121,16 @@ class Annotate():
         else:
             self.chords = [Chord(c) for c in chords]
 
-    def append(self, idx, v):
-        if isinstance(v, dict):
-            for k in v:
-                self.ann.loc[idx][k].append(v[k])
+    def append(self, idx, values):
+        """
+        Helper to set an ann chord with fn, cad etc
+        Args:
+            idx: chord index
+            values: dict
+        """
+        if isinstance(values, dict):
+            for k in values:
+                self.ann.loc[idx][k].append(values[k])
         else:
             warnings.warn('arg error')
 
@@ -322,7 +299,6 @@ class annGraph(Annotate):
         used = [False] * len(self.chords)
         for x in X:  # x=(<size>,<start>,<key>,<cadenceList>)
             rnk = max([max(self.ann.loc[c]['cadPos']) if self.ann.loc[c]['cadPos'] else -1 for c in range(x[1], (x[1] + x[0]))])+1
-            # todo rank bug, e.g. myromance chord 2, two cadences have the same rank
             for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
                 self.append(c,
                             dict(deg    = x[3][ci],
@@ -332,3 +308,7 @@ class annGraph(Annotate):
                                  fn     = Scale.fnTypes[Scale(x[2]).degrees().index(x[3][ci]) + 1]
                                  ))
                 used[c] = True
+
+
+
+

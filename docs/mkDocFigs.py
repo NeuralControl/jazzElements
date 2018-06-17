@@ -7,7 +7,6 @@ from jazzElements.viz import plotNotes
 from matplotlib import gridspec
 from jazzElements.annotate import CadenceGraph
 
-#todo: automatize mkDocFigs on sphynx build
 
 prg = Progression('Misty')
 prg.annotate(method='graph', reduce=False)
