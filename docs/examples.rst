@@ -109,12 +109,12 @@ Allow all transitions (C Harmonic Major):
 
 Only allow main cadences (C Major):
 
-.. image:: img/mainCadMin.png
+.. image:: img/mainCadMaj.png
     :width: 300pt
 
 Only allow main cadences (C Harmonic minor):
 
-.. image:: img/mainCadMaj.png
+.. image:: img/mainCadMin.png
     :width: 300pt
 
 
