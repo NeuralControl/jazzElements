@@ -1,0 +1,13 @@
+digraph g {
+	node [height=.1 shape=Mrecord]
+	size=20
+	2 -> 5 [rank=same]
+	5 -> 1 [rank=same]
+	1 [label="i\nCm, Cm6, Cm7, Cm9, Cm11, Cm13, CmM7" color=darkslategray3 style=filled]
+	2 [label="iio\nDo, Do7, Dø" color=darksalmon style=filled]
+	3 [label="III\nD♯aug, D♯aug6, D♯7+5" color=darkslategray3 style=filled]
+	4 [label="iv\nFm, Fm6, Fm7, Fm9, Fm11, Fm13, FmM7" color=darksalmon style=filled]
+	5 [label="V\nG7, G7b5, G9, G13" color=darkolivegreen1 style=filled]
+	6 [label="VI\nG♯M, G♯M6, G♯M7, G♯M9, G♯M13, G♯6/9, G♯" color=darkslategray3 style=filled]
+	7 [label="viio\nBo, Bo7, Bø" color=darkolivegreen1 style=filled]
+}
