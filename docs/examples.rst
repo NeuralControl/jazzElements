@@ -87,32 +87,32 @@ Implemented cadence Graphs
 Following are examples of detected cadences.
 They can be obtained using CadenceGraph().plot()
 
-Minor Kostka transitions:
+Kostka transitions (C Major):
 
 .. image:: img/kostkaMaj.png
     :width: 300pt
 
-Major Kostka transitions:
+Kostka transitions (C Harmonic minor):
 
 .. image:: img/kostkaMin.png
     :width: 300pt
 
-Allow all transitions Major:
+Allow all transitions (C Major):
 
 .. image:: img/allTransMaj.png
     :width: 300pt
 
-Allow all transitions Minor:
+Allow all transitions (C Harmonic Major):
 
 .. image:: img/allTransMin.png
     :width: 300pt
 
-Only allow Minor main cadences:
+Only allow main cadences (C Major):
 
 .. image:: img/mainCadMin.png
     :width: 300pt
 
-Only allow Major main cadences:
+Only allow main cadences (C Harmonic minor):
 
 .. image:: img/mainCadMaj.png
     :width: 300pt
