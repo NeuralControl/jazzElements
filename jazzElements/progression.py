@@ -91,7 +91,7 @@ class Progression:
 
         # Function
         if plotType == 'fn':
-            cadh = 30
+            cadh = 15
             # Plot chord name
             root, alt, chrType = re.search(Chord.regexChord, chord['chr']).groups()
             text(xChr + wChr / 2, yChr + hChr, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
@@ -101,11 +101,10 @@ class Progression:
             if 'cad' in ann:
                 for ci, c in enumerate(ann['cad']):
                     if len(c.split('-')) == 1: # Isolated chord
-                        text(xChr , yChr + ann['cadPos'][ci] * cadh + cadh / 2,
-                             ' '+ann['cad'][ci]+'('+ann['sca'][ci].replace(' Ion','')+')',
+                        text(xChr+3, yChr + ann['cadPos'][ci] * cadh + (cadh-3) / 2 +2,
+                             ann['cad'][ci]+'('+ann['sca'][ci].replace(' Ion','')+')',
                              color='k', va='center', ha='left',
-                             fontSize=8)
-
+                             fontSize=7)
                     else: # Cadence
                         # plot bgd
                         bgd = patches.Rectangle((xChr+2, yChr + ann['cadPos'][ci] * cadh+2), wChr-2, cadh-3, fill=True,
@@ -120,8 +119,8 @@ class Progression:
 
             if 'fn' in ann:
                 for fi, f in enumerate(ann['fn']):
-                    text(xChr + wChr, yChr + ann['cadPos'][fi] * cadh + cadh / 2,ann['fn'][fi] ,
-                         color='k', va='center', ha='right',fontSize=8)
+                    text(xChr + wChr, yChr + ann['cadPos'][fi] * cadh + cadh / 2,ann['fn'][fi] +' ',
+                         color='k', va='center', ha='right',fontSize=7)
 
         if plotType == 'kbd':
             root, alt, chrType = re.search(Chord.regexChord, chord['chr']).groups()
@@ -204,9 +203,7 @@ class Progression:
             self.ann = annGraph(self.chords)
         else:
             warnings.warn('not implemented')
-
         self.ann.annotate()
-
 
 
 

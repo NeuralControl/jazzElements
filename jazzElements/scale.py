@@ -11,23 +11,21 @@ from jazzElements.viz import plotNotes
 
 class Scale():
     fnTypes = {1: 'T', 2: 'ST', 3: 'M', 4: 'SD', 5: 'D', 6: 'SM', 7: 'L'}
-    modesLst = ['Ion', 'Dor', 'Phr', 'Lyd', 'Mix', 'Aeo', 'Loc']
+    modesLst = ['ion', 'dor', 'phr', 'lyd', 'mix', 'aeo', 'loc']
     modesIntervals = {
-        'Ion': [2, 2, 1, 2, 2, 2, 1],
-        'Dor': [2, 1, 2, 2, 2, 1, 2],
-        'Phr': [1, 2, 2, 2, 1, 2, 2],
-        'Lyd': [2, 2, 2, 1, 2, 2, 1],
-        'Mix': [2, 2, 1, 2, 2, 1, 2],
-        'Aeo': [2, 1, 2, 2, 1, 2, 2],
-        'Loc': [1, 2, 2, 1, 2, 2, 2],
-        'Chr': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        'Hmin': [2, 1, 2, 2, 1, 3, 1], # Harmonic Minor
-        'Mmin+': [2, 1, 2, 2, 2, 2, 1], # melodic Minor up
-        'Mmin-': [2, 1, 2, 2, 1, 2, 2], # melodic Minor down
+        'ion': [2, 2, 1, 2, 2, 2, 1],
+        'dor': [2, 1, 2, 2, 2, 1, 2],
+        'phr': [1, 2, 2, 2, 1, 2, 2],
+        'lyd': [2, 2, 2, 1, 2, 2, 1],
+        'mix': [2, 2, 1, 2, 2, 1, 2],
+        'aeo': [2, 1, 2, 2, 1, 2, 2],
+        'loc': [1, 2, 2, 1, 2, 2, 2],
+        'chr': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        'hm': [2, 1, 2, 2, 1, 3, 1], # Harmonic Minor
+        'mm+': [2, 1, 2, 2, 2, 2, 1], # melodic Minor up
+        'mm-': [2, 1, 2, 2, 1, 2, 2], # melodic Minor down
     }
     chrDegLst = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
-
-
 
     regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.*)")  # Regular expression to understand Roman Notation
 
@@ -39,9 +37,10 @@ class Scale():
 
         mode = mode[0].upper() + mode[1:].lower()
 
-        if mode in ['Major', 'Maj']: mode = 'Ion'
-        if mode in ['Minor', 'Min', 'Nmin']: mode = 'Aeo'
-        if mode not in self.modesIntervals: raise ValueError('mode {} not implemented'.format(mode))
+        if mode in ['Major', 'Maj','major', 'maj','M']: mode = 'ion'
+        if mode in ['Minor', 'Min', 'Nmin','m','minor', 'min', 'nmin','m']: mode = 'aeo'
+
+        if mode.lower() not in self.modesIntervals: raise ValueError('mode {} not implemented'.format(mode))
 
         self.root = Note(root)
         self.mode = mode
