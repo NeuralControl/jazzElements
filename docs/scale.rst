@@ -23,6 +23,9 @@ Attributes
       - Scale('D# min').name
       - 'D♯ Aeo'
 
+.. Hint:: A good way to remember modes order is the mnemonic "(I) (D)on’t (P)articularly (L)ike (M)odes (A) (L)ot"
+
+
 Basic operations
 -----------------
 

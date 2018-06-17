@@ -1,0 +1,285 @@
+
+## Generic TODOS:
+
+# todo: -- fix bar separation
+
+# todo: -- Not all chords quality can be resolved:
+for c in Chord.chrLst:
+    print(Chord('C' + c).name + '  ' + Chord('C' + c).quality)
+
+# todo: add dominant extensions to chords
+https://tamingthesaxophone.com/jazz-upper-extensions
+
+# todo: improve chord construction (see favorites)
+
+# todo: ++ Layer the analysis, add borrowed chords etc
+
+# todo: Secondary dominant (V leading non diatonic chord) and secondary ii-V
+https://www.jazzguitar.be/blog/roman-numerals-analysis-transposition/
+examples summertime and take the a train are in the folder annotated
+'|C|F|D7|G7|C|' should give I IV V/V V I
+fn: T S D D T
+https://www.semanticscholar.org/paper/HarmTrace-%3A-Automatic-functional-harmonic-analysis-Remco/257c1b75d56c7a13975ea0f000a9ba4ff833cd6c/figure/0
+prg = Progression('|C|F|D7|G7|C|')
+prg.annotate()
+prg.plot()
+print(prg.ann.ann)
+
+
+
+# todo: Check the following
+In addition to IIm7-V7-Is created through secondary dominants, many tunes are made up of IIm7-V7-Is with different key centres that may appear to be entirely random or may be related logically:
+Misty: key centres in bridge move down a semitone then a major 3rd
+Autumn Leaves: key centres Bb – Gm (major to relative minor)
+Giant Steps: (key centres move up in major 3rds)
+
+
+NOTES ON JazzPianoSite
+
+Chord Substitutions:
+====================
+
+    Chords can be substituted if the substitute chord contains its 3rd and 7th as the two chords will have a similar feel
+    Substitution Types:
+    - MedianNoteSubstitution on any chord:           
+        We take ths chord starting from the median note 
+        we can do a 3 note or 4 note chord
+        We can go a third up or a third down (major only?)
+        ex CMaj7 -> Em7 or Am7          3sub
+        ex Am7 -> CMaj7 or FMaj7        3sub
+        
+        => Easy to do from Scale
+             
+    - 25 substitution:
+        ex G7 -> Dm7 G7                 25sub5
+        ex G7 -> Em7 A7 | Dm G7         6325sub5
+        
+    - 25dom substitution: (instead of playing the sub we play the dominant sub)
+        ex G7 -> D7 G7                  25domsub
+        ex G7 -> E7 A7 | D7 G7          6325domsub
+        
+    - #Vdim7 substitution in place of a DOM:
+        G7 -> G#dim7                    interesting
+        
+    - Tritone Substitution in place of a DOM:
+        ex G7 -> Db7                    3sub already in chord, add to search
+         
+    examples:
+        org:           '|Dm7|G7|CM7|'               # original progression 
+        substitution1: '|Dm11|Db9|CM13#11|'         # alt|tritone|alt
+        substitution2: '|FM9|G13|Am9|'              # medianNote|alt|medianNote
+        substitution3: '|Em11,A7b9|Dm11,G7b9|CM9|'  # ???|2-5sub|alt
+        substitution4: '|Bm7b5|Bo7|Am7|'            # medianNote|#Vdim7|medianNote
+        
+    todo: check for Tritone substitution: (trit is in Chords)
+        - Tritone substitution: we can replace a dom7 by a dom7 that is 6halfSteps above the root
+        - Tritone substitution is good on II-V-I because it provides a chromatic root movement
+          e.g. Dm7–G7–CM7 -> Dm7–D♭7–CM gives a downward walking bass
+    
+        
+    todo: What do we do with this  (chrSubLst)
+    chrSubLst = \
+        [  # List of chord substitutions,  Format ['<old>-><new>,name']
+            ['IM7->iiim7', '3sub1'],  # I -> iii common on I-vi-ii-V
+            ['im7->IIIM7', '3sub1'],
+
+            ['IM7->vim7', '6sub1'],
+            ['im7->VIM7', '6sub1'],
+
+            ['V7->iim7,V7', '2-5sub5'],
+            ['V7->II7,V7', '2-5sub5'],
+
+            ['V7->iiim7,VI7,iim7,V7', '3-6-2-5sub5'],
+            ['V7->III7,VI7,II7,V7', '3-6-2-5sub5'],
+
+            ['V7->#Vdim7', '#5sub5'],
+            ['V7->bii7', 'trisub5'],
+        ]
+    
+    todo: Check what happens with a dominant of dominant series
+    'E7|A7|D7|G7|C6/9|'
+
+
+
+Passing Chords
+=============
+    Passing chords a chords that you pass by. 
+    - They dont last normally more than .5 bar
+    - They are inserted between two important chords (beat 1 or 3 of a bar)
+    - can be diatonic or non diatonic
+
+
+Approach Chords
+===============
+    https://www.jazzguitar.be/blog/take-the-a-train-jazz-guitar-chord-study/
+    Approach Chords (App.): These are chords which approach the next diatonic chord in
+    the tune by either a half step below or half step above that resolution chord.
+    
+    it is a type of passing chord that is either 1 (chromatic) or 2 (diatonic) semitones away from the next chord
+    
+    examples:
+        Original Chord Progression	| CMaj7 | Dm7 ||
+        Tritone (of previous chord)	| CMaj7 - G♭7 | Dm7 ||
+        Tritone (of next chord)	| CMaj7 - A♭7 | Dm7 ||
+        Approach #1 (diatonic)	| CMaj7 - Em7 | Dm7 ||
+        Approach #2 (semitone)	| CMaj7 - D♭7 | Dm7 ||          
+        Approach #3 (semitone)	| CMaj7 - E♭7 | Dm7 ||          
+        Diminished #1	| CMaj7 - D♭o7 | Dm7 ||
+        Diminished #2	| CMaj7 - E♭o7 | Dm7 ||
+        Dominant-minor	| CMaj7 - D7 | Dm7 ||
+        Secondary V	| CMaj7 - A7 | Dm7 ||
+        Secondary II, V	| CMaj7 - Em7 A7 | Dm7 ||
+
+        todo:  add Passing chords
+        test on:
+        allOfMe = '|C7|C7|E7|E7|A7|A7|Dm7|Dm7|' \
+                  'E7|E7|Am7|Am7|D7|D7|Dm7|G7|'
+        allOfMe_passingChords1=\
+            '|C7|C7,Dm7|E7|E7,B♭7|A7|A7,Eø7,A7|Dm7|Dm7,D#o7|' \
+            'E7|E7,Bø7|Am7|Am7,A♭7|D7|D7,A♭7|Dm7,Do7|G7,D♭7|'
+        allOfMe_passingChords2=\
+            '|C7,C#dim|Dm7,D#o7|E7,CMaj7|Bø7,E7|A7,A♭7|A7,G7|Dm7,C#o7|Dm7,D#o7|' \
+            'E7,F7|G7,G#7|Am7,E7|A♭7,E♭7|D7,D#o7|D7,Eø7|Dm7,Do7|G7,D♭7|'
+        
+Tonicization/Modulation
+=======================
+    Modulation: changing the key for over two bars
+    Tonicization: changing key for less than two bars
+    - we cant tonicize the tonic (it is already)
+    - we cant tonicize a hdim
+    - only maj and min chords can be tonics, so we can only tonicise them
+
+    two ways of tonicization:
+    - insert a secondary dominant
+    - insert a secondary leading tone (viihdim7 or viio7)
+    examples:
+    Original Chord Progression	        |CMaj7|Am7         |Dm7|G7|
+    Secondary Dominant	  	            |CMaj7|A7          |Dm7|G7|
+    Secondary Leading-Tone Chord	    |CMaj7|C#ø7 OR C#o7|Dm7|G7|
+    
+    Cycling Secondary Dominant	                    |CMaj7,B7|Em7,A7|Dm7,G7|CMaj7|
+    Cycling Secondary Dominant without resolving	|CMaj7,B7|E7,A7|D7,G7|CMaj7|
+    Secondary ii, V	                                |CMaj7|Em7,A7|Dm7|G7|
+    Chromatic Cycling Secondary ii, V               |Em7,A7|E♭m7,A♭7|Dm7|G7|
+
+Modal Interchange (borrowed chords):
+====================================
+    Changing key for a chort period while retaining the same tonal center (root)
+    in modal interchange, we borrow chords from a parallel key
+    
+    examples:
+        |Dm7|G7|CMaj7|          # original 251
+        |Dm7♭5|G7♭9|CMaj7|      # Borrowed from harmonic minor
+        |Gm7|CMaj7|Dm7♭5|       # Borrowed from Aeolian	
+        |D♭Maj7|Gm7♭5|CMaj7|    # Borrowed from Phrygian
+        |D7|GMaj7|CMaj7|        # Borrowed from Lydian
+    
+    examples:
+        mode | modal interchange        | Songs
+        Aeo  | Minor iv,♭VII7,♭VI,♭III   | All The Things You Are, I Got Rhythm, There will never be another you, My Romance, 
+                                          Lament,Lady Bird,Misty,Cherokee
+        hmin | Minor II-V               | Alone Together, What is this thing called love?, You Go To My Head
+        Mixo | I7                       | Every Blues Song, I Got Rhythm, Alone Together
+        
+    
+    example: i got rhythm
+        |B♭6,Gm7|Cm7,F7|B♭6,Gm7|Cm7,F7|
+        |B♭6,<B♭7>|E♭6,<E♭m7>|B♭6,Gm7|Cm7,F7|
+    - Bb7 and Emb7 are borrowed from Bb mixo and Bb aeo modes
+    - they are surrounded by chords from bb major on both sides
+    - it lasts only for 1 bar
+    - the tonal center still sounds like Bb
+    
+    
+Types of Modulation:
+====================
+    - unprepared or direct: We go straight to a I chord. often between sections
+    - prepared: we prepare using a V or II-V 
+        example: how high the moon: |GMaj7|GMaj7| <Gm7|C7> |FMaj7|FMaj7| <Fm7|B♭7> |E♭Maj7|
+    - pivot chord: using a diatonic common to the two keys
+        example: |Dm7 | G7 | CMaj7 | <Em7> | A7 | DMaj7 | # 251 in C then 251 in D with Em7 as pivot
+        example: automn leaves  |Cm7 | F7 | B♭Maj7 | <E♭Maj7> | Am7♭5 | D7 | Gm7 | Gm7 |
+    - transitional/chain: succession of 2-5 to move quickly through keys, moving down by semitone, tone or fifth
+        example: blues for alice         |FMaj7 | Em7♭5,A7 | Dm7,G7 | Cm7,F7 | B♭7 |
+        example: In Your Own Sweet Way:  |Am7♭5,D7 | Gm7,C7 | Cm7,F7 | B♭6 ||
+    
+    Most modulations change key to:
+        - relative minor or major
+        - parallel minor or major
+        - a key closed related on the circle of fifth do many notes in common
+        
+        
+LOOK FOR TONICIZATION BEFORE CONCLUDING FOR MODULATION, LOOK FOR 
+- secondary dominants
+- borrowed chords
+- chord substitution
+- passing chords
+
+Modes feel
+==========
+    Modes feel  (https://endofthegame.net/2011/07/28/modesmajorscale/)
+    Ionian – Very clean sounding, almost to the point of sounding sterile. Your Grandma would love this one.
+    Dorian – Can sound smooth and soulful or hip and bluesy, depending on how you use it.
+    Phrygian – Has a very Middle-Eastern or Spanish sound.
+    Lydian – Very clean, like Ionian, but the #4 gives it a more spacey, unresolved quality.
+    Mixolydian – “Funky” or “folky”, depending on how it’s used. This mode has been used for everything from old sea chanteys to a lot of 70’s rock tunes.
+    Aeolian – Dark and sad like those old cowboy songs, or tough and mean as used in a lot of heavy rock songs.
+    Locrian – The real ear-twister of the bunch. Can sound Spanish like Phrygian, but much darker and more unresolved.
+    
+    BRIGHTEST
+    Lydian – 1 2 3 #4 5 6 7
+    Ionian – 1 2 3 4 5 6 7
+    Mixolydian – 1 2 3 4 5 6 b7
+    Dorian – 1 b2 b3 4 5 6 b7
+    Aeolian – 1 2 b3 4 5 b6 b7
+    Phrygian – 1 b2 b3 4 5 b6 b7
+    Locrian – 1 b2 b3 4 b5 b6 b7
+    DARKEST
+
+
+
+
+
+# todo: WALK THAT BASS Harmonic Analysis of the chord progression
+Following WalkThatBass:
+http://www.thejazzpianosite.com/jazz-piano-lessons/jazz-chord-progressions/how-to-analyse-a-chord-progression-harmonic-analysis/
+
+Level 1:
+- Find the most represented key
+- Annotate chords using this key
+Level 2:
+- Annotate Function: (PD,D,T)
+- Annotate Second Level Chords
+    Everything before PD-D-T is a Tonic Prolongation (prolongs the tonic without a cadence)
+    They can be Substitutions, or Quick Passing Chords
+- Look for non-diatonic chords:
+    Long period (>1bar): Modulation
+    Short Period (.5-1 bar): Passing Chord | Borrowed Chord | Secondary Dominant
+
+Improvisation:
+- first level: We can use the relevant mode under each chord, but we change scale all the time
+- or in the second level: We use the functionally important chords
+then we can go into crazy stuff i.e. side slipping, cycled patterns, chromatic runs etc...
+
+
+
+
+#  https://en.wikipedia.org/wiki/Chromatic_circle
+# import numpy as np
+# import matplotlib.cm as cm
+# from matplotlib.pyplot import figure, show, rc
+# sca=Scale('C m')
+#
+# # force square figure and square axes looks better for polar, IMO
+# fig = figure(figsize=(8,8))
+# ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True)
+# itv=np.insert(np.cumsum(sca.intervals()),0,0)
+# N = 12
+# theta = itv*2*np.pi/12
+# radii = [1]*len(theta)
+# width = np.pi/(4*12)
+# bars = ax.bar(theta, radii, width=width, bottom=0.0)
+# for r,bar in zip(radii, bars):
+#     bar.set_facecolor('k')
+# axis('off')
+
