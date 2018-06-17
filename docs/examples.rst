@@ -41,9 +41,9 @@ We can then use the keyboard view to play the chords (upper keyboard) with the l
 
 >>> # Generating the 4 notes 2-5-1s for every root:
 >>> seq=''.join(['|{},{}|{}'.format(
->>>     Scale(key,'Ion').getDegree(2,nbNotes=4),
->>>     Scale(key,'Ion').getDegree(5,nbNotes=4),
->>>     Scale(key,'Ion').getDegree(1,nbNotes=4) ) for key in Note.chrFlat])
+>>>     Scale(key,'ion').getDegree(2,nbNotes=4),
+>>>     Scale(key,'ion').getDegree(5,nbNotes=4),
+>>>     Scale(key,'ion').getDegree(1,nbNotes=4) ) for key in Note.chrFlat])
 
 >>> prg=Progression(chr,name='Maj 2-5-1s')
 >>> prg.annotate()

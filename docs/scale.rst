@@ -2,7 +2,7 @@
 
 Scales
 ======
-Scales can be instantiated as s=Scale(root='C', mode='Ion') or Scale('C Hmin').
+Scales can be instantiated as s=Scale(root='C', mode='ion') or Scale('C hm').
 Attributes
 ----------
 

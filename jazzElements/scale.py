@@ -29,16 +29,15 @@ class Scale():
 
     regexRoman = re.compile(r"([#b♭♯]*)([iIvV]+)(.*)")  # Regular expression to understand Roman Notation
 
-    def __init__(self, root='C', mode='Ion'):
+    def __init__(self, root='C', mode='ion'):
         if isinstance(root, Note):
             root = root.name
         if ' ' in root:
             root, mode = root.split(' ')
 
-        mode = mode[0].upper() + mode[1:].lower()
-
         if mode in ['Major', 'Maj','major', 'maj','M']: mode = 'ion'
-        if mode in ['Minor', 'Min', 'Nmin','m','minor', 'min', 'nmin','m']: mode = 'aeo'
+        if mode in ['Minor', 'Min', 'Nmin', 'm', 'minor', 'min', 'nmin', 'm']: mode = 'aeo'
+        if mode in ['hmin']: mode = 'hm'
 
         if mode.lower() not in self.modesIntervals: raise ValueError('mode {} not implemented'.format(mode))
 
@@ -117,20 +116,20 @@ class Scale():
                     if m != self.mode]
 
     def relativeMinor(self, asStr=False):
-        if self.mode == 'Ion':  # Relative Major is 1.5 tone below key
-            return Scale(Note(self.root) - 3, 'Aeo').name if asStr else Scale(Note(self.root) - 3, 'Aeo')
+        if self.mode == 'ion':  # Relative Major is 1.5 tone below key
+            return Scale(Note(self.root) - 3, 'aeo').name if asStr else Scale(Note(self.root) - 3, 'aeo')
         else:
             raise ValueError('Cannot calculate relative Minor')
 
     def relativeMajor(self, asStr=False):
-        if self.mode == 'Aeo':  # Relative Minor is 1.5 tone above key
-            return Scale(Note(self.root) + 3, 'Ion').name if asStr else Scale(Note(self.root) + 3, 'Ion')
+        if self.mode == 'aeo':  # Relative Minor is 1.5 tone above key
+            return Scale(Note(self.root) + 3, 'ion').name if asStr else Scale(Note(self.root) + 3, 'ion')
         else:
             raise ValueError('Cannot calculate relative Major')
 
     def parallelMinor(self, asStr=False):
-        if self.mode == 'Ion':
-            return Scale(Note(self.root), 'Aeo').name if asStr else Scale(Note(self.root), 'Aeo')
+        if self.mode == 'ion':
+            return Scale(Note(self.root), 'Aeo').name if asStr else Scale(Note(self.root), 'aeo')
         else:
             raise ValueError('Cannot calculate parallel Minor')
 

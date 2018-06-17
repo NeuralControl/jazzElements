@@ -1,14 +1,13 @@
 import re
 
+import matplotlib.cm as cmx
+from  matplotlib.colors import Normalize
 import pandas as pd
 from matplotlib import patches
 from matplotlib.pyplot import *
-import matplotlib.colors as colors
-import matplotlib.cm as cmx
 
 from jazzElements.annotate import annGraph
 from jazzElements.chord import Chord
-from jazzElements.note import Note
 from jazzElements.scale import Scale
 
 progressions = \
@@ -16,7 +15,7 @@ progressions = \
         'Satin Doll': '|Dm7,G7|%|Em7,A7|%|Am7,D7|Abm7,Db7|CM7|%|',
 
         'Misty': '|Fm7,Bb7|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7'
-                         '|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|EbM7#5,Ab7|EbM7,Do7,G7alt,Cm7,Bm7'
+                 '|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|EbM7#5,Ab7|EbM7,Do7,G7alt,Cm7,Bm7'
                  '|Bbm7|Eb7b9|AbM7|%'
                  '|Am7|D7,F67|Gm7b5|C7b9|Fm7,Bb7'
                  '|EbM7|Bbm7,Eb7|AbM7|Abm7,Db7|EbM7,Cm7|Fm7,Bb7|Gm7,C7|Fm7,Bb7|Eb6|Fm7,Bb7|',
@@ -45,6 +44,7 @@ progressions = \
             '|Dm7|Dm7|Eø|Am7|Dm7|G7|CM7|CM7|',
     }
 
+
 class Progression:
     def __init__(self, prg, name=''):
         # todo: chords are now of equal duration within a bar.
@@ -56,7 +56,7 @@ class Progression:
                 'barsPerRow': 4,
                 'sepx': 0,
                 'sepy': 20,
-                'beatsPerBar':4,
+                'beatsPerBar': 4,
             }
 
         self.name = name
@@ -86,12 +86,13 @@ class Progression:
         ann = self.ann.ann.loc[chr] if self.ann else None
 
         xChr, yChr, wChr, hChr = pos
-        bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=False, clip_on=False, color='k',alpha=1)
+        bgd = patches.Rectangle((xChr, yChr), wChr, hChr, fill=False, clip_on=False, color='k', alpha=1)
         ax.add_patch(bgd)
 
         # Function
         if plotType == 'fn':
-            cadh = 15
+            cadh = 20
+            fnSz = 8
             # Plot chord name
             root, alt, chrType = re.search(Chord.regexChord, chord['chr']).groups()
             text(xChr + wChr / 2, yChr + hChr, '{}{}$^{{{}}}$ '.format(root, alt, chrType.replace('#', '+')),
@@ -100,27 +101,32 @@ class Progression:
 
             if 'cad' in ann:
                 for ci, c in enumerate(ann['cad']):
-                    if len(c.split('-')) == 1: # Isolated chord
-                        text(xChr+3, yChr + ann['cadPos'][ci] * cadh + (cadh-3) / 2 +2,
-                             ann['cad'][ci]+'('+ann['sca'][ci].replace(' Ion','')+')',
-                             color='k', va='center', ha='left',
-                             fontSize=7)
-                    else: # Cadence
+                    yFill = yChr + (ann['cadPos'][ci] + 0.5) * cadh
+
+                    if len(c.split('-')) == 1:  # Isolated chord
+                        text(
+                            xChr + 3, yFill,
+                            ann['cad'][ci] + '(' + ann['sca'][ci].replace(' ion', '') + ')',
+                            color='k', va='center', ha='left', fontSize=fnSz)
+                    else:  # Cadence
                         # plot bgd
-                        bgd = patches.Rectangle((xChr+2, yChr + ann['cadPos'][ci] * cadh+2), wChr-2, cadh-3, fill=True,
-                                                clip_on=False, color=self.cfg['scaleColors'][ann['sca'][ci]], ec=None)
+                        bgd = patches.Rectangle(
+                            (xChr + 2, yFill - cadh / 2), wChr - 2, cadh,
+                            fill=True, clip_on=False, color=self.cfg['scaleColors'][ann['sca'][ci]], ec=None)
                         ax.add_patch(bgd)
 
                         # Print cadence if first chord
-                        if ann['chrPos'][ci]==0:
-                            text(xChr , yChr + ann['cadPos'][ci] * cadh + cadh / 2,' '+ann['sca'][ci].replace(' Ion','')+': '+ann['cad'][ci],
+                        if ann['chrPos'][ci] == 0:
+                            text(
+                                xChr + 3,yFill,
+                                 ann['sca'][ci].replace(' ion', '') + ': ' + ann['cad'][ci],
                                  color='k', va='center', ha='left',
-                                 fontSize=10, weight='bold')
+                                 fontSize=fnSz, weight='bold')
 
             if 'fn' in ann:
                 for fi, f in enumerate(ann['fn']):
-                    text(xChr + wChr, yChr + ann['cadPos'][fi] * cadh + cadh / 2,ann['fn'][fi] +' ',
-                         color='k', va='center', ha='right',fontSize=7)
+                    text(xChr + wChr, yChr + ann['cadPos'][fi] * cadh + cadh / 2, ann['fn'][fi] + ' ',
+                         color='k', va='center', ha='right', fontSize=fnSz)
 
         if plotType == 'kbd':
             root, alt, chrType = re.search(Chord.regexChord, chord['chr']).groups()
@@ -160,8 +166,9 @@ class Progression:
                 yBar -= (hBar + self.cfg['sepy'])
 
         # Plot Bar
-        plot([xBar - self.cfg['sepx'] / 2, xBar - self.cfg['sepx'] / 2], [yBar, yBar + hBar], color='k', lw=3,alpha=1)
-        text(xBar - self.cfg['sepx'] / 2, yBar + hBar, '{:02}'.format(b + 1), color='w', va='top', ha='center', fontSize=8,
+        plot([xBar - self.cfg['sepx'] / 2, xBar - self.cfg['sepx'] / 2], [yBar, yBar + hBar], color='k', lw=3, alpha=1)
+        text(xBar - self.cfg['sepx'] / 2, yBar + hBar, '{:02}'.format(b + 1), color='w', va='top', ha='center',
+             fontSize=8,
              weight=1000,
              bbox=dict(boxstyle='round4', fc='k'))
 
@@ -176,7 +183,7 @@ class Progression:
 
     def plot(self, plotType='fn'):
         keys = self.countKeys()
-        cNorm = colors.Normalize(vmin=min([k[1] for k in keys]), vmax=1.5 * max([k[1] for k in keys]))
+        cNorm = Normalize(vmin=min([k[1] for k in keys]), vmax=1.5 * max([k[1] for k in keys]))
         scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=get_cmap('Blues'))
         self.cfg['scaleColors'] = {x[0]: scalarMap.to_rgba(x[1]) for i, x in enumerate(keys)}
 
@@ -190,7 +197,7 @@ class Progression:
         for b in self.chords['bar'].unique():
             posBar = [x + (b % self.cfg['barsPerRow']) * (wBar + self.cfg['sepy']),
                       y + h - hBar * (1 + (b // self.cfg['barsPerRow'])) - self.cfg['sepy'] * (
-                      (b // self.cfg['barsPerRow'])), wBar, hBar]
+                          (b // self.cfg['barsPerRow'])), wBar, hBar]
             self.plotBar(b, posBar, plotType=plotType)
 
         # axis('tight')
@@ -206,9 +213,7 @@ class Progression:
         self.ann.annotate()
 
 
-
 prg = Progression('My Romance')
 prg.annotate()
 prg.plot()
 print(prg.ann.ann)
-
