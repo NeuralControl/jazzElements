@@ -119,33 +119,30 @@ class Scale():
         if self.mode == 'ion':  # Relative Major is 1.5 tone below key
             return Scale(Note(self.root) - 3, 'aeo').name if asStr else Scale(Note(self.root) - 3, 'aeo')
         else:
-            raise ValueError('Cannot calculate relative Minor')
+            return None
 
     def relativeMajor(self, asStr=False):
         if self.mode == 'aeo':  # Relative Minor is 1.5 tone above key
             return Scale(Note(self.root) + 3, 'ion').name if asStr else Scale(Note(self.root) + 3, 'ion')
         else:
-            raise ValueError('Cannot calculate relative Major')
+            return None
 
     def parallelMinor(self, asStr=False):
         if self.mode == 'ion':
             return Scale(Note(self.root), 'Aeo').name if asStr else Scale(Note(self.root), 'aeo')
         else:
-            raise ValueError('Cannot calculate parallel Minor')
+            return None
+
+    def parallelMajor(self, asStr=False):
+        if self.mode == 'aeo':
+            return Scale(Note(self.root), 'ion').name if asStr else Scale(Note(self.root), 'ion')
+        else:
+            return None
 
     def chordFromRoman(self, item, asStr=False):
         alt, deg, chrType = re.search(self.regexRoman, item).groups()
         chr = Chord(self.notes(asStr=True)[self.chrDegLst.index(deg.upper())] + alt + chrType)
         return chr.name if asStr else chr
-
-    def possibleSubstitutions(self, asStr=False):
-        S = []
-        for s in self.chrSubLst:
-            From, To = s[0].split('->')
-            From = [self.chordFromRoman(c, asStr=asStr) for c in From.split(',')]
-            To = [self.chordFromRoman(c, asStr=asStr) for c in To.split(',')]
-            S.append([From, To, s[1]])
-        return S
 
     def getDegree(self, d, nbNotes=4, asStr=False):
         if isinstance(d, str):
@@ -157,7 +154,6 @@ class Scale():
             return [Chord(self.chords()[d-1].root.name+chrType).name for chrType in Chord.chrFamilies[self.degreesQuality(4)[d-1]]]
         else:
             return [Chord(self.chords()[d-1].root.name+chrType) for chrType in Chord.chrFamilies[self.degreesQuality(4)[d-1]]]
-
 
     def degreesQuality(self, nbNotes=4):
         return [chr.quality for chr in self.chords(nbNotes)]

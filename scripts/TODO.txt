@@ -7,24 +7,17 @@
 for c in Chord.chrLst:
     print(Chord('C' + c).name + '  ' + Chord('C' + c).quality)
 
+# todo: add signature to progression either using the scale or the alterations
+
 # todo: add dominant extensions to chords
 https://tamingthesaxophone.com/jazz-upper-extensions
 
 # todo: improve chord construction (see favorites)
 
-# todo: ++ Layer the analysis, add borrowed chords etc
-
 # todo: Secondary dominant (V leading non diatonic chord) and secondary ii-V
 https://www.jazzguitar.be/blog/roman-numerals-analysis-transposition/
 examples summertime and take the a train are in the folder annotated
-'|C|F|D7|G7|C|' should give I IV V/V V I
-fn: T S D D T
 https://www.semanticscholar.org/paper/HarmTrace-%3A-Automatic-functional-harmonic-analysis-Remco/257c1b75d56c7a13975ea0f000a9ba4ff833cd6c/figure/0
-prg = Progression('|C|F|D7|G7|C|')
-prg.annotate()
-prg.plot()
-print(prg.ann.ann)
-
 
 
 # todo: Check the following
@@ -45,10 +38,7 @@ Chord Substitutions:
         We take ths chord starting from the median note 
         we can do a 3 note or 4 note chord
         We can go a third up or a third down (major only?)
-        ex CMaj7 -> Em7 or Am7          3sub
-        ex Am7 -> CMaj7 or FMaj7        3sub
-        
-        => Easy to do from Scale
+        => 1625 turns into 3625
              
     - 25 substitution:
         ex G7 -> Dm7 G7                 25sub5
@@ -62,7 +52,7 @@ Chord Substitutions:
         G7 -> G#dim7                    interesting
         
     - Tritone Substitution in place of a DOM:
-        ex G7 -> Db7                    3sub already in chord, add to search
+        ex G7 -> Db7
          
     examples:
         org:           '|Dm7|G7|CM7|'               # original progression 
@@ -77,28 +67,6 @@ Chord Substitutions:
           e.g. Dm7–G7–CM7 -> Dm7–D♭7–CM gives a downward walking bass
     
         
-    todo: What do we do with this  (chrSubLst)
-    chrSubLst = \
-        [  # List of chord substitutions,  Format ['<old>-><new>,name']
-            ['IM7->iiim7', '3sub1'],  # I -> iii common on I-vi-ii-V
-            ['im7->IIIM7', '3sub1'],
-
-            ['IM7->vim7', '6sub1'],
-            ['im7->VIM7', '6sub1'],
-
-            ['V7->iim7,V7', '2-5sub5'],
-            ['V7->II7,V7', '2-5sub5'],
-
-            ['V7->iiim7,VI7,iim7,V7', '3-6-2-5sub5'],
-            ['V7->III7,VI7,II7,V7', '3-6-2-5sub5'],
-
-            ['V7->#Vdim7', '#5sub5'],
-            ['V7->bii7', 'trisub5'],
-        ]
-    
-    todo: Check what happens with a dominant of dominant series
-    'E7|A7|D7|G7|C6/9|'
-
 
 
 Passing Chords
@@ -116,30 +84,7 @@ Approach Chords
     the tune by either a half step below or half step above that resolution chord.
     
     it is a type of passing chord that is either 1 (chromatic) or 2 (diatonic) semitones away from the next chord
-    
-    examples:
-        Original Chord Progression	| CMaj7 | Dm7 ||
-        Tritone (of previous chord)	| CMaj7 - G♭7 | Dm7 ||
-        Tritone (of next chord)	| CMaj7 - A♭7 | Dm7 ||
-        Approach #1 (diatonic)	| CMaj7 - Em7 | Dm7 ||
-        Approach #2 (semitone)	| CMaj7 - D♭7 | Dm7 ||          
-        Approach #3 (semitone)	| CMaj7 - E♭7 | Dm7 ||          
-        Diminished #1	| CMaj7 - D♭o7 | Dm7 ||
-        Diminished #2	| CMaj7 - E♭o7 | Dm7 ||
-        Dominant-minor	| CMaj7 - D7 | Dm7 ||
-        Secondary V	| CMaj7 - A7 | Dm7 ||
-        Secondary II, V	| CMaj7 - Em7 A7 | Dm7 ||
 
-        todo:  add Passing chords
-        test on:
-        allOfMe = '|C7|C7|E7|E7|A7|A7|Dm7|Dm7|' \
-                  'E7|E7|Am7|Am7|D7|D7|Dm7|G7|'
-        allOfMe_passingChords1=\
-            '|C7|C7,Dm7|E7|E7,B♭7|A7|A7,Eø7,A7|Dm7|Dm7,D#o7|' \
-            'E7|E7,Bø7|Am7|Am7,A♭7|D7|D7,A♭7|Dm7,Do7|G7,D♭7|'
-        allOfMe_passingChords2=\
-            '|C7,C#dim|Dm7,D#o7|E7,CMaj7|Bø7,E7|A7,A♭7|A7,G7|Dm7,C#o7|Dm7,D#o7|' \
-            'E7,F7|G7,G#7|Am7,E7|A♭7,E♭7|D7,D#o7|D7,Eø7|Dm7,Do7|G7,D♭7|'
         
 Tonicization/Modulation
 =======================
@@ -147,33 +92,18 @@ Tonicization/Modulation
     Tonicization: changing key for less than two bars
     - we cant tonicize the tonic (it is already)
     - we cant tonicize a hdim
-    - only maj and min chords can be tonics, so we can only tonicise them
+    - only maj and min chords can be tonics, so we can only tonicize them
 
     two ways of tonicization:
     - insert a secondary dominant
     - insert a secondary leading tone (viihdim7 or viio7)
-    examples:
-    Original Chord Progression	        |CMaj7|Am7         |Dm7|G7|
-    Secondary Dominant	  	            |CMaj7|A7          |Dm7|G7|
-    Secondary Leading-Tone Chord	    |CMaj7|C#ø7 OR C#o7|Dm7|G7|
-    
-    Cycling Secondary Dominant	                    |CMaj7,B7|Em7,A7|Dm7,G7|CMaj7|
-    Cycling Secondary Dominant without resolving	|CMaj7,B7|E7,A7|D7,G7|CMaj7|
-    Secondary ii, V	                                |CMaj7|Em7,A7|Dm7|G7|
-    Chromatic Cycling Secondary ii, V               |Em7,A7|E♭m7,A♭7|Dm7|G7|
+
 
 Modal Interchange (borrowed chords):
 ====================================
-    Changing key for a chort period while retaining the same tonal center (root)
+    Changing key for a short period while retaining the same tonal center (root)
     in modal interchange, we borrow chords from a parallel key
-    
-    examples:
-        |Dm7|G7|CMaj7|          # original 251
-        |Dm7♭5|G7♭9|CMaj7|      # Borrowed from harmonic minor
-        |Gm7|CMaj7|Dm7♭5|       # Borrowed from Aeolian	
-        |D♭Maj7|Gm7♭5|CMaj7|    # Borrowed from Phrygian
-        |D7|GMaj7|CMaj7|        # Borrowed from Lydian
-    
+
     examples:
         mode | modal interchange        | Songs
         Aeo  | Minor iv,♭VII7,♭VI,♭III   | All The Things You Are, I Got Rhythm, There will never be another you, My Romance, 

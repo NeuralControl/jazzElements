@@ -53,7 +53,7 @@ class Progression:
             {
                 'colors': ['#c0d6e4', '#afeeee', '#dddddd', '#ffb6c1', '#e6e6fa', '#f5f5dc', '#ccff00', '#31698a',
                            '#f08080', '#ffa500', '#008080'] * 3,
-                'barsPerRow': 4,
+                'barsPerRow': 8,
                 'sepx': 0,
                 'sepy': 20,
                 'beatsPerBar': 4,
@@ -81,7 +81,6 @@ class Progression:
         self.ann = None
 
     def plotChord(self, ax, chr, pos, plotType='fn'):
-
         chord = self.chords.loc[chr]
         ann = self.ann.ann.loc[chr] if self.ann else None
 
@@ -206,7 +205,7 @@ class Progression:
         # axis('equal')
 
     def annotate(self, model='kostka'):
-        self.ann = annGraph(self.chords,model=model)
+        self.ann = annGraph(self.chords,model=model,)
         self.ann.run()
 
 
