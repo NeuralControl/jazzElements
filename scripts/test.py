@@ -1,5 +1,4 @@
 import pandas as pd
-
 from jazzElements.annotate import annGraph
 from jazzElements.chord import Chord
 from jazzElements.progression import Progression
@@ -90,7 +89,7 @@ def findCurrentNextKeys(cad, sca, chrPos):
 ## Analysis:
 chrStr = '|Dm7|G7|CM7|Cmaj7|C#dim7|Dm7|G7|'
 # Base
-prg = Progression('My Romance')
+prg = Progression('Misty')
 # prg.annotate(model='mainCad')
 # prg.ann.ann['chords'] = prg.ann.chords
 # ann = prg.ann.ann
@@ -132,27 +131,25 @@ for ci in range(len(chords)):
                                     deg=cad[0].split('-')[cad[2]], cadPos=len(prg.ann.ann['cadPos'][ci]),
                                     fn=cad[0].split('-')[cad[2]]+'?'))
     else:
-        # 3sub1 #iosub6 app
         for x in [f for f in iso[ci] if f[0] == 'dia']:
-            prg.ann.append(ci,
-                           dict(deg=x[1], sca=x[2], fn='~', chrPos=0, cadPos=len(prg.ann.ann['cadPos'][ci])))
+            prg.ann.append(ci,dict(deg=x[1], sca=x[2], fn='~(dia)', chrPos=0,cad='', cadPos=len(prg.ann.ann['cadPos'][ci])))
+
         for x in [f for f in iso[ci] if f[0].endswith('/')]:
             prg.ann.append(ci, dict(fn='SD', deg=x[0][:-1], sca=curKey[ci + 1], cad='V/',
                                     cadPos=len(prg.ann.ann['cadPos'][ci])))
         for x in [f for f in iso[ci] if f[0] == 'bor']:
-            prg.ann.append(ci, dict(sca=x[2], fn=x[0], cad=x[1], cadPos=len(prg.ann.ann['cadPos'][ci])))
+            prg.ann.append(ci, dict(sca=x[2], fn=x[0]+'(bor)', cad=x[1], cadPos=len(prg.ann.ann['cadPos'][ci])))
         for x in [f for f in iso[ci] if f[0] == 'tri']:
-            prg.ann.append(ci, dict(fn='~', deg='TRI TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
+            prg.ann.append(ci, dict(fn='~(tri)', deg='TRI TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
         for x in [f for f in iso[ci] if f[0] == 'tri>']:
-            prg.ann.append(ci, dict(fn='~', deg='TRI> TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
+            prg.ann.append(ci, dict(fn='~(tri)>', deg='TRI> TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
         for x in [f for f in iso[ci] if f[0] == '3sub1']:
-            prg.ann.append(ci, dict(fn='~', deg='3sub1 TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
-        for x in [f for f in iso[ci] if f[0] == '3sub1']:
-            prg.ann.append(ci, dict(fn='~', deg='3sub1 TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
+            prg.ann.append(ci, dict(fn='~(3sub1)', deg='3sub1 TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
+
         for x in [f for f in iso[ci] if f[0] == '#iosub6']:
-            prg.ann.append(ci, dict(fn='~', deg='#iosub6 TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
+            prg.ann.append(ci, dict(fn='~(#iosub6)', deg='#iosub6 TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
         for x in [f for f in iso[ci] if f[0] == 'app']:
-            prg.ann.append(ci, dict(fn='~', deg='app TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
+            prg.ann.append(ci, dict(fn='~(app)', deg='app TODO', cadPos=len(prg.ann.ann['cadPos'][ci])))  # todo
 
 print(prg.ann.ann)
 prg.plot()
