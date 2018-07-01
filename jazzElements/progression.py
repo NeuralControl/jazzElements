@@ -53,7 +53,7 @@ class Progression:
             {
                 'colors': ['#c0d6e4', '#afeeee', '#dddddd', '#ffb6c1', '#e6e6fa', '#f5f5dc', '#ccff00', '#31698a',
                            '#f08080', '#ffa500', '#008080'] * 3,
-                'barsPerRow': 8,
+                'barsPerRow': 4,
                 'sepx': 0,
                 'sepy': 20,
                 'beatsPerBar': 4,
@@ -81,6 +81,7 @@ class Progression:
         self.ann = None
 
     def plotChord(self, ax, chr, pos, plotType='fn'):
+
         chord = self.chords.loc[chr]
         ann = self.ann.ann.loc[chr] if self.ann else None
 
@@ -100,12 +101,12 @@ class Progression:
 
             if 'cad' in ann:
                 for ci, c in enumerate(ann['cad']):
-                    yFill = yChr + (ann['cadPos'][ci] + 0.5) * cadh
+                    yFill = yChr + (ann['rnk'][ci] + 0.5) * cadh
 
                     if len(c.split('-')) == 1:  # Isolated chord
                         text(
                             xChr + 3, yFill,
-                            ann['cad'][ci] + '(' + ann['sca'][ci].replace(' ion', '') + ')',
+                            ann['cad'][ci] + '(' + ann['sca'][ci].replace(' ion', '').replace(' aeo','m') + ')',
                             color='k', va='center', ha='left', fontSize=fnSz)
                     else:  # Cadence
                         # plot bgd
@@ -124,7 +125,7 @@ class Progression:
 
             if 'fn' in ann:
                 for fi, f in enumerate(ann['fn']):
-                    text(xChr + wChr, yChr + ann['cadPos'][fi] * cadh + cadh / 2, ann['fn'][fi] + ' ',
+                    text(xChr + wChr, yChr + ann['rnk'][fi] * cadh + cadh / 2, ann['fn'][fi] + ' ',
                          color='k', va='center', ha='right', fontSize=fnSz)
 
         if plotType == 'kbd':
@@ -182,7 +183,7 @@ class Progression:
 
     def plot(self, plotType='fn'):
         keys = self.countKeys()
-        cNorm = Normalize(vmin=min([k[1] for k in keys]), vmax=1.5 * max([k[1] for k in keys]))
+        cNorm = Normalize(vmin=min([k[1] for k in keys],default=0), vmax=1.5 * max([k[1] for k in keys],default=1))
         scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=get_cmap('Blues'))
         self.cfg['scaleColors'] = {x[0]: scalarMap.to_rgba(x[1]) for i, x in enumerate(keys)}
 
@@ -205,7 +206,7 @@ class Progression:
         # axis('equal')
 
     def annotate(self, model='kostka'):
-        self.ann = annGraph(self.chords,model=model,)
+        self.ann = annGraph(self.chords,model=model)
         self.ann.run()
 
 

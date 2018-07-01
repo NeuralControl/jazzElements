@@ -5,6 +5,73 @@ from jazzElements.chord import Chord
 from jazzElements.note import Note
 from jazzElements.scale import Scale
 
+def annIsolated(chords, curKey):
+    iso = []
+    for ci in range(len(chords)):
+        # Current key
+        if isinstance(curKey, str):
+            key = curKey
+        else:
+            key = curKey[ci] if curKey is not None else None
+
+        # Diatonic Chord
+        if key:
+            deg = Scale(key).hasChord(chords[ci])
+            if deg:
+                iso.append((ci, 'dia', deg, key))
+
+        # Secondary Dominant
+        if ci < len(chords) - 1 and chords[ci] in Scale(chords[ci + 1].root, 'ion').getDegreeFamily(5):
+            iso.append((ci, 'V' + Chord(chords[ci]).type + '/'))
+
+        # Borrowed relative major
+        if key and isinstance(Scale(key).relativeMajor(), Scale):
+            if Scale(key).relativeMajor().hasChord(chords[ci]):
+                iso.append((ci, 'bor', 'relMaj', Scale(key).relativeMajor().name,Scale(key).relativeMajor().hasChord(chords[ci])))
+
+        # Borrowed relative minor
+        if key and isinstance(Scale(key).relativeMinor(), Scale):
+            if Scale(key).relativeMinor().hasChord(chords[ci]):
+                iso.append((ci, 'bor', 'relMin', Scale(key).relativeMinor().name,Scale(key).relativeMinor().hasChord(chords[ci])))
+
+        # Borrowed parallel minor
+        if key and isinstance(Scale(key).parallelMinor(), Scale):
+            if Scale(key).parallelMinor().hasChord(chords[ci]):
+                iso.append((ci, 'bor', 'parMin', Scale(key).parallelMinor().name,Scale(key).parallelMinor().hasChord(chords[ci])))
+
+        # Borrowed parallel major
+        if key and isinstance(Scale(key).parallelMajor(), Scale):
+            if Scale(key).parallelMajor().hasChord(chords[ci]):
+                iso.append((ci, 'bor', 'parMaj', Scale(key).parallelMajor().name,Scale(key).parallelMajor().hasChord(chords[ci])))
+
+        # Tritone sub of the current chord
+        tri = chords[ci].tritoneSubstitution()
+        if key and tri and Scale(key).hasChord(tri):
+            iso.append((ci, 'tri', tri))
+
+        # Tritone of next chord
+        if ci < (len(chords) - 1):
+            tri = chords[ci + 1].tritoneSubstitution()
+            if tri and tri == chords[ci]:
+                iso.append((ci, 'tri>', tri))
+
+        # 3 sub 1
+        if key and chords[ci] in Scale(key).getDegreeFamily(3):
+            iso.append((ci, '3sub1'))
+
+        # #io sub VI
+        if key and chords[ci] in [Chord((Scale(key).root + 1).name + 'o'),
+                                  Chord((Scale(key).root + 1).name + 'o7')]:
+            iso.append((ci, '#iosub6'))
+
+        # Approach chord
+        if ci < (len(chords) - 1) and min(Chord(chords[ci]).root - Chord(chords[ci + 1]).root,
+                                          (Chord(chords[ci + 1]).root - Chord(chords[ci]).root)) in [1, 2]:
+            iso.append((ci, 'app'))
+
+    return iso
+
+
 class CadenceGraph():
     cadGraphs = \
         {
@@ -167,7 +234,7 @@ class CadenceGraph():
 
 
 class annGraph():
-    def __init__(self, chords,model):
+    def __init__(self, chords, model):
         self.name = ''
         self.description = ''
         self.model = model
@@ -179,30 +246,43 @@ class annGraph():
         self.resetAnnotations()
 
     def resetAnnotations(self):
-        fields = ['fn', 'deg', 'sca', 'cad', 'cadPos', 'chrPos']
+        fields = ['fn', 'deg', 'sca', 'cad', 'chrPos', 'rnk']
         self.ann = pd.DataFrame([[[] for _ in range(len(fields))] for _ in range(len(self.chords))],
                                 columns=fields,
                                 index=range(len(self.chords)))
 
     def append(self, idx, values):
+
         """
         Helper to set an ann chord with fn, cad etc
         Args:
             idx: chord index
             values: dict
         """
-        for x in ['deg','sca','fn','cad']:
-            if x not in values:
-                values[x]='?'
+        V = dict(deg='?', sca='?', fn='?', chrPos=0, cad='')
+        V.update(values)
+
+        if isinstance(V['cad'], list) and len(V['cad']) > 1:  # We got a cadence here, find out the rank first
+            rnk = max(max(self.ann.loc[idx:(idx - 1 + len(V['cad']))]['rnk'], default=-1), default=-1) + 1
+            for chrPos in range(len(V['cad'])):
+                self.ann.loc[idx + chrPos]['cad'].append('-'.join(V['cad']))
+                self.ann.loc[idx + chrPos]['rnk'].append(rnk)
+                self.ann.loc[idx + chrPos]['chrPos'].append(chrPos)
+                self.ann.loc[idx + chrPos]['sca'].append(V['sca'])
+                self.ann.loc[idx + chrPos]['fn'].append(V['cad'][chrPos])
+                self.ann.loc[idx + chrPos]['deg'].append(V['cad'][chrPos])
+            return
+
+        if 'rnk' not in V:
+            V['rnk'] = max(self.ann.loc[idx]['rnk']) + 1 if len(self.ann.loc[idx]['rnk']) else 0
 
         for k in self.ann:
-            if k in values:
-                self.ann.loc[idx][k].append(values[k])
+            if k in V:
+                self.ann.loc[idx][k].append(V[k])
             else:
                 self.ann.loc[idx][k].append(None)
 
-
-    def run(self,model=None):
+    def run(self, model=None):
         if model:
             self.model = model
 
@@ -213,10 +293,12 @@ class annGraph():
             self.annAllTrans()
         elif self.model == 'mainCad':
             self.annMainCad()
+        elif self.model == 'wtb':
+            self.annWtb()
         else:
             raise ValueError('annotation model unknown ({})'.format(self.model))
 
-    def findCadences(self,cads,updateAnn=True):
+    def findCadences(self, cads, updateAnn=True):
         """
         Uses the graph models to find all cadences in a progression
         Args:
@@ -237,13 +319,13 @@ class annGraph():
         if updateAnn:
             used = [False] * len(self.chords)
             for x in X:  # x=(<size>,<start>,<key>,<cadenceList>)
-                rnk = max([max(self.ann.loc[c]['cadPos']) if self.ann.loc[c]['cadPos'] else -1 for c in
+                rnk = max([max(self.ann.loc[c]['rnk']) if self.ann.loc[c]['rnk'] else -1 for c in
                            range(x[1], (x[1] + x[0]))]) + 1
                 for ci, c in enumerate(range(x[1], (x[1] + x[0]))):
                     self.append(c,
                                 dict(deg=x[3][ci],
                                      sca=x[2],
-                                     cad='-'.join(x[3]), cadPos=rnk,
+                                     cad='-'.join(x[3]), rnk=rnk,
                                      chrPos=ci,
                                      fn=Scale.fnTypes[Scale(x[2]).degrees().index(x[3][ci]) + 1] if len(
                                          x[3]) > 1 else ''
@@ -252,11 +334,68 @@ class annGraph():
         return X
 
     def annKostka(self):
-        self.findCadences(['kostkaMaj','kostkaMin'])
+        self.findCadences(['kostkaMaj', 'kostkaMin'])
 
     def annAllTrans(self):
-        self.findCadences(['allTransMaj','allTransMin'])
+        self.findCadences(['allTransMaj', 'allTransMin'])
 
     def annMainCad(self):
-        self.findCadences(['mainCadMin','mainCadMaj'])
+        self.findCadences(['mainCadMin', 'mainCadMaj'])
+
+    def annWtb(self):
+        self.resetAnnotations()
+
+        # Calculate minimum cadences
+        cads = self.findCadences(['mainCadMin', 'mainCadMaj'], updateAnn=False)
+        cads = [x for x in cads if x[0] >= 2]
+
+        ## calculate current/next key
+        K = pd.Series([None] * len(self.chords))
+        for c in cads:
+            K[c[1]:c[1] + c[0]] = c[2]
+        curKey = K.fillna(method='ffill').values
+        nextKey = K.fillna(method='bfill').values
+
+        ## calculate isolated self.chords
+        iso = [[] for _ in self.chords]
+        for a in annIsolated(self.chords, curKey): # Within the current key
+            iso[a[0]].append(a[1:])
+        for a in annIsolated(self.chords, nextKey): # Within the next key
+            if len(iso[a[0]])==0:
+                iso[a[0]].append(a[1:])
+
+        for c in cads:
+            self.append(c[1],dict(sca=c[2],cad=c[3]))
+
+        for ci in range(len(iso)):
+            for x in [f for f in iso[ci] if f[0] == 'dia']:
+                self.append(ci, dict(deg=x[1], sca=x[2], fn='~(dia)'))
+            for x in [f for f in iso[ci] if f[0].endswith('/')]:
+                self.append(ci, dict(fn='SD', deg=x[0][:-1], sca=curKey[ci + 1], cad='V/'))
+            for x in [f for f in iso[ci] if f[0] == 'bor']:
+                self.append(ci, dict(sca=x[2], fn='~(' + x[1] + ')', deg=x[3]))
+            for x in [f for f in iso[ci] if f[0] == 'tri']:
+                self.append(ci, dict(fn='~(tri)', deg='tri'))
+            for x in [f for f in iso[ci] if f[0] == 'tri>']:
+                self.append(ci, dict(fn='~(tri)>', deg='tri>'))
+            for x in [f for f in iso[ci] if f[0] == '3sub1']:
+                self.append(ci, dict(fn='~(3sub1)', deg='1'))
+            for x in [f for f in iso[ci] if f[0] == '#iosub6']:
+                self.append(ci, dict(fn='~(#iosub6)', deg='#iosub6'))
+            for x in [f for f in iso[ci] if f[0] == 'app']:
+                self.append(ci, dict(fn='~(app)', sca='', deg=''))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
