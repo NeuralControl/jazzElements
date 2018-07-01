@@ -11,6 +11,7 @@ from jazzElements.viz import plotNotes
 
 class Scale():
     fnTypes = {1: 'T', 2: 'ST', 3: 'M', 4: 'SD', 5: 'D', 6: 'SM', 7: 'L'}
+
     modesLst = ['ion', 'dor', 'phr', 'lyd', 'mix', 'aeo', 'loc']
     modesIntervals = {
         'ion': [2, 2, 1, 2, 2, 2, 1],

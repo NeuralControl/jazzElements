@@ -1,7 +1,7 @@
 from matplotlib.pyplot import *
 from jazzElements.progression import Progression,progressions
 
-def plotKnownProgressions(plotType='fn',reduce=False,tgt='d:\\Code\\jazzElements\\img\\'):
+def plotKnownProgressions(plotType='fn',tgt='d:\\Code\\jazzElements\\img\\'):
     """
         Analyze known progressions and store to disk
     Args:
@@ -18,10 +18,5 @@ def plotKnownProgressions(plotType='fn',reduce=False,tgt='d:\\Code\\jazzElements
 
 plotKnownProgressions('fn')
 
-plotKnownProgressions('kbd')
-
-
-
-
-
+# plotKnownProgressions('kbd')
 

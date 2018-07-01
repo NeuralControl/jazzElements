@@ -6,7 +6,7 @@ import pandas as pd
 from matplotlib import patches
 from matplotlib.pyplot import *
 
-from jazzElements.annotate import annGraph
+from jazzElements.annotate import Annotate
 from jazzElements.chord import Chord
 from jazzElements.scale import Scale
 
@@ -102,7 +102,6 @@ class Progression:
             if 'cad' in ann:
                 for ci, c in enumerate(ann['cad']):
                     yFill = yChr + (ann['rnk'][ci] + 0.5) * cadh
-
                     if len(c.split('-')) == 1:  # Isolated chord
                         text(
                             xChr + 3, yFill,
@@ -206,7 +205,7 @@ class Progression:
         # axis('equal')
 
     def annotate(self, model='kostka'):
-        self.ann = annGraph(self.chords,model=model)
+        self.ann = Annotate(self.chords, model=model)
         self.ann.run()
 
 
