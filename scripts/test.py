@@ -1,6 +1,6 @@
 from jazzElements.progression import Progression
 
-prg = Progression('Misty')
+prg = Progression('Minor 251s')
 prg.annotate('wtb')
 prg.plot()
 

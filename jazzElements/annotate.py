@@ -120,12 +120,20 @@ class CadenceGraph():
                     'key': 'ion',
                     'next': {1: [1], 2: [2, 5], 3: [3], 4: [4], 5: [5, 1], 6: [6], 7: [7]}
                 },
-            'mainCadMin':
+            'mainCadHmin':
                 {
-                    'description': 'chord detector and main minor cadences',
+                    'description': 'chord detector and main harmonic minor cadences',
                     'key': 'hm',
                     'next': {1: [1], 2: [2, 5], 3: [3], 4: [4], 5: [5, 1], 6: [6], 7: [7]}
                 },
+            'mainCadMin':
+                {
+                    'description': 'chord detector and main aeolian cadences',
+                    'key': 'aeo',
+                    'next': {1: [1], 2: [2, 5], 3: [3], 4: [4], 5: [5, 1], 6: [6], 7: [7]}
+                },
+
+
         }
 
     def __init__(self, root, model):
@@ -341,7 +349,7 @@ class Annotate():
     def annWtb(self):
         self.resetAnnotations()
         # Calculate minimum cadences
-        cads = self.findCadences(['mainCadMin', 'mainCadMaj'], minSz=2)
+        cads = self.findCadences(['mainCadMaj','mainCadMin','mainCadHmin'], minSz=2)
 
         ## calculate current/next key
         K = pd.Series([None] * len(self.chords))
@@ -375,3 +383,7 @@ class Annotate():
                 self.append(ci, dict(fn='~(#iosub6)', deg='#iosub6'))
             for x in [f for f in iso[ci] if f[0] == 'app']:
                 self.append(ci, dict(fn='~(app)', sca='', deg=''))
+
+
+
+
