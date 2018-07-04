@@ -8,13 +8,16 @@ def plotKnownProgressions(plotType='fn',tgt='d:\\Code\\jazzElements\\img\\'):
         plotType: 'fn' | 'kbd'
     """
     for song in progressions:
-        for method in ['kostka','wtb']:
-            print('== '+song+' == ('+method+')')
-            prg = Progression(song)
-            prg.annotate(model=method)
-            prg.plot(plotType)
-            savefig(tgt + plotType+'\\' + song.replace(' ','')+' '+method)
-            close('all')
+        for model in ['kostka','wtb']:
+            try:
+                print('== '+song+' == ('+model+')')
+                prg = Progression(song)
+                prg.annotate(model=model)
+                prg.plot(plotType)
+                savefig(tgt + plotType+'\\' + song.replace(' ','')+' '+model)
+                close('all')
+            except:
+                warnings.warn('Error on '+song+' '+model)
 
 plotKnownProgressions('fn')
 

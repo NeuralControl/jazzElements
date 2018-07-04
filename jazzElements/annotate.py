@@ -5,8 +5,7 @@ from jazzElements.chord import Chord
 from jazzElements.note import Note
 from jazzElements.scale import Scale
 
-
-def annIsolated(chords, curKey):
+def findIsolated(chords, curKey):
     iso = []
     for ci in range(len(chords)):
         # Current key
@@ -19,63 +18,49 @@ def annIsolated(chords, curKey):
         if key:
             deg = Scale(key).hasChord(chords[ci])
             if deg:
-                iso.append((ci, 'dia', deg, key))
+                iso.append(dict(idx=ci, fn='dia', deg=deg, key=key))
 
         # Secondary Dominant
         if ci < len(chords) - 1 and chords[ci] in Scale(chords[ci + 1].root, 'ion').getDegreeFamily(5):
-            iso.append((ci, 'V' + Chord(chords[ci]).type + '/'))
+            iso.append(dict(idx=ci, fn='V' + Chord(chords[ci]).type + '/'+chords[ci + 1].name))
 
-        # Borrowed relative major
-        if key and isinstance(Scale(key).relativeMajor(), Scale):
-            if Scale(key).relativeMajor().hasChord(chords[ci]):
-                iso.append((ci, 'bor', 'relMaj', Scale(key).relativeMajor().name,
-                            Scale(key).relativeMajor().hasChord(chords[ci])))
-
-        # Borrowed relative minor
-        if key and isinstance(Scale(key).relativeMinor(), Scale):
-            if Scale(key).relativeMinor().hasChord(chords[ci]):
-                iso.append((ci, 'bor', 'relMin', Scale(key).relativeMinor().name,
-                            Scale(key).relativeMinor().hasChord(chords[ci])))
-
-        # Borrowed parallel minor
-        if key and isinstance(Scale(key).parallelMinor(), Scale):
-            if Scale(key).parallelMinor().hasChord(chords[ci]):
-                iso.append((ci, 'bor', 'parMin', Scale(key).parallelMinor().name,
-                            Scale(key).parallelMinor().hasChord(chords[ci])))
-
-        # Borrowed parallel major
-        if key and isinstance(Scale(key).parallelMajor(), Scale):
-            if Scale(key).parallelMajor().hasChord(chords[ci]):
-                iso.append((ci, 'bor', 'parMaj', Scale(key).parallelMajor().name,
-                            Scale(key).parallelMajor().hasChord(chords[ci])))
+        # Borrowed chords (relative and parallel keys)
+        if key:
+            for b in [(Scale(key).relativeMajor, 'rMaj'),
+                      (Scale(key).relativeMinor, 'rMin'),
+                      (Scale(key).parallelMinor, 'pMin'),
+                      (Scale(key).parallelMajor, 'pMaj')]:
+                if isinstance(b[0], Scale):
+                    if b[0].hasChord(chords[ci]):
+                        iso.append(dict(idx=ci, fn=b[1], key=b[0].name,
+                                        deg=b[0].hasChord(chords[ci])))
 
         # Tritone sub of the current chord
         tri = chords[ci].tritoneSubstitution()
         if key and tri and Scale(key).hasChord(tri):
-            iso.append((ci, 'tri', tri))
+            iso.append(dict(idx=ci, fn='tt/' + tri))
 
         # Tritone of next chord
         if ci < (len(chords) - 1):
             tri = chords[ci + 1].tritoneSubstitution()
             if tri and tri == chords[ci]:
-                iso.append((ci, 'tri>', tri))
+                iso.append(dict(idx=ci, fn='tt>' + tri))
 
         # 3 sub 1
         if key and chords[ci] in Scale(key).getDegreeFamily(3):
-            iso.append((ci, '3sub1'))
+            iso.append(dict(idx=ci, fn='3sub1',key=key))
 
         # #io sub VI
         if key and chords[ci] in [Chord((Scale(key).root + 1).name + 'o'),
                                   Chord((Scale(key).root + 1).name + 'o7')]:
-            iso.append((ci, '#iosub6'))
+            iso.append(dict(idx=ci, fn='#iosub6'))
 
         # Approach chord
         if ci < (len(chords) - 1) and min(Chord(chords[ci]).root - Chord(chords[ci + 1]).root,
                                           (Chord(chords[ci + 1]).root - Chord(chords[ci]).root)) in [1, 2]:
-            iso.append((ci, 'app'))
+            iso.append(dict(idx=ci, fn='app'))
 
     return iso
-
 
 class CadenceGraph():
     cadGraphs = \
@@ -132,7 +117,6 @@ class CadenceGraph():
                     'key': 'aeo',
                     'next': {1: [1], 2: [2, 5], 3: [3], 4: [4], 5: [5, 1], 6: [6], 7: [7]}
                 },
-
 
         }
 
@@ -193,8 +177,8 @@ class CadenceGraph():
                             if d in self.fnSeq[x[1][-1]]:  # The current chord can continue this sequence
                                 newCur.append((x[0], x[1] + [d]))
                             else:  # A new sequence starts here
-                                Seq.append((len(x[1]), x[0], self.scale.name,
-                                            [self.degreesRoman[xi - 1] for xi in x[1]]))  # store this cadence
+                                Seq.append(dict(sz=len(x[1]), idx=x[0], key=self.scale.name,
+                                                cad=[self.degreesRoman[xi - 1] for xi in x[1]]))  # store this cadence
                                 newCur.append((ci, [d]))  # add new sequence
 
                     cur = newCur.copy()
@@ -204,11 +188,13 @@ class CadenceGraph():
 
             else:  # current chord isnt in key, append all current cadences to Seq
                 for x in cur:
-                    Seq.append((len(x[1]), x[0], self.scale.name, [self.degreesRoman[xi - 1] for xi in x[1]]))
+                    Seq.append(dict(sz=len(x[1]), idx=x[0], key=self.scale.name,
+                                    cad=[self.degreesRoman[xi - 1] for xi in x[1]]))
                 cur = []
         if cur:
             for x in cur:
-                Seq.append((len(x[1]), x[0], self.scale.name, [self.degreesRoman[xi - 1] for xi in x[1]]))
+                Seq.append(
+                    dict(sz=len(x[1]), idx=x[0], key=self.scale.name, cad=[self.degreesRoman[xi - 1] for xi in x[1]]))
         return Seq
 
     def plot(self, tgt='', showChords=True):
@@ -245,7 +231,6 @@ class CadenceGraph():
         except ImportError:
             warnings.warn('graphviz needs to be installed to plot cadence graphs')
 
-
 class Annotate():
     def __init__(self, chords, model):
         self.name = ''
@@ -259,12 +244,12 @@ class Annotate():
         self.resetAnnotations()
 
     def resetAnnotations(self):
-        fields = ['fn', 'deg', 'sca', 'cad', 'chrPos', 'rnk']
+        fields = ['fn', 'deg', 'key', 'cad', 'chrPos', 'rnk']
         self.ann = pd.DataFrame([[[] for _ in range(len(fields))] for _ in range(len(self.chords))],
                                 columns=fields,
                                 index=range(len(self.chords)))
 
-    def append(self, idx, values):
+    def append(self, values):
 
         """
         Helper to set an ann chord with fn, cad etc
@@ -272,7 +257,8 @@ class Annotate():
             idx: chord index
             values: dict
         """
-        V = dict(deg='?', sca='?', fn='?', chrPos=0, cad='')
+        idx = values['idx']
+        V = dict(deg='?', key='?', fn='?', chrPos=0, cad='')
         V.update(values)
 
         if isinstance(V['cad'], list):  # We got a cadence here, find out the rank first
@@ -281,7 +267,7 @@ class Annotate():
                 self.ann.loc[idx + chrPos]['cad'].append('-'.join(V['cad']))
                 self.ann.loc[idx + chrPos]['rnk'].append(rnk)
                 self.ann.loc[idx + chrPos]['chrPos'].append(chrPos)
-                self.ann.loc[idx + chrPos]['sca'].append(V['sca'])
+                self.ann.loc[idx + chrPos]['key'].append(V['key'])
                 self.ann.loc[idx + chrPos]['fn'].append(V['cad'][chrPos])
                 self.ann.loc[idx + chrPos]['deg'].append(V['cad'][chrPos])
         else:
@@ -326,12 +312,13 @@ class Annotate():
                     cads.extend(CadenceGraph(key, cad).findCadences(self.chords))
                 else:
                     raise ValueError('cadence unknown ({})'.format(cad))
-        cads.sort(key=lambda x: x[0], reverse=True)  # Sort by size
-        cads = [x for x in cads if x[0] >= minSz]  # Remove short cadences
+
+        cads = [c for c in cads if len(np.unique(c['cad'])) >= minSz]  # Remove short cadences
 
         if updateAnn:
             for c in cads:
-                self.append(c[1], dict(sca=c[2], cad=c[3]))
+                self.append(c)
+
         return cads
 
     def annKostka(self):
@@ -349,41 +336,23 @@ class Annotate():
     def annWtb(self):
         self.resetAnnotations()
         # Calculate minimum cadences
-        cads = self.findCadences(['mainCadMaj','mainCadMin','mainCadHmin'], minSz=2)
+        cads = self.findCadences(['mainCadMaj', 'mainCadMin', 'mainCadHmin'], minSz=3)
 
         ## calculate current/next key
         K = pd.Series([None] * len(self.chords))
         for c in cads:
-            K[c[1]:c[1] + c[0]] = c[2]
+            K[c['idx']:c['idx'] + c['sz']] = c['key']
         curKey = K.fillna(method='ffill').values
         nextKey = K.fillna(method='bfill').values
 
         ## calculate isolated self.chords
-        iso = [[] for _ in self.chords]
-        for a in annIsolated(self.chords, curKey):  # Within the current key
-            iso[a[0]].append(a[1:])
-        for a in annIsolated(self.chords, nextKey):  # Within the next key
-            if len(iso[a[0]]) == 0:
-                iso[a[0]].append(a[1:])
+        iso = []
+        iso.extend(findIsolated(self.chords, curKey))   # Within the current key
+        iso.extend(findIsolated(self.chords, nextKey))  # Within the next key
 
-        for ci in range(len(iso)):
-            for x in [f for f in iso[ci] if f[0] == 'dia']:
-                self.append(ci, dict(deg=x[1], sca=x[2], fn='~(dia)'))
-            for x in [f for f in iso[ci] if f[0].endswith('/')]:
-                self.append(ci, dict(fn='SD', deg=x[0][:-1], sca=curKey[ci + 1], cad='V/'))
-            for x in [f for f in iso[ci] if f[0] == 'bor']:
-                self.append(ci, dict(sca=x[2], fn='~(' + x[1] + ')', deg=x[3]))
-            for x in [f for f in iso[ci] if f[0] == 'tri']:
-                self.append(ci, dict(fn='~(tri)', deg='tri'))
-            for x in [f for f in iso[ci] if f[0] == 'tri>']:
-                self.append(ci, dict(fn='~(tri)>', deg='tri>'))
-            for x in [f for f in iso[ci] if f[0] == '3sub1']:
-                self.append(ci, dict(fn='~(3sub1)', deg='1'))
-            for x in [f for f in iso[ci] if f[0] == '#iosub6']:
-                self.append(ci, dict(fn='~(#iosub6)', deg='#iosub6'))
-            for x in [f for f in iso[ci] if f[0] == 'app']:
-                self.append(ci, dict(fn='~(app)', sca='', deg=''))
+        # remove double entries (terrible)
+        iso=[{v[0]:v[1] for v in V} for V in np.unique([[(k,d[k]) for k in d ] for d in iso ])]
 
-
-
+        for ci in iso:
+            self.append(ci)
 

@@ -105,20 +105,20 @@ class Progression:
                     if len(c.split('-')) == 1:  # Isolated chord
                         text(
                             xChr + 3, yFill,
-                            ann['cad'][ci] + '(' + ann['sca'][ci].replace(' ion', '').replace(' aeo','m') + ')',
+                            ann['cad'][ci] + '(' + ann['key'][ci].replace(' ion', '').replace(' aeo','m') + ')',
                             color='k', va='center', ha='left', fontSize=fnSz)
                     else:  # Cadence
                         # plot bgd
                         bgd = patches.Rectangle(
                             (xChr + 2, yFill - cadh / 2), wChr - 2, cadh,
-                            fill=True, clip_on=False, color=self.cfg['scaleColors'][ann['sca'][ci]], ec=None)
+                            fill=True, clip_on=False, color=self.cfg['scaleColors'][ann['key'][ci]], ec=None)
                         ax.add_patch(bgd)
 
                         # Print cadence if first chord
                         if ann['chrPos'][ci] == 0:
                             text(
                                 xChr + 3,yFill,
-                                 ann['sca'][ci].replace(' ion', '') + ': ' + ann['cad'][ci],
+                                 ann['key'][ci].replace(' ion', '') + ': ' + ann['cad'][ci],
                                  color='k', va='center', ha='left',
                                  fontSize=fnSz, weight='bold')
 
@@ -146,8 +146,8 @@ class Progression:
                                           (hChr - 50) / 2],
                                      nbOctaves=1, showName=False)
 
-            if 'sca' in ann and len(ann['sca']):
-                Scale(ann['sca'][0]).plot(ax=ax, pos=[xChr + 5, yChr + 5, min(wChr - 10, 100), (hChr - 50) / 2],
+            if 'key' in ann and len(ann['key']):
+                Scale(ann['key'][0]).plot(ax=ax, pos=[xChr + 5, yChr + 5, min(wChr - 10, 100), (hChr - 50) / 2],
                                           nbOctaves=1,
                                           showName=False)
 
@@ -172,8 +172,8 @@ class Progression:
              bbox=dict(boxstyle='round4', fc='k'))
 
     def countKeys(self):
-        if 'sca' in self.ann.ann:
-            s = [val for sublist in self.ann.ann.sca for val in sublist]
+        if 'key' in self.ann.ann:
+            s = [val for sublist in self.ann.ann.key for val in sublist]
             s = [(x, s.count(x)) for x in set(s)]
             s.sort(key=lambda s: s[1], reverse=True)
             return s
@@ -204,7 +204,7 @@ class Progression:
         suptitle(self.name, size=20, weight='bold')
         # axis('equal')
 
-    def annotate(self, model='kostka'):
+    def annotate(self, model='wtb'):
         self.ann = Annotate(self.chords, model=model)
         self.ann.run()
 
