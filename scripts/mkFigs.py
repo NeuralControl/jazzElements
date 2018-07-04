@@ -17,6 +17,7 @@ def plotKnownProgressions(plotType='fn',tgt='d:\\Code\\jazzElements\\img\\'):
                 savefig(tgt + plotType+'\\' + song.replace(' ','')+' '+model)
                 close('all')
             except:
+                raise ValueError('Error on '+song+' '+model)
                 warnings.warn('Error on '+song+' '+model)
 
 plotKnownProgressions('fn')
